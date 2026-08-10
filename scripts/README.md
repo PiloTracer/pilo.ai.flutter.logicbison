@@ -19,6 +19,7 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 | [`blast-radius-check.sh`](blast-radius-check.sh) | Diff size, area spread, protected surfaces, never-commit paths | pre-commit, `@flutter-verify` |
 | [`dart-hygiene-check.sh`](dart-hygiene-check.sh) | Patterns the analyzer misses: `print`, colour/spacing/fontSize literals, bare catch, secrets | pre-commit, task gate |
 | [`self-test.sh`](self-test.sh) | The verifiers themselves, against fixtures | CI, `CONTRIBUTING` |
+| [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` / `@flutter-deploy-repo verify` |
 
 ## Self-test
 
@@ -40,6 +41,8 @@ Adding a scan or a rule means adding a fixture line that triggers it and an asse
 | [`deploy-basic.sh`](deploy-basic.sh) | Thin install — pointer + `.cursorrules` registration (skill: `@flutter-deploy-basic`) |
 | [`deploy-files.sh`](deploy-files.sh) | Fat install — self-contained copy (skill: `@flutter-deploy-files`) |
 | [`deploy-repo.sh`](deploy-repo.sh) | Pinned clone or submodule (skill: `@flutter-deploy-repo`) |
+
+The three deploy scripts take the target positionally or via `--target`, and the lifecycle modes bare or `--`-prefixed in any order (`update` ≡ `--update`). `verify` hands off to `deploy-verify.sh`; `update` and `uninstall` are skill-run protocols, so the scripts route to the owning skill rather than acting.
 
 Project scaffolding is [`templates/bootstrap.sh`](../templates/bootstrap.sh) — installing the framework and setting up a project are different steps, and both are required.
 

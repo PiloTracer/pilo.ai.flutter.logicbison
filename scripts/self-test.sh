@@ -167,6 +167,60 @@ for f in analysis_options.yaml .cursorrules; do
 done
 rm -rf "$BF"
 
+head_ "deploy-verify and argument normalisation"
+D1="$(mktemp -d)"
+( cd "$D1" && git init -q )
+
+expect 0 "deploy-basic accepts a positional target" -- bash scripts/deploy-basic.sh "$D1"
+expect 2 "re-install is refused and routed to update" -- bash scripts/deploy-basic.sh --target "$D1"
+expect 2 "update routes to the skill protocol" -- bash scripts/deploy-basic.sh "$D1" update
+expect 0 "status reports the install" -- bash scripts/deploy-basic.sh "$D1" status
+
+# bare and --prefixed modes must be the same action, in any argument order
+OUT_A="$(bash scripts/deploy-basic.sh "$D1" update 2>&1; echo "exit=$?")"
+OUT_B="$(bash scripts/deploy-basic.sh --update --target "$D1" 2>&1; echo "exit=$?")"
+if [ "$OUT_A" = "$OUT_B" ]; then
+  PASSED=$((PASSED+1)); printf '  ok    update and --update are identical in any argument order\n'
+else
+  FAILED=$((FAILED+1))
+  printf '  FAIL  update vs --update diverged\n' >&2
+  printf '%s\n---\n%s\n' "$OUT_A" "$OUT_B" | tail -12 | sed 's/^/          /' >&2
+fi
+
+expect 0 "verify mode hands off to deploy-verify" -- \
+  bash scripts/deploy-basic.sh "$D1" verify --quiet
+expect 0 "a correct fresh install passes (later-step tokens are pending, not failures)" -- \
+  bash scripts/deploy-verify.sh "$D1" --quiet
+expect_output 'pending token REPLACE:FLUTTER_TASK_REF_PREFIX' "operator-owned tokens are named with their owner" -- \
+  bash scripts/deploy-verify.sh "$D1"
+
+cp "$D1/.cursorrules" "$D1/.cursorrules.good"
+sed -i 's|Framework: `[^`]*`|Framework: `/nonexistent/framework`|' "$D1/.cursorrules"
+expect 1 "a dangling framework path in .cursorrules fails" -- bash scripts/deploy-verify.sh "$D1" --quiet
+expect_output 'dangles' "the dangling path is named" -- bash scripts/deploy-verify.sh "$D1"
+mv "$D1/.cursorrules.good" "$D1/.cursorrules"
+
+sed -i '/FLUTTER_AGENT_OS_END/d' "$D1/.cursorrules"
+expect 1 "a missing END marker fails" -- bash scripts/deploy-verify.sh "$D1" --quiet
+expect_output 'FLUTTER_AGENT_OS_BEGIN/END pair' "the marker failure is named" -- \
+  bash scripts/deploy-verify.sh "$D1"
+
+D2="$(mktemp -d)"; D3="$(mktemp -d)"
+mkdir -p "$D2/app" "$D3/app"
+( cd "$D2/app" && git init -q ); ( cd "$D3/app" && git init -q )
+bash scripts/deploy-files.sh "$D2/app" >/dev/null 2>&1
+bash scripts/deploy-files.sh --target "$D3/app" >/dev/null 2>&1
+if diff -q "$D2/app/FLUTTER_AGENT_OS.md" "$D3/app/FLUTTER_AGENT_OS.md" >/dev/null \
+   && diff -q "$D2/app/.cursorrules" "$D3/app/.cursorrules" >/dev/null; then
+  PASSED=$((PASSED+1)); printf '  ok    positional and --target installs produce identical files\n'
+else
+  FAILED=$((FAILED+1)); printf '  FAIL  positional vs --target installs diverge\n' >&2
+fi
+sed -i -E 's/REPLACE:(FLUTTER|DART)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
+expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-verify.sh "$D2/app" --quiet
+
+rm -rf "$D1" "$D2" "$D3"
+
 head_ "Result"
 printf '  passed: %s  failed: %s\n\n' "$PASSED" "$FAILED"
 if [ "$FAILED" -eq 0 ]; then

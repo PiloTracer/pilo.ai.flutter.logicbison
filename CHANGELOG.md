@@ -6,6 +6,17 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`, `@flutter-d
 
 ---
 
+## [Unreleased]
+
+### Added — target-side deploy verification; order-independent deploy arguments (2026-08-10)
+
+- **`scripts/deploy-verify.sh`** (new): the mechanical backbone of the three deploy skills' `verify` modes. It checks a target repo's pointer file, the framework location it records, and the `.cursorrules` Flutter block: exactly one ordered `FLUTTER_AGENT_OS_BEGIN/END` pair, no surviving deploy-owned `REPLACE:` tokens (`FLUTTER_FRAMEWORK_PATH`, `FLUTTER_SNIPPET_BLOCK`, `FLUTTER_PROJECT_NAME` — a failure, because the deploy should have filled them), every other unresolved `REPLACE:(FLUTTER|DART)_*` token named as **pending** with its owning step (bootstrap, stack, foundation, operator), the `Framework:` path resolving and matching the pointer's `Source:`, every `@flutter-*` route in the block resolving, gitignore scratch exclusions, and `framework-verify.sh` passing at the recorded location. A basic install whose recorded source differs from the running framework copy is warned about by name — that is how a moved framework is detected.
+- **The deploy scripts now parse arguments order-independently.** The target may be positional or `--target <repo>`, and the lifecycle modes work bare or `--`-prefixed in any position: `update` ≡ `--update`, `verify` ≡ `--verify`, `status` ≡ `--status`, `uninstall` ≡ `--uninstall`. `verify` hands off to `deploy-verify.sh`; `update` and `uninstall` remain skill-run protocols, so the scripts route to the owning skill instead of acting. `deploy-basic.sh <target> update` and `deploy-basic.sh --target <target> --update` are byte-identical in output, and `self-test.sh` asserts it.
+- **Deploys fill the tokens they legitimately know.** All three install scripts now substitute `REPLACE:FLUTTER_PROJECT_NAME` (target directory name) and `REPLACE:FLUTTER_APP_ROOT` when a root `pubspec.yaml` makes it unambiguous, in addition to `REPLACE:FLUTTER_FRAMEWORK_PATH`. Remaining tokens are left for their owning skills, and `deploy-verify.sh` names them instead of leaving them silent.
+- The three deploy skills document the invocation parsing and gain verify rows for unresolved tokens and framework-path consistency, with `deploy-verify.sh` quoted as evidence.
+
+---
+
 ## [0.2.0] — 2026-08-06
 
 ### Breaking — deploy skills split by install mode; session git scoped to `.work.flutter/` (2026-08-03)

@@ -44,6 +44,15 @@ Installs **the framework**, not the app. `@flutter-release` ships your Flutter a
 | `uninstall - <target>` | Remove the framework directory and any submodule registration; **never** removes project artifacts |
 | `status` | Read-only: installed mode, pinned revision, drift |
 
+### Invocation parsing
+
+Arguments are **order-independent**. One argument is the target repository path — quoted or not, absolute or relative, in any position. The mode word works bare or `--`-prefixed, in any position: `update` ≡ `--update`, `verify` ≡ `--verify`, `status` ≡ `--status`, `uninstall` ≡ `--uninstall`. No mode word means install. These two invocations are the same action:
+
+    @flutter-deploy-repo "/mnt/work/Projects/system-erp" update
+    @flutter-deploy-repo /mnt/work/Projects/system-erp --update
+
+An argument that is neither a path nor a known mode → stop and ask. Never guess. The scripts parse the same way, so `bash scripts/deploy-repo.sh <target> update` and `bash scripts/deploy-repo.sh --target <target> --update` are also identical.
+
 ### Choosing the repo mode
 
 | Situation | Mode | Why |
@@ -121,6 +130,8 @@ Renamed skills or changed verbs are breaking and must be called out explicitly, 
 
 ## verify protocol
 
+Mechanical backbone: `bash scripts/deploy-verify.sh <target>` (equivalently `bash scripts/deploy-repo.sh <target> verify`, run from the framework source) implements the checks below, names every failure with its fix, and reports tokens owned by later steps as **pending** rather than failures. Quote its verdict; the skill adds the judgement the script cannot have (local modifications, update-only intactness).
+
 | # | Check | Fails when |
 |---|-------|-----------|
 | 1 | `<target>/.ai.flutter/` exists with `skills/`, `standards/`, `scripts/`, `concepts/`, `templates/` | any missing |
@@ -130,8 +141,10 @@ Renamed skills or changed verbs are breaking and must be called out explicitly, 
 | 5 | `.cursorrules` registers the framework | missing section |
 | 6 | No skill id collides with another installed framework | collision |
 | 7 | `scripts/framework-verify.sh` passes **inside the copy** | non-zero exit |
-| 8 | Target `.gitignore` excludes framework scratch paths | not excluded |
+| 8 | Target `.gitignore` excludes framework scratch paths (pending until `@flutter-bootstrap init`) | not excluded after bootstrap |
 | 9 | `.work.flutter/` intact (update only) | any modified |
+| 10 | No deploy-owned `REPLACE:` token survives in `.cursorrules` (`FLUTTER_FRAMEWORK_PATH`, `FLUTTER_SNIPPET_BLOCK`, `FLUTTER_PROJECT_NAME`); tokens owned by later steps are named as pending with their owner | any deploy-owned token |
+| 11 | The `Framework:` path in the Flutter block resolves and matches the pointer's `Source:` | dangling or mismatch |
 
 Report per check with the evidence, then a single verdict. Failures name the fix command.
 
@@ -189,7 +202,7 @@ If a collision is detected anyway, **stop**. Do not rename another framework's s
 | 7 | No project artifact modified | pass/fail | git status |
 | 8 | Locally modified framework files surfaced, not discarded | pass/skip | list |
 | 9 | Pinned revision and mode recorded in the pointer | pass/fail | |
-| 10 | `verify` run inside the copy; all checks reported | pass/fail | verdict |
+| 10 | `verify` run inside the copy via `deploy-verify.sh`; all checks reported, pending tokens named | pass/fail | verdict |
 | 11 | Breaking changes called out with migrations | pass/skip | |
 | 12 | License position stated | pass/fail | |
 | 13 | Next step (`@flutter-bootstrap init`) given | pass/fail | |

@@ -89,10 +89,11 @@ foundation-complete → plan-ready → implementation-ready → release-ready
 | **flutter-stack** `set` | `{FLUTTER_HANDOFF}` present (SK0 gate) | **Recommended:** `@flutter-bootstrap init` |
 | **flutter-stack** `probe` | `{FLUTTER_HANDOFF}` present | - (7 stack dimensions, ≤5 questions/pass) |
 | **flutter-stack** `status` / `show` | - | Read-only |
-| **flutter-session** `open` | `{FLUTTER_HANDOFF}` (offer bootstrap if missing) | **Recommended:** `@flutter-bootstrap init` |
-| **flutter-session** `close` | Prior `open` or dirty tree | - (may combine with `commit` / `push`) |
-| **flutter-session** `commit` | Dirty `.work.flutter/` (else report "nothing to commit") | - (scoped to `.work.flutter/`; includes untracked files/dirs) |
-| **flutter-session** `push` | Remote configured; pending `.work.flutter/` changes are committed first | - (scoped to `.work.flutter/`) |
+| **flutter-session** `start` / `open` | `{FLUTTER_HANDOFF}` (offer bootstrap if missing) | **Recommended:** `@flutter-bootstrap init` |
+| **flutter-session** `close` | Prior `start` or dirty tree | - (may combine with `commit` / `push`; `scoped` limits the commit to bookend files) |
+| **flutter-session** `commit` | Dirty in-scope tree (else report "nothing to commit") | - (scope: `.work.flutter/` in adopters, whole tree in the framework repo; includes untracked; no HANDOFF/NEXT writes) |
+| **flutter-session** `push` | Remote configured; pending in-scope changes are committed first | - (same scope resolution as `commit`; no close) |
+| **flutter-session** `add` | Dirty `.work.flutter/` (else report "nothing to stage") | - (stage-only checkpoint; no commit, no close) |
 | **flutter-session** `context` / `status` | - | Read-only |
 | **flutter-foundation** `greenfield` | `.cursorrules` + `{FLUTTER_HANDOFF}` (**GF0** gate) | **Recommended:** `@flutter-bootstrap init` |
 | **flutter-foundation** `continue` | Prior foundation work started | - |
@@ -235,12 +236,13 @@ All skills use the same verbs where applicable, so muscle memory stays portable.
 | `approve` | Flip an artifact's status after a passing review | flutter-feature-spec |
 | `document` | Author docs for something that already exists (brownfield) | flutter-feature-spec, flutter-docs |
 | `plan` | Prepare the next unit of work | flutter-implementation, flutter-test |
-| `start` | Begin a unit of work | flutter-implementation |
-| `open` | Open a session: load context, confirm readiness, resume or begin | flutter-session |
+| `start` | Begin a unit of work · open a session (load context, confirm readiness, capture goal) | flutter-implementation, flutter-session |
+| `open` / `begin` | Aliases of session `start` | flutter-session |
 | `complete` | Mark a unit as done | flutter-implementation |
-| `close` | Wrap up + write handoff; may combine with `commit` / `push` | flutter-session |
-| `commit` | Git commit of `.work.flutter/` only (incl. new untracked files/dirs); no close | flutter-session |
-| `push` | Commit pending `.work.flutter/` state (if any), then push to the remote; no close | flutter-session |
+| `close` | Wrap up + write handoff + draft the commit message; may combine with `commit` / `push` / `scoped` | flutter-session |
+| `add` | Stage in-scope changes (incl. untracked) without committing; no close | flutter-session |
+| `commit` | Git commit of the resolved scope (`.work.flutter/` in adopters, whole tree in the framework repo); no close, no HANDOFF/NEXT writes | flutter-session |
+| `push` | Commit pending in-scope state (if any), then push to the remote; no close | flutter-session |
 | `context` | Read-only full context load, uncommitted-aware; no writes | flutter-session |
 | `verify` | Audit produced artifacts | flutter-plan-verify (`foundation`/`master`/`alignment`/`coverage`/`brownfield`), flutter-data |
 | `milestone` / `uncommitted` / `last` / `gate` | Verification scopes | flutter-verify |

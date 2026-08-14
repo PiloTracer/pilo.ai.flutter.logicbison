@@ -110,8 +110,8 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 ## Support
 
 ```
-@flutter-session status|context|open|close|handoff|next|blockers|commit|push
-@flutter-session close [commit] [push]        any combination; order is close → commit → push
+@flutter-session status|context|start|close|handoff|next|blockers|add|commit|push
+@flutter-session close [commit] [scoped] [push]   any combination; order is close → add → commit → push
 @flutter-concept-run list|select|run - <FLS-nn>|status
 @flutter-docs create guide|tutorial|reference|explanation|runbook
 @flutter-docs readme|review|index|status

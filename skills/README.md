@@ -79,7 +79,7 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 
 | Skill id | Folder | Role |
 |----------|--------|------|
-| flutter-session | `flutter-session/` | Session open/close, HANDOFF and NEXT maintenance, read-only `context` load; git `commit` / `push` scoped to `.work.flutter/` |
+| flutter-session | `flutter-session/` | Session `start`/`close`, HANDOFF and NEXT maintenance, read-only `context`/`status`; git `add` / `commit` / `push` (with `scoped` option) — `.work.flutter/` scope in adopter repos, whole tree in the framework repo; commit message always shown |
 | flutter-concept-run | `flutter-concept-run/` | Run FLS-01…FLS-13 concept prompts; attach output to the iteration, SPEC or PR |
 | flutter-docs | `flutter-docs/` | Create guides, tutorials and reference docs under `.work.flutter/docs/` |
 

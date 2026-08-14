@@ -18,6 +18,8 @@ Repair is where agents most often make things worse: by treating the symptom, by
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Diagnose before fixing.** Every finding is classified (§ Cause classification) before a line changes. A fix applied to a misdiagnosed cause is a new defect wearing a fix's clothes.
@@ -173,6 +175,8 @@ If re-verification surfaces **new** findings caused by the repair, they are part
 
 **Run next:** <command>
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 **Verdicts:** `repaired` (all in-scope findings closed and re-verified) · `partial` (some closed, remainder listed with owners) · `escalated` (blocked on another layer) · `failed` (attempted and did not close — say what was tried and what was learned).
 

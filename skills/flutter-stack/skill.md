@@ -17,6 +17,8 @@ A Flutter codebase is only as consistent as its stack decision. This skill makes
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Every package must be free, open source and commercial-use-permitted.** Allowed: MIT, BSD-2/3, Apache-2.0, Zlib, MPL-2.0 (file-level copyleft, acceptable as a dependency). Refused by default: GPL, AGPL, LGPL (static-link risk on mobile), CC-BY-NC, "source-available", or any package with a paid tier required for production use. See [`PACKAGE_LICENSE_STANDARD`](../../standards/20260801-PACKAGE_LICENSE_STANDARD.md).
@@ -195,6 +197,8 @@ Binding per-stack rules: `stacks/<K1 choice>.md`. Every generated file follows t
 **Expensive to reverse:** K1 <choice>, K6 <choice> — confirmed with operator: yes/no
 **Run next:** `@flutter-foundation greenfield` (or `continue` if P0–P1 are done)
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

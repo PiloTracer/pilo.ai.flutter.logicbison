@@ -61,6 +61,8 @@ description: >-
 | Guide | `docs/guides/workflows/<file>.md` |
 ```
 
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
+
 Add a **Snippet** section (≤5 lines) only when a literal command or code fragment answers the question better than prose.
 
 ---
@@ -105,4 +107,5 @@ Print the purpose, the bucket list from `reference.md` § Routing table (bucket 
 - [`reference.md`](reference.md) — authoritative routing table
 - [`flutter-director/skill.md`](../flutter-director/skill.md) — when the operator wants work done
 - [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) — gates and redirects
+- [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — every response closes with Form A or Form B
 - [`START_HERE.md`](../../START_HERE.md) — operator decision tree

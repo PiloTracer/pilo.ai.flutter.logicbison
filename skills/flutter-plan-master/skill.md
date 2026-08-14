@@ -20,6 +20,8 @@ The master plan turns a certified foundation into an **ordered, traceable, verif
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Extended tables:** [`reference.md`](reference.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B · [Document clarity](../SKILL_DEPENDENCIES.md#document-clarity-contract) — Status + Needs header, separate Decisions/Open questions lists, exactly one `## Next action`, no leftover scaffolding.
+
 **Hard rules:**
 
 1. **Every task traces up and down.** Up to a foundation feature ID or NFR; down to at least one concrete file path. A task that traces to neither is not a task, it is a wish.
@@ -192,6 +194,8 @@ Run `integrity`, then `probe` until coverage ≥85% and the challenge is defensi
 **Blocking UNKNOWNS:** <ids or none>
 **Run next:** review the plan, set `status: Approved`, then `@flutter-plan-master status`
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

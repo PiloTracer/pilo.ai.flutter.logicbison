@@ -22,6 +22,8 @@ Installs **the framework**, not the app. `@flutter-release` ships your Flutter a
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never overwrite project artifacts.** `.work.flutter/`, project standards, foundation docs, SPECs and plans belong to the target repo. Framework files are replaceable; project files are not.

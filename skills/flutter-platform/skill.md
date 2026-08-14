@@ -17,6 +17,8 @@ The Dart/native boundary is where "works on my simulator" turns into a productio
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Parity or an explicit divergence.** Every capability is defined for **every** target platform in doc 02 §1. "Android only for now" is acceptable *only* as a recorded divergence with the iOS behaviour stated (unsupported, degraded, or deferred to milestone F{N}).

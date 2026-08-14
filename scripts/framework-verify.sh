@@ -138,6 +138,35 @@ for s in $REGISTERED; do
     || fail "$s is registered but absent from SKILL_DEPENDENCIES.md"
 done
 
+# ---------------------------------------------- 4b. operator handoff contract
+head_ "Operator handoff contract"
+grep -q '^## Operator handoff contract' skills/SKILL_DEPENDENCIES.md \
+  && pass "SKILL_DEPENDENCIES.md carries the operator handoff contract" \
+  || fail "SKILL_DEPENDENCIES.md is missing ## Operator handoff contract"
+
+# A skill without the contract reference can end a turn with an unstated
+# expectation — the operator cannot tell whether input is needed.
+for s in $REGISTERED; do
+  grep -q 'SKILL_DEPENDENCIES.md#operator-handoff-contract' "skills/$s/skill.md" 2>/dev/null \
+    && pass "$s references the operator handoff contract" \
+    || fail "$s skill.md does not reference the operator handoff contract"
+done
+
+# ---------------------------------------------- 4c. document clarity contract
+head_ "Document clarity contract"
+grep -q '^## Document clarity contract' skills/SKILL_DEPENDENCIES.md \
+  && pass "SKILL_DEPENDENCIES.md carries the document clarity contract" \
+  || fail "SKILL_DEPENDENCIES.md is missing ## Document clarity contract"
+
+# Skills whose primary output is generated documents (plans, SPECs, ADRs, docs)
+# must reference the contract, or their artifacts drift back to shapeless prose.
+DOC_GENERATING="flutter-foundation flutter-plan-master flutter-plan-repair flutter-feature-spec flutter-docs"
+for s in $DOC_GENERATING; do
+  grep -q 'SKILL_DEPENDENCIES.md#document-clarity-contract' "skills/$s/skill.md" 2>/dev/null \
+    && pass "$s references the document clarity contract" \
+    || fail "$s skill.md does not reference the document clarity contract"
+done
+
 # --------------------------------------------------------------- 5. standards
 head_ "Standards"
 count="$(find standards -maxdepth 1 -name '2*-*.md' | wc -l | tr -d ' ')"

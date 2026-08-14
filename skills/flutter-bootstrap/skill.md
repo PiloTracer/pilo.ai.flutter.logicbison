@@ -16,6 +16,8 @@ Create the project-memory scaffold that every other skill reads and writes. Idem
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 - **Never overwrite without an answer.** Every existing target is either skipped or overwritten by an explicit operator choice recorded in the run report.
@@ -174,6 +176,8 @@ Scan every created file for `REPLACE:FLUTTER_*` tokens and list them with their 
 3. `@flutter-foundation greenfield`   ← greenfield
    `@flutter-plan-verify brownfield`  ← existing codebase
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

@@ -19,6 +19,8 @@ Most "the app is broken" reports are not code defects. This skill separates the 
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Command reference:** [`resources/flutter-cli.md`](../../resources/flutter-cli.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Classify before acting.** Read the actual error output first. Guessing the fix from the symptom is how an hour disappears.
@@ -208,6 +210,8 @@ Never start at level 4. Never run a clean before the cause is understood — it 
 **Unverified:** <e.g. iOS build — no macOS host available>
 **Run next:** <command>
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

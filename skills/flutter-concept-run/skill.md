@@ -20,6 +20,8 @@ A concept is a **review lens**: one narrow question asked well, repeatedly, with
 
 **Concept pack:** [`concepts/README.md`](../../concepts/README.md) · **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Run against real evidence.** A concept run reads the actual code or diff. Running one from memory of the code is fabrication.
@@ -161,6 +163,8 @@ The **NOT verified** section is the point of the concept. An FLS-06 output whose
 **Attached to:** <iteration F2 registry / SPEC-004 / PR>
 **Run next:** `@flutter-repair repair - from concept`
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 Attach the full output to `{FLUTTER_WORK_ROOT}/concepts/<task-id>-<slug>.md` when it is long, and record the path in the iteration's Concept/NFR registry. Short runs may be inline, but the registry row is still required.
 

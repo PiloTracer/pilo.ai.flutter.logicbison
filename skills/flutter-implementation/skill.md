@@ -19,6 +19,8 @@ Execute implementation iterations derived from an **Approved master plan**. Each
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Extended detail:** [`reference.md`](reference.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 - **No implementation without a valid iteration block.** Missing or invalid → run `plan` first.
@@ -162,6 +164,8 @@ Resolve the batch **before** the loop. Default when `-` is omitted: `count=1`.
 - or populate the `Files` column in `## Current iteration`
 Then re-run `@flutter-implementation continue`.
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

@@ -16,6 +16,8 @@ Accessibility is a correctness property, not a polish item: an app that a screen
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`ACCESSIBILITY_STANDARD`](../../standards/20260801-ACCESSIBILITY_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Automated checks are necessary and insufficient.** They catch contrast, tap-target size and missing labels. They cannot judge whether a label is *meaningful*, whether the reading order makes sense, or whether an interaction is discoverable. Report both what was automated and what still needs a human with a screen reader.
@@ -153,6 +155,8 @@ Automated checks cannot judge sense. Produce a script a human runs with the plat
 | A1 contrast pair | `@flutter-repair repair - from a11y` |
 | A6 traversal | Run `@flutter-a11y traverse - /cart` with a human |
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

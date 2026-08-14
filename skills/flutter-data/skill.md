@@ -17,6 +17,8 @@ The data layer is where correctness is won or lost: it decides what is true, whe
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`DATA_LAYER_STANDARD`](../../standards/20260801-DATA_LAYER_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Domain entities never know about JSON, HTTP or the database.** DTOs live in `data/`, entities live in `domain/`, and mapping is explicit. A `fromJson` on a domain entity is a layering violation.

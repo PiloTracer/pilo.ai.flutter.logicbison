@@ -17,6 +17,8 @@ The auditor for the **planning layer**. Read-only by construction: it finds and 
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Read-only. No exceptions.** No file writes, not even a status line in HANDOFF. Findings go in the report; the operator or `@flutter-plan-repair` acts on them.
@@ -179,6 +181,8 @@ Route to `@flutter-plan-repair brownfield` with the specific slots scoring 0 or 
 |---------|----------|
 | FR7, FR11 unmapped | `@flutter-plan-repair repair - from master` |
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

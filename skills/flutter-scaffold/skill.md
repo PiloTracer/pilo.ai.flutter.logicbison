@@ -16,6 +16,8 @@ Structure decided once and generated consistently beats structure argued about i
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never scaffold before the stack is locked.** Generated code encodes idioms; guessing them creates a codebase nobody agreed to.
@@ -127,7 +129,7 @@ Generate, per `{FLUTTER_STACK_LOCK}` and the matching [`stacks/`](../../stacks/)
 
 ### A5 — Verify then report
 
-Run `flutter pub get` → `dart format --set-exit-if-changed .` → `flutter analyze` → `flutter test`. All four must pass. Report the tree, the commands with exit codes, and the next command.
+Run `flutter pub get` → `dart format --set-exit-if-changed .` → `flutter analyze` → `flutter test`. All four must pass. Report the tree, the commands with exit codes, and the next command. End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 **Pub resolve discipline:** never pin `build_runner` (or any codegen driver) to "whatever pub.dev shows as latest" without resolving against the installed Flutter SDK. Flutter pins `meta` via `flutter_test`; a newer `build_runner` that needs a newer `meta` fails `pub get` before any code is wrong. If resolve fails, lower the codegen pin to the version `flutter pub add` suggests, record it in the scaffold report, and do not claim the stack lock's "seen on pub.dev" version is installable until `pub get` exits 0.
 

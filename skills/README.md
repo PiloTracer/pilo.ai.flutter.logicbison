@@ -101,7 +101,7 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 
 **Do not** ask `@flutter-foundation` whether you are implementation-ready — that is `@flutter-plan-master status`.
 
-Registered in `.cursorrules` § Skills.
+Registered in the adopter `.cursorrules` snippet § Skills (`templates/cursorrules.flutter.snippet.template`).
 
 ---
 
@@ -111,7 +111,7 @@ These are single-source-of-truth fragments that skills **link** rather than rest
 
 | File | Owns |
 |------|------|
-| [`SKILL_DEPENDENCIES.md`](SKILL_DEPENDENCIES.md) | Readiness states, gate matrix, blocked-report shape, path resolution, canonical verbs, self-verify auto-invoke |
+| [`SKILL_DEPENDENCIES.md`](SKILL_DEPENDENCIES.md) | Readiness states, gate matrix, blocked-report shape, path resolution, canonical verbs, self-verify auto-invoke, operator handoff + document clarity contracts |
 | [`probe-protocol.md`](probe-protocol.md) | The adaptive `probe` loop, coverage scoring, question quality bar, and the **challenge pass** (operator grilling) |
 
 ---

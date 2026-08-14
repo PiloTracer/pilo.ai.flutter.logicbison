@@ -17,6 +17,8 @@ Fixes the **planning** layer. Code defects are `@flutter-repair`; toolchain fail
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B · [Document clarity](../SKILL_DEPENDENCIES.md#document-clarity-contract) — Status + Needs header, separate Decisions/Open questions lists, exactly one `## Next action`, no leftover scaffolding.
+
 **Hard rules:**
 
 1. **Repair against findings, not vibes.** Either a verifier report is in scope, or the operator gave an explicit goal after `-`. Otherwise run the verifier first.
@@ -140,6 +142,8 @@ Quote the new exit codes and verdict. **A repair claimed without re-verification
 **Outstanding:** <what remains and who owns it>
 **Run next:** <command>
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

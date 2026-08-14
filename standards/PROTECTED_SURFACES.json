@@ -3,7 +3,8 @@
   "description": "Machine-readable high-blast-radius paths for Flutter Agent OS. Read by scripts/blast-radius-check.sh, the pre-commit hook, @flutter-verify and @flutter-implementation. Framework defaults below; consumer repos extend the consumer_* arrays in their project copy at {FLUTTER_STANDARDS_ROOT}/PROTECTED_SURFACES.json.",
   "rule": "fail_verify_without_explicit_human_approval_in_the_same_message",
   "framework_paths": [
-    "templates/cursorrules.template",
+    "templates/cursorrules.flutter.template",
+    "templates/cursorrules.flutter.snippet.template",
     "templates/bootstrap.sh",
     "skills/SKILL_DEPENDENCIES.md",
     "skills/probe-protocol.md",
@@ -20,6 +21,7 @@
   ],
   "framework_patterns": [
     "scripts/*.sh",
+    "templates/*.template",
     "templates/work.flutter/**",
     "standards/2*-*.md"
   ],

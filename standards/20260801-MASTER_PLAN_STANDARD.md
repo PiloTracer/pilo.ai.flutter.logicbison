@@ -24,6 +24,8 @@ last-updated: YYYY-MM-DD
 
 Only `status: Approved` certifies **implementation-ready**. `@flutter-implementation` refuses to run without it.
 
+The plan also follows `skills/SKILL_DEPENDENCIES.md` § Document clarity contract: the header states what the plan needs (review, approval, or nothing), and the document ends with exactly one `## Next action` — once Approved, typically `@flutter-implementation plan - F0`.
+
 ---
 
 ## The twenty-one sections

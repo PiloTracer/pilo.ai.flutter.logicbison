@@ -15,6 +15,10 @@ Framework: `REPLACE:FLUTTER_FRAMEWORK_PATH` · Project memory: `.work.flutter/` 
 | `{FLUTTER_SPEC_ROOT}` | `.work.flutter/features/` |
 | `{FLUTTER_STANDARDS_ROOT}` | `.work.flutter/standards/` |
 | `{FLUTTER_DECISIONS_ROOT}` | `.work.flutter/decisions/` |
+| `{FLUTTER_DOCS_ROOT}` | `.work.flutter/docs/` |
+| `{FLUTTER_PROMPTS_ROOT}` | `.work.flutter/prompts/` |
+| `{FLUTTER_TOUCH_SCOPE}` | `.work.flutter/touch-scope` |
+| `{FLUTTER_PROBE_LEDGER}` | `.work.flutter/plans/foundation/PROBE_LEDGER.md` |
 | `{FLUTTER_STACK_LOCK}` | `.work.flutter/STACK.md` |
 | `{APP_ROOT}` | `REPLACE:FLUTTER_APP_ROOT` |
 

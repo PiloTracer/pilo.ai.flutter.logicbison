@@ -15,6 +15,8 @@ Tests are the only mechanism by which a claim about behaviour becomes evidence. 
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`TESTING_STANDARD`](../../standards/20260801-TESTING_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never report a test result you did not observe.** No toolchain or device → `not run (<reason>)` and route to `@flutter-doctor env`. A fabricated green suite is the worst possible output of this skill.

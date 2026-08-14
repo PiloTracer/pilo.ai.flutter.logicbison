@@ -16,6 +16,8 @@ Releasing is the moment every earlier shortcut becomes visible. This skill makes
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`RELEASE_STANDARD`](../../standards/20260801-RELEASE_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **`certify` is the only path to release-ready**, and it runs the real audits. A gate reported without its command output is `unverified`, and `unverified` blocks certification.

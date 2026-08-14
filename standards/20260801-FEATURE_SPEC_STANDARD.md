@@ -34,6 +34,8 @@ last-updated: <YYYY-MM-DD>
 | Implemented | Built and verified; amendments still allowed |
 | Superseded | Replaced; names its replacement |
 
+On top of this lifecycle, every SPEC follows `skills/SKILL_DEPENDENCIES.md` § Document clarity contract: decisions the operator must make are listed separately from open questions (never one mixed list), and until the SPEC is Approved it ends with exactly one `## Next action` — typically `@flutter-feature-spec review - <slug>` or `@flutter-feature-spec approve - <slug>`.
+
 ---
 
 ## 2. The sixteen sections

@@ -19,6 +19,8 @@ Documentation that is wrong is worse than documentation that is missing, because
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Style:** [`standards/20260801-DOCUMENTATION_STANDARD.md`](../../standards/20260801-DOCUMENTATION_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B · [Document clarity](../SKILL_DEPENDENCIES.md#document-clarity-contract) — Status + Needs header, separate Decisions/Open questions lists, exactly one `## Next action`, no leftover scaffolding.
+
 **Hard rules:**
 
 1. **Every code sample must compile.** Put it in a scratch target and analyze it. A sample that does not compile is a bug report from the future.

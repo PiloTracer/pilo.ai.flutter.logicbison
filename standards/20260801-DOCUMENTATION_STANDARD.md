@@ -54,6 +54,8 @@ sources: [SPEC-004, standards/...]
 
 `verified` is the date every command and sample was last executed — distinct from `updated`, which changes when prose changes. Without the distinction, a prose edit makes a two-year-old command look current.
 
+Every generated doc also follows `skills/SKILL_DEPENDENCIES.md` § Document clarity contract: the header states what the document needs (review, or `nothing`); decisions the reader must make and open questions are separate numbered lists; the document ends with exactly one `## Next action` — for a procedure, the verification step in §4 is that action.
+
 ---
 
 ## 4. Writing

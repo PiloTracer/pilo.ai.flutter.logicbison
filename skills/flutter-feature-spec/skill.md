@@ -16,6 +16,8 @@ A SPEC is the contract between intent and implementation. It exists so that `@fl
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`FEATURE_SPEC_STANDARD`](../../standards/20260801-FEATURE_SPEC_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B · [Document clarity](../SKILL_DEPENDENCIES.md#document-clarity-contract) — Status + Needs header, separate Decisions/Open questions lists, exactly one `## Next action`, no leftover scaffolding.
+
 **Hard rules:**
 
 1. **Classify before writing.** `intake` runs first on any free-text request. Auto-creating a SPEC for a request that was really a bug report, a cross-cutting concern, or an existing feature wastes everyone's time.
@@ -129,7 +131,7 @@ Front matter: `status: Draft | Review | Approved | Implemented | Superseded`, `o
 
 ### C4 — Self-review and report
 
-Run `review` immediately. Report the SPEC path, status, gaps, and the next command.
+Run `review` immediately. Report the SPEC path, status, gaps, and the next command. End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

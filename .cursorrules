@@ -49,6 +49,9 @@ Separate Confirmed / Inference / Unknown. Do not collapse the three into confide
 ### 6. Completion gate
 Before reporting done: changes applied, both suites run, failures reported rather than described as edge cases, residual risks named.
 
+### 7. Operator handoff
+Every response that ends a turn closes per `skills/SKILL_DEPENDENCIES.md` § Operator handoff contract: terse output; approvals under `**Needs your approval:**` citing `path:L<n>`; questions numbered under `**Needs your answer:**`; exactly one `**Next step:**` command; one line (Form A) when nothing is needed. Decisions and questions never mixed; empty sections omitted; no unstated expectations.
+
 ---
 
 ## Never state a version number

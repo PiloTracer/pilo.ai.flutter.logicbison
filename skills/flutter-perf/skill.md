@@ -16,6 +16,8 @@ Performance work fails in two ways: optimising what is not slow, and declaring v
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`PERFORMANCE_STANDARD`](../../standards/20260801-PERFORMANCE_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never report a number you did not measure.** No device → `not run (no device)` plus the static findings. An invented millisecond figure is worse than no figure.
@@ -131,6 +133,8 @@ Never claim a static finding *is* the cause of a reported jank. Name the measure
 
 **Not measured:** <budgets with no device> — these are **not** passing.
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

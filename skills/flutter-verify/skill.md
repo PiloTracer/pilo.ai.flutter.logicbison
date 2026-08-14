@@ -17,6 +17,8 @@ The verification authority for the **code** layer. `@flutter-plan-verify` audits
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`QUALITY_GATES`](../../standards/20260801-QUALITY_GATES.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never claim a check passed that you did not run.** Every `pass` carries a command, an exit code, or a quoted line. A check that could not run is `not run (<reason>)` — never `pass`, never silently omitted.
@@ -160,6 +162,8 @@ Audits the last commit, or the last push when that is newer.
 |---------|----------|
 | D6 bare catch | `@flutter-repair repair - from milestone` |
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 **Verdict rules:**
 

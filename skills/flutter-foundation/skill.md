@@ -20,6 +20,8 @@ The foundation answers **what we are building, for whom, on what, under which co
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Extended tables:** [`reference.md`](reference.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B · [Document clarity](../SKILL_DEPENDENCIES.md#document-clarity-contract) — Status + Needs header, separate Decisions/Open questions lists, exactly one `## Next action`, no leftover scaffolding.
+
 **Hard rules:**
 
 1. **Order is binding: name → intent → product probe → *then* platforms and technology.** Choosing a stack before understanding the product is the most common and most expensive failure in Flutter projects. P2 is gated on P0–P1 for this reason.

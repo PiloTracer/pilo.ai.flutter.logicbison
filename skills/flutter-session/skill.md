@@ -25,6 +25,8 @@ Every session ends. The only question is whether the next one starts from a writ
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Invocation examples, mode matrix, blockers protocol, edge cases:** [`reference.md`](reference.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never guess state — read it.** Every claim in a snapshot names the file it came from.
@@ -257,6 +259,8 @@ Run the git protocol below, **after** C3/C4 so the HANDOFF entry and NEXT pointe
 **Left untouched:** <out-of-scope paths that were not staged, or none>
 ```
 
+Close with Form A or Form B per the [Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
+
 ---
 
 ## git protocol (add / commit / push / close combinations)
@@ -304,6 +308,8 @@ The framework repo carries no project memory of its own — `.work.flutter/` is 
 **Git:** scope <project | framework> · committed <n> files · <sha> · pushed <yes/no · branch>
 **Left untouched:** <out-of-scope paths that existed but were not staged>
 ```
+
+A report carrying this block still closes with Form A or Form B per the [Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

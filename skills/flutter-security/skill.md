@@ -17,6 +17,8 @@ Mobile clients are shipped to attackers. This skill assumes the binary will be u
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) · **Standard:** [`SECURITY_PRIVACY_STANDARD`](../../standards/20260801-SECURITY_PRIVACY_STANDARD.md)
 
+**Contracts:** [Operator handoff](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — close every response with Form A or Form B.
+
 **Hard rules:**
 
 1. **Never echo a discovered secret.** Report the file, the line and the *kind* of secret. Printing the value into a report, a log or a commit message spreads the exposure.
@@ -167,6 +169,8 @@ Apply a specific measure from a finding. Every hardening change:
 |---------|----------|
 | S1 | Rotate externally, then `@flutter-security harden - secrets` |
 ```
+
+End the report with the Operator handoff close (Form A `Next: …` or Form B `**Needs your approval:**` / `**Needs your answer:**` / `**Next step:**`) per [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract).
 
 ---
 

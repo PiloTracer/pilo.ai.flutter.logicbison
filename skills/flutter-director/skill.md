@@ -332,6 +332,7 @@ If a request genuinely cannot be fulfilled by any registered skill and does not 
 
 - [`reference.md`](reference.md) — bucket registry, shortcut chains, worked routing examples
 - [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md) — gate matrix and readiness states
+- [`SKILL_DEPENDENCIES.md` § Operator handoff contract](../SKILL_DEPENDENCIES.md#operator-handoff-contract) — every response closes with Form A or Form B
 - [`probe-protocol.md`](../probe-protocol.md) — question quality bar and the challenge pass
 - [`skills/README.md`](../README.md) — skill registry
 - [`START_HERE.md`](../../START_HERE.md) — operator decision tree

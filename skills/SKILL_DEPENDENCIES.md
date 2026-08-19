@@ -90,14 +90,18 @@ Implements the operator-provided **Documentation Clarity Protocol** (origin: `{F
 
 `@flutter-director` (when redirecting outside Flutter) must resolve sibling framework roots in **this exact order** before routing. Never assume a fixed absolute path.
 
-1. **`.cursorrules` § Frameworks registry** — the file shipped to every adopter repo. If it names a path for `.ai` / `.ai.ui`, use it.
-2. **Sibling auto-discovery** from this framework's parent directory: `parent="$(cd "$FLUTTER_OS_ROOT/.." && pwd)"; test -d "${parent}/.ai"`.
+1. **`.cursorrules` § Frameworks registry** — the file shipped to every adopter repo. If it names a path for a framework, use it. It is the **authoritative** registry; the table below mirrors it for skills that run before a deploy has happened.
+2. **Sibling auto-discovery** from this framework's parent directory: `parent="$(cd "$FLUTTER_OS_ROOT/.." && pwd)"; test -d "${parent}/.ai"`. Sister dirs follow legacy `.ai.<fw>` naming or family naming (source basename with `<fw>` inserted before its last dot-segment, e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source) — `scripts/sister-discovery.sh` implements both and is what the deploy scripts use.
 3. **Preflight:** verify `<framework_root>/skills/README.md` is readable before invoking that framework's director. Absent → output one line `framework not installed here` and stop. Never route into the void.
 
 | Framework | Role | Director | Preflight target |
 |-----------|------|----------|------------------|
 | Flutter Agent OS (*this tree*) | Flutter app planning, build, verify, repair | `@flutter-director` | `skills/README.md` |
 | Agent OS (`.ai`) | Backend, DB, infra, cross-cutting SDLC | `@ai-director` | `../.ai/skills/README.md` |
+| Business OS (`.ai.biz`) | Business operations and process automation | `@biz-director` | `../.ai.biz/skills/README.md` |
+| CTO Professor OS (`.ai.cto`) | Architecture and technical leadership coaching | `@cto-director` | `../.ai.cto/skills/README.md` |
+| MLT Agent OS (`.ai.mlt`) | Machine learning tooling and training | `@mlt-director` | `../.ai.mlt/skills/README.md` |
+| Social OS (`.ai.soc`) | Social presence and community operations | `@soc-director` | `../.ai.soc/skills/README.md` |
 | UI Design OS (`.ai.ui`) | Design tokens, screen SPECs, visual craft | `@ui-director` | `../.ai.ui/skills/README.md` |
 | Cross-framework | Spans two or more of the above | `@x-director` | `../.ai/skills/x-director/skill.md` |
 

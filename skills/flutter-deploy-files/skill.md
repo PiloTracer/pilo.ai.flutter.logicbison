@@ -143,6 +143,7 @@ Mechanical backbone: `bash scripts/deploy-verify.sh <target>` (equivalently `bas
 | 7 | `scripts/framework-verify.sh` passes **inside the copy** | non-zero exit |
 | 8 | Target `.gitignore` excludes framework scratch paths (pending until `@flutter-bootstrap init`) | not excluded after bootstrap |
 | 9 | `.work.flutter/` intact (update only) | any modified |
+| 10 | Frameworks registry cells: a `REPLACE:AI*_PATH` cell whose sister is installed is flagged for re-run; a filled cell that no longer resolves to a framework is named | installable sister left unfilled; dangling filled cell |
 | 10 | No deploy-owned `REPLACE:` token survives in `.cursorrules` (`FLUTTER_FRAMEWORK_PATH`, `FLUTTER_SNIPPET_BLOCK`, `FLUTTER_PROJECT_NAME`); tokens owned by later steps are named as pending with their owner | any deploy-owned token |
 | 11 | The `Framework:` path in the Flutter block resolves and matches the pointer's `Source:` | dangling or mismatch |
 

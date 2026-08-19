@@ -51,6 +51,21 @@ Commands are canonical in `DOCS_FLUTTER_STACK.md`.
 10. **Record after acting.** Append a HANDOFF entry; keep exactly one active pointer in `{FLUTTER_NEXT}`.
 11. **Cohabitation.** `.ai` and `.ai.ui` own their own work trees and skills. Never write into them; route non-Flutter work out.
 
+### Frameworks registry (cross-framework discovery)
+
+Sister frameworks are siblings on disk; `.ai.<fw>` (legacy) / `pilo.ai.<fw>.logicbison` (family) naming — see path resolution below. This framework is pinned by the `Framework:` line above; the rows below route to the other Agent OS frameworks.
+
+| Framework | Director | Path | Bootstrap artifact |
+|-----------|----------|------|--------------------|
+| `.ai` (Agent OS) | `@ai-director` | REPLACE:AI_PATH (default `../.ai`) | `.ai/skills/README.md` |
+| `.ai.biz` (Business OS) | `@biz-director` | REPLACE:AI_BIZ_PATH (default `../.ai.biz`) | `.ai.biz/skills/README.md` |
+| `.ai.cto` (CTO Professor OS) | `@cto-director` | REPLACE:AI_CTO_PATH (default `../.ai.cto`) | `.ai.cto/skills/README.md` |
+| `.ai.mlt` (MLT Agent OS) | `@mlt-director` | REPLACE:AI_MLT_PATH (default `../.ai.mlt`) | `.ai.mlt/skills/README.md` |
+| `.ai.soc` (Social OS) | `@soc-director` | REPLACE:AI_SOC_PATH (default `../.ai.soc`) | `.ai.soc/skills/README.md` |
+| `.ai.ui` (UI Design OS) | `@ui-director` | REPLACE:AI_UI_PATH (default `../.ai.ui`) | `.ai.ui/skills/README.md` |
+
+**Path resolution:** (1) use a filled path cell; a `REPLACE:*` or empty cell → fall through. (2) Auto-discover: source dir S = the framework path pinned by the `Framework:` line above — for a basic install that is the recorded source, and `parent = S/..` finds the sisters; for a files/repo install it is the copy inside this repo, so the sisters resolve as `../.ai.<fw>` next to this repo. Sister = `<S basename with <fw> inserted before its last .segment>` (e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source; `.ai`-prefixed sources resolve `.ai.<fw>` directly), else legacy `.ai.<fw>`; missing = "not installed". (3) Before routing, verify the framework dir + its `skills/README.md` exist; if absent, route with `[degraded: <framework> not installed]` — never route into the void. If the source dir name breaks discovery, fill the path cells manually — the deploy prints what it checked.
+
 ### Skills
 
 Orchestration: `@flutter-director` `@flutter-router`

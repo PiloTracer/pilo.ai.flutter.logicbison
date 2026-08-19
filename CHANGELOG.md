@@ -8,6 +8,18 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`, `@flutter-d
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-08-19
+
+_Version number aligns with the Agent OS family 0.6.1 line (previous Flutter Agent OS release: 0.2.0)._
+
+### Changed — frameworks registry ships to targets; sister discovery in all three deploys (2026-08-19)
+
+- **`scripts/sister-discovery.sh`** (new): the shared sister-framework discovery lib (legacy `.ai.<fw>` + family `pilo.ai.<fw>.logicbison` naming), copied from Agent OS so the deploy scripts resolve sibling frameworks with the same rules the directors use. Registered in `scripts/README.md` and the framework-verify required tree.
+- **Frameworks registry lands in `.cursorrules` and every deployed target.** The framework's own `.cursorrules` carries the 7-row registry (self-hosted); `templates/cursorrules.flutter.snippet.template` carries the consumer registry (six rows — the Flutter row is the block's own `Framework:` pin, so the cell set is `REPLACE:AI_PATH` + `REPLACE:AI_*_PATH`), which full-template installs get via the existing `REPLACE:FLUTTER_SNIPPET_BLOCK` expansion. `SKILL_DEPENDENCIES.md` § Frameworks registry resolution now tables all six sisters and names the `.cursorrules` registry as authoritative.
+- **All three deploy scripts fill the registry cells at install time.** `deploy-basic.sh` discovers sisters next to the source framework (thin installs read skills from there) and fills absolute paths; `deploy-files.sh` / `deploy-repo.sh` discover next to the target and fill `../`-relative paths. A cell whose sister is not installed stays `REPLACE:` and is named with what was checked — runtime auto-discovery handles it. The hardcoded `.ai` + `.ai.ui` collision note in `deploy-basic.sh` is now the six-name `.ai*` leak warning.
+- **`deploy-verify.sh` gains a Frameworks registry section.** `REPLACE:AI*_PATH` tokens are scanned (pending warn with owner; never a fail — a missing sister is legitimate); an unfilled cell whose sister IS discoverable warns "installed but unfilled — re-run install/update"; a filled cell that no longer resolves to a framework is named. Matches the reference semantics of Agent OS `cursorrules-verify.sh`.
+- **Verify rows in the three deploy skills** (`basic` row 12, `files`/`repo` row 10) and the `flutter-bootstrap` B6 token table document the registry cells; `deploy-verify.sh`'s `token_owner` stays in sync with B6.
+
 ### Changed — flutter-session reaches full session-bookend parity (2026-08-13)
 
 - **`flutter-session` gains `start`, `add` and `scoped`.** `start` (with `open` / `begin` as aliases) is now the session-opening verb — `flutter-implementation` already routed to `@flutter-session start`, which previously named no mode. `add` is a stage-only checkpoint: it stages all safe in-scope changes (including new untracked files/dirs) without committing or closing, for mid-session review of the staged set. `close commit scoped` commits only the paths the close report names (in project scope, typically HANDOFF + NEXT), for operators who want bookend files only.

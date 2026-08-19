@@ -43,7 +43,8 @@ for d in skills standards concepts templates scripts hooks stacks resources docs
   [ -d "$d" ] && pass "$d/ present" || fail "$d/ missing"
 done
 for f in LICENSE README.md START_HERE.md skills/README.md skills/SKILL_DEPENDENCIES.md \
-         skills/probe-protocol.md standards/PROTECTED_SURFACES.json templates/bootstrap.sh; do
+         skills/probe-protocol.md standards/PROTECTED_SURFACES.json templates/bootstrap.sh \
+         scripts/sister-discovery.sh; do
   [ -f "$f" ] && pass "$f present" || fail "$f missing"
 done
 

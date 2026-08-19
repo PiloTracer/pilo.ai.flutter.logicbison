@@ -19,7 +19,8 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 | [`blast-radius-check.sh`](blast-radius-check.sh) | Diff size, area spread, protected surfaces, never-commit paths | pre-commit, `@flutter-verify` |
 | [`dart-hygiene-check.sh`](dart-hygiene-check.sh) | Patterns the analyzer misses: `print`, colour/spacing/fontSize literals, bare catch, secrets | pre-commit, task gate |
 | [`self-test.sh`](self-test.sh) | The verifiers themselves, against fixtures | CI, `CONTRIBUTING` |
-| [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` / `@flutter-deploy-repo verify` |
+| [`sister-discovery.sh`](sister-discovery.sh) | Sister-framework discovery (legacy `.ai.<fw>` + family naming) — sourced by the deploy scripts, not run directly | `@flutter-deploy-* install` |
+| [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, registry cells, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` / `@flutter-deploy-repo verify` |
 
 ## Self-test
 

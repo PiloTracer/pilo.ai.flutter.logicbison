@@ -82,6 +82,25 @@ EOF
     exit 2 ;;
 esac
 
+# Bare `.ai` slot (the Agent OS itself) — not expressible via sister_names:
+# the legacy sibling `.ai` first, else the family root (source with its
+# framework slot stripped, e.g. pilo.ai.flutter.logicbison → pilo.ai.logicbison).
+find_agent_os_dir() {
+  local root="$1" parent="$2" name tail stem last
+  [ -f "${parent}/.ai/skills/README.md" ] && { printf '%s' "${parent}/.ai"; return 0; }
+  name="$(basename "$root")"
+  case "$name" in
+    *.*.*)
+      tail="${name##*.}"; stem="${name%.*}"; last="${stem##*.}"
+      case " $FRAMEWORK_SLOTS " in
+        *" $last "*)
+          [ -f "${parent}/${stem%.*}.${tail}/skills/README.md" ] \
+            && { printf '%s' "${parent}/${stem%.*}.${tail}"; return 0; } ;;
+      esac ;;
+  esac
+  return 1
+}
+
 VERSION="$(grep -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' "${FRAMEWORK_ROOT}/CHANGELOG.md" 2>/dev/null \
            | head -1 | tr -d '#[] ' || echo "unversioned")"
 POINTER="${TARGET}/FLUTTER_AGENT_OS.md"
@@ -171,11 +190,35 @@ if [ "$DRY" -eq 0 ]; then
     tmp="$(mktemp)"
     sed "s|REPLACE:FLUTTER_APP_ROOT|.|g" "$CR" > "$tmp" && mv "$tmp" "$CR"
   fi
+  # Frameworks registry cells (the six sister slots + the bare .ai slot).
+  # A thin install reads skills from this framework, so sisters are discovered
+  # next to the source; a cell left REPLACE: is filled by runtime auto-discovery
+  # (see the registry's path resolution) — say what was checked either way.
+  source "${FRAMEWORK_ROOT}/scripts/sister-discovery.sh"
+  SIBLING_PARENT="$(cd "$FRAMEWORK_ROOT/.." && pwd)"
+  for fw in $FRAMEWORK_SLOTS ""; do
+    FWU="$(printf '%s' "$fw" | tr '[:lower:]' '[:upper:]')"
+    token="REPLACE:AI${FWU:+_}${FWU}_PATH"
+    grep -q "$token" "$CR" || continue
+    if [ -z "$fw" ]; then
+      fw_dir="$(find_agent_os_dir "$FRAMEWORK_ROOT" "$SIBLING_PARENT" || true)"
+    else
+      fw_dir="$(find_sister_dir "$FRAMEWORK_ROOT" "$fw" "$SIBLING_PARENT" || true)"
+    fi
+    if [ -n "$fw_dir" ]; then
+      sed -i "s|${token} (default \`[^)]*)|${fw_dir} (discovered at deploy time)|" "$CR"
+      echo "  frameworks: resolved ${token} → ${fw_dir}"
+    else
+      echo "  frameworks: ${token} not found (checked ${SIBLING_PARENT}) — left for runtime auto-discovery"
+    fi
+  done
 fi
 
-# Collision check with sibling frameworks.
-for other in "${TARGET}/.ai" "${TARGET}/.ai.ui"; do
-  [ -d "$other" ] && echo "  note      $(basename "$other") present — cohabitation applies; no skill ids collide (all are flutter-*)"
+# Collision check with sibling frameworks — a local .ai* framework dir on the
+# target is a fat-client leak: skills would resolve locally instead of from
+# the thin-client source. All six sister names + the bare .ai root.
+for other in "${TARGET}/.ai" "${TARGET}/.ai.biz" "${TARGET}/.ai.cto" "${TARGET}/.ai.mlt" "${TARGET}/.ai.soc" "${TARGET}/.ai.ui"; do
+  [ -d "$other" ] && echo "  note      $(basename "$other") present — local skills resolve first (fat-client leak); thin-client reads from ${FRAMEWORK_ROOT}"
 done
 
 cat <<EOF

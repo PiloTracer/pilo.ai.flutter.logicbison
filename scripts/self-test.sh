@@ -216,7 +216,7 @@ if diff -q "$D2/app/FLUTTER_AGENT_OS.md" "$D3/app/FLUTTER_AGENT_OS.md" >/dev/nul
 else
   FAILED=$((FAILED+1)); printf '  FAIL  positional vs --target installs diverge\n' >&2
 fi
-sed -i -E 's/REPLACE:(FLUTTER|DART)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
+sed -i -E 's/REPLACE:(FLUTTER|DART|AI)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
 expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-verify.sh "$D2/app" --quiet
 
 rm -rf "$D1" "$D2" "$D3"

@@ -89,6 +89,25 @@ EOF
     exit 2 ;;
 esac
 
+# Bare `.ai` slot (the Agent OS itself) — not expressible via sister_names:
+# the legacy sibling `.ai` first, else the family root (source with its
+# framework slot stripped, e.g. pilo.ai.flutter.logicbison → pilo.ai.logicbison).
+find_agent_os_dir() {
+  local root="$1" parent="$2" name tail stem last
+  [ -f "${parent}/.ai/skills/README.md" ] && { printf '%s' "${parent}/.ai"; return 0; }
+  name="$(basename "$root")"
+  case "$name" in
+    *.*.*)
+      tail="${name##*.}"; stem="${name%.*}"; last="${stem##*.}"
+      case " $FRAMEWORK_SLOTS " in
+        *" $last "*)
+          [ -f "${parent}/${stem%.*}.${tail}/skills/README.md" ] \
+            && { printf '%s' "${parent}/${stem%.*}.${tail}"; return 0; } ;;
+      esac ;;
+  esac
+  return 1
+}
+
 DEST="${TARGET}/${INTO}"
 [ -e "$DEST" ] && { echo "already present: ${DEST}"; echo "Run @flutter-deploy-repo update - ${TARGET} (or --update)"; exit 2; }
 
@@ -176,6 +195,30 @@ tmp="$(mktemp)"; sed "s|REPLACE:FLUTTER_PROJECT_NAME|$(basename "$TARGET")|g" "$
 if [ -f "${TARGET}/pubspec.yaml" ]; then
   tmp="$(mktemp)"; sed "s|REPLACE:FLUTTER_APP_ROOT|.|g" "$CR" > "$tmp" && mv "$tmp" "$CR"
 fi
+# Frameworks registry cells (the six sister slots + the bare .ai slot).
+# A repo install reads skills from ${INTO} inside the target, so sisters are
+# discovered next to the target and filled as ../ paths; a cell left REPLACE:
+# is filled by runtime auto-discovery (see the registry's path resolution) —
+# say what was checked either way.
+source "${FRAMEWORK_ROOT}/scripts/sister-discovery.sh"
+TARGET_PARENT="$(cd "$TARGET/.." && pwd)"
+for fw in $FRAMEWORK_SLOTS ""; do
+  FWU="$(printf '%s' "$fw" | tr '[:lower:]' '[:upper:]')"
+  token="REPLACE:AI${FWU:+_}${FWU}_PATH"
+  grep -q "$token" "$CR" || continue
+  if [ -z "$fw" ]; then
+    fw_dir="$(find_agent_os_dir "$FRAMEWORK_ROOT" "$TARGET_PARENT" || true)"
+  else
+    fw_dir="$(find_sister_dir "$FRAMEWORK_ROOT" "$fw" "$TARGET_PARENT" || true)"
+  fi
+  if [ -n "$fw_dir" ]; then
+    rel="$(basename "$fw_dir")"
+    sed -i "s|${token} (default \`[^)]*)|../${rel} (discovered at deploy time)|" "$CR"
+    echo "  frameworks: resolved ${token} → ../${rel}"
+  else
+    echo "  frameworks: ${token} not found next to target (checked ${TARGET_PARENT}) — left for runtime auto-discovery"
+  fi
+done
 
 cat <<EOF
 

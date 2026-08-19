@@ -161,6 +161,7 @@ Mechanical backbone: `bash scripts/deploy-verify.sh <target>` (equivalently `bas
 | 9 | `.work.flutter/` intact (update only) | any modified |
 | 10 | No deploy-owned `REPLACE:` token survives in `.cursorrules` (`FLUTTER_FRAMEWORK_PATH`, `FLUTTER_SNIPPET_BLOCK`, `FLUTTER_PROJECT_NAME`); tokens owned by later steps are named as pending with their owner | any deploy-owned token |
 | 11 | The `Framework:` path in the Flutter block resolves and matches the pointer's `Source:` | dangling or mismatch |
+| 12 | Frameworks registry cells: a `REPLACE:AI*_PATH` cell whose sister is installed is flagged for re-run; a filled cell that no longer resolves to a framework is named | installable sister left unfilled; dangling filled cell |
 
 Report per check with the evidence, then a single verdict. Failures name the fix command.
 

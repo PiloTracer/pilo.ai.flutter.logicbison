@@ -139,7 +139,7 @@ Scan every created file for `REPLACE:FLUTTER_*` tokens and list them with their 
 
 | Token | Filled by |
 |-------|-----------|
-| `REPLACE:FLUTTER_PROJECT_NAME` | operator, now |
+| `REPLACE:FLUTTER_PROJECT_NAME` | the deploy script (target directory name) — re-run install/update |
 | `REPLACE:FLUTTER_APP_ROOT` | `@flutter-bootstrap` (auto when `pubspec.yaml` is found) |
 | `REPLACE:FLUTTER_STATE_MANAGEMENT`, `_NAVIGATION`, `_DI`, `_SERIALIZATION`, `_LOCAL_STORE`, `_HTTP`, `_TEST_DOUBLE` | `@flutter-stack set` |
 | `REPLACE:FLUTTER_SDK_VERSION`, `REPLACE:DART_SDK_VERSION` | `@flutter-bootstrap` from `flutter --version`, else operator |
@@ -147,6 +147,7 @@ Scan every created file for `REPLACE:FLUTTER_*` tokens and list them with their 
 | `REPLACE:FLUTTER_MIN_IOS`, `REPLACE:FLUTTER_MIN_ANDROID_SDK` | `@flutter-foundation` P1 |
 | `REPLACE:FLUTTER_COVERAGE_MIN` | `@flutter-foundation` P3 (default 80) |
 | `REPLACE:FLUTTER_TASK_REF_PREFIX` | operator (default `FLT`) |
+| `REPLACE:AI_PATH`, `REPLACE:AI_UI_PATH`, `REPLACE:AI_BIZ_PATH`, `REPLACE:AI_SOC_PATH`, `REPLACE:AI_CTO_PATH`, `REPLACE:AI_MLT_PATH` | the deploy script (sister framework discovery) — re-run install/update; an unfilled cell is expected when the sister is not installed |
 
 ### B7 — Run report
 

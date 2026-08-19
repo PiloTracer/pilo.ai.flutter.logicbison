@@ -63,6 +63,8 @@ token_owner() {
       printf '@flutter-foundation P3 (default 80)' ;;
     REPLACE:FLUTTER_TASK_REF_PREFIX)
       printf 'operator (default FLT)' ;;
+    REPLACE:AI_PATH|REPLACE:AI_UI_PATH|REPLACE:AI_BIZ_PATH|REPLACE:AI_SOC_PATH|REPLACE:AI_CTO_PATH|REPLACE:AI_MLT_PATH)
+      printf 'the deploy script (sister framework discovery) — re-run install/update; an unfilled cell is expected when the sister is not installed' ;;
     *)  printf 'see @flutter-bootstrap B6' ;;
   esac
 }
@@ -175,13 +177,13 @@ else
     pass "markers are ordered BEGIN before END"
     BLOCK="$(awk '/FLUTTER_AGENT_OS_END/{print; exit} /FLUTTER_AGENT_OS_BEGIN/{f=1} f' "$CR")"
   else
-    fail "FLUTTER_AGENT_OS_END precedes FLUTTER_AGENT_OS_BEGIN — the block is malformed"
+    fail "FLUTTER_AGENT_OS_END is missing or precedes BEGIN — the block is malformed"
   fi
 
   # Unresolved template tokens. Scanned across the whole file but restricted
   # to this framework's prefixes, so a cohabiting framework's pending tokens
   # do not fail our verify.
-  TOKENS="$(grep -oE 'REPLACE:(FLUTTER|DART)_[A-Z_]+' "$CR" | sort -u)"
+  TOKENS="$(grep -oE 'REPLACE:(FLUTTER|DART|AI)_[A-Z_]+' "$CR" | sort -u)"
   if [ -z "$TOKENS" ]; then
     pass "no unresolved REPLACE: tokens"
   else
@@ -234,6 +236,92 @@ if [ -n "$BLOCK" ]; then
       [ "$DEAD" -eq 0 ] && pass "every @flutter-* route in the block resolves"
     fi
   fi
+fi
+
+# ------------------------------------------------- frameworks registry cells
+# Sister discovery is shipped to targets via the registry table in .cursorrules;
+# the cells are filled by the deploy (REPLACE:AI_*_PATH) or left for runtime
+# auto-discovery. Here: an unfilled cell whose sister IS discoverable is a
+# deploy that did not do its job; a filled cell that dangles is a stale cell.
+head_ "Frameworks registry"
+# Bare `.ai` slot (the Agent OS itself) — not expressible via sister_names:
+# the legacy sibling `.ai` first, else the family root (source with its
+# framework slot stripped, e.g. pilo.ai.flutter.logicbison → pilo.ai.logicbison).
+find_agent_os_dir() {
+  local root="$1" parent="$2" name tail stem last
+  [ -f "${parent}/.ai/skills/README.md" ] && { printf '%s' "${parent}/.ai"; return 0; }
+  name="$(basename "$root")"
+  case "$name" in
+    *.*.*)
+      tail="${name##*.}"; stem="${name%.*}"; last="${stem##*.}"
+      case " $FRAMEWORK_SLOTS " in
+        *" $last "*)
+          [ -f "${parent}/${stem%.*}.${tail}/skills/README.md" ] \
+            && { printf '%s' "${parent}/${stem%.*}.${tail}"; return 0; } ;;
+      esac ;;
+  esac
+  return 1
+}
+
+if [ -n "$FWC" ] && [ -f "${FWC}/scripts/sister-discovery.sh" ]; then
+  # shellcheck disable=SC1090
+  source "${FWC}/scripts/sister-discovery.sh" 2>/dev/null || true
+  set +e  # the lib sets errexit; this verifier is read-only by design
+  # Discovery must mirror what the install itself checked, or an "unfilled"
+  # warning would advise a re-run that cannot fill the cell: basic installs
+  # discover next to the source framework, files/repo installs next to the
+  # target. (MODE is parsed from the pointer above.)
+  SRC_PARENT="$(dirname "$FWC")"
+  TGT_PARENT="$(dirname "$TARGET")"
+  case "$MODE" in
+    basic)  DISCO_PARENTS=("$SRC_PARENT") ;;
+    files|repo) DISCO_PARENTS=("$TGT_PARENT") ;;
+    *)      DISCO_PARENTS=("$SRC_PARENT" "$TGT_PARENT") ;;
+  esac
+  for fw in "" $FRAMEWORK_SLOTS; do
+    FWU="$(printf '%s' "$fw" | tr '[:lower:]' '[:upper:]')"
+    token="REPLACE:AI${FWU:+_}${FWU}_PATH"
+    name=".ai${fw:+.$fw}"
+    if grep -q "$token" "$CR"; then
+      # Unfilled cell: warn only when the sister is discoverable where the
+      # install would have looked — a re-run can then actually fill it.
+      sis=""
+      for p in "${DISCO_PARENTS[@]}"; do
+        if [ -z "$fw" ]; then
+          sis="$(find_agent_os_dir "$FWC" "$p" || true)"
+        else
+          sis="$(find_sister_dir "$FWC" "$fw" "$p" || true)"
+        fi
+        [ -n "$sis" ] && break
+      done
+      if [ -n "$sis" ]; then
+        warn "$name installed at $sis but $token unfilled — re-run install/update to fill the cell"
+      else
+        pass "$name not installed where the install looks (cell left for runtime auto-discovery)"
+      fi
+      continue
+    fi
+    # Filled cell — a manual or discovered value must still resolve to a
+    # framework. Skip placeholder-style cells (token, self row, empty).
+    row="$(grep -E "^\\| \`${name}\` \\(" "$CR" | head -1)"
+    [ -n "$row" ] || continue
+    cell="$(printf '%s\n' "$row" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $4); print $4}')"
+    cell="${cell%% *}"   # strip annotations like "(discovered at deploy time)"
+    case "$cell" in
+      ''|*'REPLACE:'*|*'this directory'*) continue ;;
+    esac
+    case "$cell" in
+      /*) c="$(canon "$cell")" ;;
+      *)  c="$(canon "${TARGET}/${cell}")" ;;
+    esac
+    if [ -n "$c" ] && [ -f "${c}/skills/README.md" ]; then
+      pass "$name registry cell resolves: $cell"
+    else
+      warn "$name registry cell does not resolve to a framework: $cell — re-run install/update or fix the cell"
+    fi
+  done
+else
+  warn "sister-discovery.sh not available at the recorded framework — cannot check registry cells"
 fi
 
 # -------------------------------------------------------- target repo hygiene

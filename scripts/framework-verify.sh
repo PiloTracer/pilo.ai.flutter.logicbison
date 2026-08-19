@@ -124,10 +124,12 @@ for id in $(grep -rhoE 'FLS-[0-9]{2}' skills/ standards/ concepts/ docs/ .quick/
 done
 
 # Every @flutter-* invocation must name a skill that exists. A dead route is
-# worse than a missing feature: the agent follows it and stalls.
+# worse than a missing feature: the agent follows it and stalls. CHANGELOG.md
+# is excluded — it is a dated record, and history legitimately names skills
+# that have since been removed; the invariant applies to live routing docs.
 for s in $(grep -rhoE '@flutter-[a-z0-9]+(-[a-z0-9]+)*' \
              skills/ standards/ concepts/ docs/ .quick/ templates/ resources/ stacks/ \
-             ./*.md 2>/dev/null | sed 's/@//' | sort -u); do
+             ./*.md --exclude=CHANGELOG.md 2>/dev/null | sed 's/@//' | sort -u); do
   [ -d "skills/$s" ] && pass "route @$s resolves" || fail "route @$s names no skill"
 done
 

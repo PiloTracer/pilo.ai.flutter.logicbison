@@ -12,7 +12,7 @@ description: >-
 
 Create the project-memory scaffold that every other skill reads and writes. Idempotent and brownfield-safe: existing files are **never** overwritten without an explicit answer.
 
-**Pairs with:** `flutter-stack` (next step), `flutter-foundation` (needs the scaffold), `flutter-deploy-basic` / `flutter-deploy-files` / `flutter-deploy-repo` (install the framework itself into a repo — this skill sets up the *project* side).
+**Pairs with:** `flutter-stack` (next step), `flutter-foundation` (needs the scaffold), `flutter-deploy-basic` / `flutter-deploy-files` (install the framework itself into a repo — this skill sets up the *project* side).
 
 **Registry:** [`SKILL_DEPENDENCIES.md`](../SKILL_DEPENDENCIES.md)
 

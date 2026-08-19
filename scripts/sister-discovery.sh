@@ -20,13 +20,16 @@
 # name, fill the `REPLACE:AI_*_PATH` cell manually (deploy output lists what
 # it checked — see .cursorrules § Frameworks registry path resolution).
 #
-# Sourced by scripts/deploy-basic.sh and scripts/cursorrules-verify.sh.
-# scripts/install-opencode-config.sh mirrors this logic in python — keep in sync.
+# Sourced by the deploy scripts — scripts/deploy-basic.sh, deploy-files.sh,
+# deploy-verify.sh. Do not run directly.
 #
 # Functions (pure; no side effects):
 #   sister_names <fw> <ai-root>   → candidate dir names, preferred first
 #   find_sister_dir <ai-root> <fw> [parent...] → first existing dir with
 #                                  skills/README.md (exit 1 when none)
+#   find_agent_os_dir <source-root> <parent> → the bare `.ai` slot (Agent OS
+#                                  itself): family root first, then legacy
+#                                  `.ai` (exit 1 when neither — never guess)
 set -euo pipefail
 
 # The six sibling framework slots (framework IDs). Order also drives the
@@ -89,5 +92,28 @@ find_sister_dir() {
       fi
     done
   done < <(sister_names "$fw" "$root")
+  return 1
+}
+
+# find_agent_os_dir <source-root> <parent> — the bare `.ai` slot (the Agent OS
+# itself), which sister_names cannot express. Candidate priority mirrors the
+# sibling rule: the family root (source with its framework slot stripped, e.g.
+# pilo.ai.flutter.logicbison → pilo.ai.logicbison) wins when both exist, else
+# the legacy sibling `.ai`. Both candidates must carry skills/README.md. Exit
+# 1 when neither — the caller leaves the cell unfilled for runtime
+# auto-discovery; never guess.
+find_agent_os_dir() {
+  local root="$1" parent="$2" name tail stem last
+  name="$(basename "$root")"
+  case "$name" in
+    *.*.*)
+      tail="${name##*.}"; stem="${name%.*}"; last="${stem##*.}"
+      case " $FRAMEWORK_SLOTS " in
+        *" $last "*)
+          [ -f "${parent}/${stem%.*}.${tail}/skills/README.md" ] \
+            && { printf '%s' "${parent}/${stem%.*}.${tail}"; return 0; } ;;
+      esac ;;
+  esac
+  [ -f "${parent}/.ai/skills/README.md" ] && { printf '%s' "${parent}/.ai"; return 0; }
   return 1
 }

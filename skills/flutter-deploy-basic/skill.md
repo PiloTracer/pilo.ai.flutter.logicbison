@@ -14,7 +14,7 @@ description: >-
 
 Installs **the framework**, not the app. `@flutter-release` ships your Flutter application; `@flutter-deploy-basic` puts this Agent OS into a repository so the other skills can run there. This skill owns the **basic (thin)** install only: a pointer file plus `.cursorrules` registration, with the skills read from the framework's own location.
 
-**Sibling skills:** fat installs are `@flutter-deploy-files`; version-pinned clone or submodule installs are `@flutter-deploy-repo`. Pick the mode first, then the skill that owns it.
+**Sibling skills:** fat installs are `@flutter-deploy-files`. Pick the mode first, then the skill that owns it.
 
 **Never gated.** Installation is the step that creates the state everything else requires.
 
@@ -61,7 +61,6 @@ An argument that is neither a path nor a known mode → stop and ask. Never gues
 |-----------|------|-----|
 | Framework lives beside the repo on this machine; one developer or a shared checkout | `basic` | No duplication; updates are instant |
 | CI, containers, or contributors who will not have the source | `files` → `@flutter-deploy-files` | Self-contained and reproducible |
-| The target wants the framework pinned in its own history | `repo` → `@flutter-deploy-repo` | Version-pinned, reviewable |
 | Already installed | `update` | Preserves project artifacts |
 
 ---
@@ -100,7 +99,7 @@ The mode with the highest risk of destroying work, so it is the most constrained
 
 ### U1 — Establish both versions
 
-Read the installed pointer for mode and version; read the source version. Same version → report "already current" and stop unless drift is found. A pointer whose `Mode:` is not `basic` → stop: the target was installed by `@flutter-deploy-files` or `@flutter-deploy-repo`, and updating it here would apply the wrong protocol.
+Read the installed pointer for mode and version; read the source version. Same version → report "already current" and stop unless drift is found. A pointer whose `Mode:` is not `basic` → stop: the target was installed by `@flutter-deploy-files`, and updating it here would apply the wrong protocol.
 
 ### U2 — Classify every path
 
@@ -195,7 +194,7 @@ If a collision is detected anyway, **stop**. Do not rename another framework's s
 - Touching `.work.flutter/` during an update.
 - Replacing a locally modified skill without asking.
 - Installing over an existing install instead of updating.
-- Running the `files` or `repo` update protocol against a `basic` pointer (or vice versa).
+- Running the `files` update protocol against a `basic` pointer (or vice versa).
 - Reporting success without running `verify`.
 - A thin install where the source path is temporary or user-specific, without saying so.
 - Renaming another framework's skills to resolve a collision.

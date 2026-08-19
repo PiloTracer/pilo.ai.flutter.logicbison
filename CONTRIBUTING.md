@@ -103,7 +103,7 @@ Semver in [`CHANGELOG.md`](CHANGELOG.md).
 - **Minor** — new skill, standard, concept, or mode. Additive.
 - **Patch** — corrections, clarifications, script fixes.
 
-`@flutter-deploy-basic update` / `@flutter-deploy-files update` / `@flutter-deploy-repo update` compare versions and classify each file, so an accurate changelog is load-bearing, not decorative.
+`@flutter-deploy-basic update` / `@flutter-deploy-files update` compare versions and classify each file, so an accurate changelog is load-bearing, not decorative.
 
 ---
 

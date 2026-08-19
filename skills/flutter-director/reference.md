@@ -37,7 +37,7 @@ Full signal lists. Match on **intent**; the phrases are examples, not a keyword 
 | `session` | "start work" · "wrap up" · "commit this" · "push the session state" · "what was I doing" | `@flutter-session <mode>` | — |
 | `concept` | "run the architecture check" · "FLS-06" · "concept prompts" | `@flutter-concept-run <mode>` | attach output |
 | `docs` | "write a guide" · "tutorial for onboarding" · "document the API surface" | `@flutter-docs create <kind> - <slug>` | — |
-| `deploy` | "install this framework in my other repo" | thin → `@flutter-deploy-basic - <path>`; fat → `@flutter-deploy-files - <path>`; pinned → `@flutter-deploy-repo - <path>` | — |
+| `deploy` | "install this framework in my other repo" | thin → `@flutter-deploy-basic - <path>`; fat → `@flutter-deploy-files - <path>` | — |
 | `router` | "how do I…" · "where does X live" · "which skill for Y" | `@flutter-router - <question>` | — |
 | `not-flutter` | "design the REST API" · "Postgres schema" · "Kubernetes" · "pick brand colors" · "design the dashboard layout" | preflight → `@ai-director` / `@ui-director` | — |
 | `cross-framework` | "build the app and the backend for it" · "design and implement the checkout screen" | preflight → `@x-director` | — |

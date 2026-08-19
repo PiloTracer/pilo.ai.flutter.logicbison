@@ -10,7 +10,7 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 
 | Script | Checks | Run by |
 |--------|--------|--------|
-| [`framework-verify.sh`](framework-verify.sh) | The framework itself: registration, frontmatter, context budgets, internal links, `@skill` route resolution, FLS registration, path discipline | `CONTRIBUTING`, `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` / `@flutter-deploy-repo verify` |
+| [`framework-verify.sh`](framework-verify.sh) | The framework itself: registration, frontmatter, context budgets, internal links, `@skill` route resolution, FLS registration, path discipline | `CONTRIBUTING`, `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` |
 | [`master-plan-verify.sh`](master-plan-verify.sh) | The 21 plan sections, front matter, id conventions, placeholder residue | `@flutter-plan-verify master` |
 | [`traceability-verify.sh`](traceability-verify.sh) | FR/NFR ↔ task coverage in **both** directions | `@flutter-plan-verify master` |
 | [`readiness-verify.sh`](readiness-verify.sh) | Probe ledger honesty: unsupported confirmations, coverage arithmetic | `@flutter-foundation certify` |
@@ -20,7 +20,7 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 | [`dart-hygiene-check.sh`](dart-hygiene-check.sh) | Patterns the analyzer misses: `print`, colour/spacing/fontSize literals, bare catch, secrets | pre-commit, task gate |
 | [`self-test.sh`](self-test.sh) | The verifiers themselves, against fixtures | CI, `CONTRIBUTING` |
 | [`sister-discovery.sh`](sister-discovery.sh) | Sister-framework discovery (legacy `.ai.<fw>` + family naming) — sourced by the deploy scripts, not run directly | `@flutter-deploy-* install` |
-| [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, registry cells, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` / `@flutter-deploy-repo verify` |
+| [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, registry cells, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` |
 
 ## Self-test
 
@@ -41,9 +41,8 @@ Adding a scan or a rule means adding a fixture line that triggers it and an asse
 | [`install-git-hooks.sh`](install-git-hooks.sh) | Installs the hooks; preserves and chains existing ones as `<hook>.local` |
 | [`deploy-basic.sh`](deploy-basic.sh) | Thin install — pointer + `.cursorrules` registration (skill: `@flutter-deploy-basic`) |
 | [`deploy-files.sh`](deploy-files.sh) | Fat install — self-contained copy (skill: `@flutter-deploy-files`) |
-| [`deploy-repo.sh`](deploy-repo.sh) | Pinned clone or submodule (skill: `@flutter-deploy-repo`) |
 
-The three deploy scripts take the target positionally or via `--target`, and the lifecycle modes bare or `--`-prefixed in any order (`update` ≡ `--update`). `verify` hands off to `deploy-verify.sh`; `update` and `uninstall` are skill-run protocols, so the scripts route to the owning skill rather than acting.
+The two deploy scripts take the target positionally or via `--target`, and the lifecycle modes bare or `--`-prefixed in any order (`update` ≡ `--update`). `verify` hands off to `deploy-verify.sh`; `update` and `uninstall` are skill-run protocols, so the scripts route to the owning skill rather than acting.
 
 Project scaffolding is [`templates/bootstrap.sh`](../templates/bootstrap.sh) — installing the framework and setting up a project are different steps, and both are required.
 

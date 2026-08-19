@@ -64,7 +64,7 @@ Sister frameworks are siblings on disk; `.ai.<fw>` (legacy) / `pilo.ai.<fw>.logi
 | `.ai.soc` (Social OS) | `@soc-director` | REPLACE:AI_SOC_PATH (default `../.ai.soc`) | `.ai.soc/skills/README.md` |
 | `.ai.ui` (UI Design OS) | `@ui-director` | REPLACE:AI_UI_PATH (default `../.ai.ui`) | `.ai.ui/skills/README.md` |
 
-**Path resolution:** (1) use a filled path cell; a `REPLACE:*` or empty cell → fall through. (2) Auto-discover: source dir S = the framework path pinned by the `Framework:` line above — for a basic install that is the recorded source, and `parent = S/..` finds the sisters; for a files/repo install it is the copy inside this repo, so the sisters resolve as `../.ai.<fw>` next to this repo. Sister = `<S basename with <fw> inserted before its last .segment>` (e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source; `.ai`-prefixed sources resolve `.ai.<fw>` directly), else legacy `.ai.<fw>`; missing = "not installed". (3) Before routing, verify the framework dir + its `skills/README.md` exist; if absent, route with `[degraded: <framework> not installed]` — never route into the void. If the source dir name breaks discovery, fill the path cells manually — the deploy prints what it checked.
+**Path resolution:** (1) use a filled path cell; a `REPLACE:*` or empty cell → fall through. (2) Auto-discover: source dir S = the framework path pinned by the `Framework:` line above — for a basic install that is the recorded source, and `parent = S/..` finds the sisters; for a files install it is the copy inside this repo, so the sisters resolve as `../.ai.<fw>` next to this repo. Sister = `<S basename with <fw> inserted before its last .segment>` (e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source; `.ai`-prefixed sources resolve `.ai.<fw>` directly), else legacy `.ai.<fw>`; missing = "not installed". (3) Before routing, verify the framework dir + its `skills/README.md` exist; if absent, route with `[degraded: <framework> not installed]` — never route into the void. If the source dir name breaks discovery, fill the path cells manually — the deploy prints what it checked.
 
 ### Skills
 
@@ -73,7 +73,7 @@ Setup and planning: `@flutter-bootstrap` `@flutter-stack` `@flutter-foundation` 
 Implementation: `@flutter-scaffold` `@flutter-implementation` `@flutter-data` `@flutter-platform` `@flutter-release`
 Verification: `@flutter-test` `@flutter-verify` `@flutter-perf` `@flutter-a11y` `@flutter-security`
 Repair: `@flutter-repair` `@flutter-doctor`
-Support: `@flutter-session` `@flutter-concept-run` `@flutter-docs` `@flutter-deploy-basic` `@flutter-deploy-files` `@flutter-deploy-repo`
+Support: `@flutter-session` `@flutter-concept-run` `@flutter-docs` `@flutter-deploy-basic` `@flutter-deploy-files`
 
 Registry and gates: `REPLACE:FLUTTER_FRAMEWORK_PATH/skills/SKILL_DEPENDENCIES.md`
 

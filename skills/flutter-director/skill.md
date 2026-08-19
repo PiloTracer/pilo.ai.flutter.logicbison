@@ -168,7 +168,7 @@ Classify into one bucket. Match by intent. Full signal lists and worked examples
 | `session` | "start session", "close session", "commit", "push", "where was I?" | `@flutter-session` |
 | `concept` | "run FLS-06", "architecture check", "concept prompt" | `@flutter-concept-run` |
 | `docs` | "document", "write a guide", "tutorial", "reference doc" | `@flutter-docs` |
-| `deploy` | "install this framework into my repo", "copy the framework" | thin → `@flutter-deploy-basic`; fat → `@flutter-deploy-files`; pinned → `@flutter-deploy-repo` |
+| `deploy` | "install this framework into my repo", "copy the framework" | thin → `@flutter-deploy-basic`; fat → `@flutter-deploy-files` |
 | `router` | "how do I…?", "where is…?", "which skill…?" | `@flutter-router - <question>` |
 | `not-flutter` | Backend, API, DB, infra → `.ai`. Design tokens, visual craft → `.ai.ui` | Preflight, then `@ai-director` / `@ui-director` |
 | `cross-framework` | Spans Flutter + backend and/or design ("app plus the API behind it") | Preflight, then `@x-director` |

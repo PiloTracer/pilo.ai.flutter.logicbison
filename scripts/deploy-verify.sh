@@ -105,8 +105,9 @@ VERSION="$(grep -m1 '^\*\*Version:\*\*' "$POINTER" | sed -E 's/^\*\*Version:\*\*
 SOURCE="$(grep -m1 '^\*\*Source:\*\*' "$POINTER" | sed -E 's/^\*\*Source:\*\* *//; s/ *\(.*$//; s/ *$//; s|/$||' | tr -d '`')"
 
 case "$MODE" in
-  basic|files|repo) pass "pointer mode: $MODE" ;;
-  *) fail "pointer Mode is '${MODE:-<missing>}' — expected basic, files or repo" ;;
+  basic|files) pass "pointer mode: $MODE" ;;
+  repo) fail "pointer Mode: repo is no longer supported — the pinned deploy-repo install was removed from this framework. Remove the installed copy (${TARGET}/.ai.flutter/), this pointer and the .cursorrules Flutter block, then re-install with @flutter-deploy-files (or @flutter-deploy-basic)." ;;
+  *) fail "pointer Mode is '${MODE:-<missing>}' — expected basic or files" ;;
 esac
 [ -n "$VERSION" ] && pass "pointer version recorded: $VERSION" \
                   || fail "pointer records no Version — update cannot reason about what changed"
@@ -122,7 +123,7 @@ case "$MODE" in
       /*) FW="$SOURCE" ;;
       *)  fail "a basic install's Source must be an absolute path, got: $SOURCE" ;;
     esac ;;
-  files|repo) FW="${TARGET}/${SOURCE}" ;;
+  files) FW="${TARGET}/${SOURCE}" ;;
 esac
 
 FWC=""
@@ -244,24 +245,6 @@ fi
 # auto-discovery. Here: an unfilled cell whose sister IS discoverable is a
 # deploy that did not do its job; a filled cell that dangles is a stale cell.
 head_ "Frameworks registry"
-# Bare `.ai` slot (the Agent OS itself) — not expressible via sister_names:
-# the legacy sibling `.ai` first, else the family root (source with its
-# framework slot stripped, e.g. pilo.ai.flutter.logicbison → pilo.ai.logicbison).
-find_agent_os_dir() {
-  local root="$1" parent="$2" name tail stem last
-  [ -f "${parent}/.ai/skills/README.md" ] && { printf '%s' "${parent}/.ai"; return 0; }
-  name="$(basename "$root")"
-  case "$name" in
-    *.*.*)
-      tail="${name##*.}"; stem="${name%.*}"; last="${stem##*.}"
-      case " $FRAMEWORK_SLOTS " in
-        *" $last "*)
-          [ -f "${parent}/${stem%.*}.${tail}/skills/README.md" ] \
-            && { printf '%s' "${parent}/${stem%.*}.${tail}"; return 0; } ;;
-      esac ;;
-  esac
-  return 1
-}
 
 if [ -n "$FWC" ] && [ -f "${FWC}/scripts/sister-discovery.sh" ]; then
   # shellcheck disable=SC1090
@@ -269,13 +252,13 @@ if [ -n "$FWC" ] && [ -f "${FWC}/scripts/sister-discovery.sh" ]; then
   set +e  # the lib sets errexit; this verifier is read-only by design
   # Discovery must mirror what the install itself checked, or an "unfilled"
   # warning would advise a re-run that cannot fill the cell: basic installs
-  # discover next to the source framework, files/repo installs next to the
+  # discover next to the source framework, files installs next to the
   # target. (MODE is parsed from the pointer above.)
   SRC_PARENT="$(dirname "$FWC")"
   TGT_PARENT="$(dirname "$TARGET")"
   case "$MODE" in
     basic)  DISCO_PARENTS=("$SRC_PARENT") ;;
-    files|repo) DISCO_PARENTS=("$TGT_PARENT") ;;
+    files) DISCO_PARENTS=("$TGT_PARENT") ;;
     *)      DISCO_PARENTS=("$SRC_PARENT" "$TGT_PARENT") ;;
   esac
   for fw in "" $FRAMEWORK_SLOTS; do

@@ -117,7 +117,6 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 @flutter-docs readme|review|index|status
 @flutter-deploy-basic basic|update|--update|verify|uninstall|status - <target>
 @flutter-deploy-files files|update|--update|verify|uninstall|status - <target>
-@flutter-deploy-repo repo|update|--update|verify|uninstall|status - <target>
 ```
 
 ---

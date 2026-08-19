@@ -14,7 +14,6 @@
     "scripts/install-git-hooks.sh",
     "scripts/deploy-basic.sh",
     "scripts/deploy-files.sh",
-    "scripts/deploy-repo.sh",
     "hooks/pre-commit",
     "hooks/commit-msg",
     "hooks/pre-push"

@@ -2,15 +2,25 @@
 
 All notable changes to Flutter Agent OS. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`, `@flutter-deploy-repo`) read this file in their `update` mode (also spelled `--update`) to classify what changed between an installed version and the current one, so entries need to be accurate about scope.
+The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this file in their `update` mode (also spelled `--update`) to classify what changed between an installed version and the current one, so entries need to be accurate about scope.
 
 ---
-
-## [Unreleased]
 
 ## [0.6.1] — 2026-08-19
 
 _Version number aligns with the Agent OS family 0.6.1 line (previous Flutter Agent OS release: 0.2.0)._
+
+### Removed — deploy-repo, the pinned install mode (2026-08-19)
+
+- **`@flutter-deploy-repo` and `scripts/deploy-repo.sh` are gone.** The pinned install (clone/archive/submodule into `<target>/.ai.flutter/`) is no longer supported; the two remaining modes are thin (`@flutter-deploy-basic`) and fat (`@flutter-deploy-files`). Removed from both skill and script registries, the routing docs (README, PROCESS_ROUTER, `.quick/commands.md`, director/router tables, flutter-bootstrap pairs, CONTRIBUTING), the deploy skills' mode tables and pointer-mode stop messages, the snippet template's Support line, `standards/PROTECTED_SURFACES.json`, and the `sister-discovery.sh` header.
+- **`deploy-verify.sh` fails `Mode: repo` pointers** with a migration instruction: remove the installed copy, the pointer and the `.cursorrules` Flutter block, then re-install with `@flutter-deploy-files` (or `@flutter-deploy-basic`). A repo install has no update/uninstall path any more, so certifying it as healthy would be a false verdict.
+- **`framework-verify.sh` route scan excludes `CHANGELOG.md`** — history legitimately names skills that have since been removed; the every-`@flutter-*`-route-resolves invariant applies to live routing docs.
+
+### Changed — one discovery implementation for the bare `.ai` slot (2026-08-19)
+
+- **`scripts/sister-discovery.sh`** gains `find_agent_os_dir` — the bare `.ai` slot (Agent OS itself), previously re-defined inside all four deploy scripts. Candidate priority now mirrors the sibling rule: the family root (source with its framework slot stripped, e.g. `pilo.ai.flutter.logicbison` → `pilo.ai.logicbison`) wins when both exist, then the legacy `.ai`; exit 1 when neither, so the deploy leaves the cell unfilled with a note — never guesses. The local copies checked legacy `.ai` first, inconsistent with `sister_names` priority.
+- **The four deploy scripts** (`deploy-basic.sh`, `deploy-files.sh`, `deploy-repo.sh`, `deploy-verify.sh`) drop their local `find_agent_os_dir` definitions and use the lib's — one implementation, identical candidate priority, identical empty-on-missing behavior. `deploy-verify.sh` keeps validating `REPLACE:AI_PATH` alongside the six `AI_*_PATH` cells. (`deploy-repo.sh`'s copy went with the script itself — see the removal entry above.)
+- **Lib header** now names its real consumers (the four deploy scripts); the stale `cursorrules-verify.sh` / `install-opencode-config.sh` references — Agent OS leftovers, no such scripts in this repo — are gone.
 
 ### Changed — frameworks registry ships to targets; sister discovery in all three deploys (2026-08-19)
 

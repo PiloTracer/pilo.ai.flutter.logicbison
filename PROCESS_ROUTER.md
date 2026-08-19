@@ -50,8 +50,7 @@ For free-text requests use `@flutter-director - <request>`. For questions use `@
 | End a session cleanly | `@flutter-session close` |
 | Install the framework elsewhere (thin) | `@flutter-deploy-basic - <target>` |
 | Install the framework elsewhere (fat) | `@flutter-deploy-files - <target>` |
-| Install the framework elsewhere (pinned) | `@flutter-deploy-repo - <target>` |
-| Update the framework | `@flutter-deploy-basic update - <target>` (or `--update`) / `@flutter-deploy-files update` / `@flutter-deploy-repo update` |
+| Update the framework | `@flutter-deploy-basic update - <target>` (or `--update`) / `@flutter-deploy-files update` |
 
 ---
 

@@ -55,7 +55,7 @@ The framework is a set of **markdown protocols** any LLM can follow, plus **shel
 
 **Repair** — `flutter-repair` (code) · `flutter-doctor` (toolchain)
 
-**Support** — `flutter-session` · `flutter-concept-run` · `flutter-docs` · `flutter-deploy-basic` (thin) · `flutter-deploy-files` (fat) · `flutter-deploy-repo` (pinned)
+**Support** — `flutter-session` · `flutter-concept-run` · `flutter-docs` · `flutter-deploy-basic` (thin) · `flutter-deploy-files` (fat)
 
 Full registry with roles: [`skills/README.md`](skills/README.md). Gates and prerequisites: [`skills/SKILL_DEPENDENCIES.md`](skills/SKILL_DEPENDENCIES.md).
 
@@ -96,7 +96,6 @@ The economics are simple: a question during planning costs a minute. The same ga
 ```bash
 bash scripts/deploy-basic.sh --target /path/to/repo   # thin — reads from here
 bash scripts/deploy-files.sh --target /path/to/repo   # fat — self-contained
-bash scripts/deploy-repo.sh  --target /path/to/repo   # pinned clone or submodule
 ```
 
 Then, in the target repo:

@@ -89,7 +89,6 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 |----------|--------|------|
 | flutter-deploy-basic | `flutter-deploy-basic/` | Install the framework into another repository, **thin** (`basic`): pointer + `.cursorrules` registration; `update` / `--update`, `verify`, `uninstall`, `status` |
 | flutter-deploy-files | `flutter-deploy-files/` | Install the framework into another repository, **fat** (`files`): self-contained copy; `update` / `--update`, `verify`, `uninstall`, `status` |
-| flutter-deploy-repo | `flutter-deploy-repo/` | Install the framework into another repository, **pinned** (`repo`): clone/archive/submodule; `update` / `--update`, `verify`, `uninstall`, `status` |
 
 **Typical flow (greenfield):** `@flutter-bootstrap init` → `@flutter-stack set` → `@flutter-foundation greenfield` → `certify` → `@flutter-plan-master greenfield` → `@flutter-plan-master status` (implementation-ready) → `@flutter-scaffold app` → `@flutter-implementation plan - F1` → `start` / `continue` / `complete` → `@flutter-release certify`.
 

@@ -209,7 +209,6 @@ foundation-complete → plan-ready → implementation-ready → release-ready
 | **flutter-docs** `status` | - | Read-only |
 | **flutter-deploy-basic** `basic` / `update` / `--update` / `verify` / `uninstall` / `status` | Target dir exists (**I0** gate); source framework root resolvable; `update` / `--update` needs an existing install with `Mode: basic` | - (no-overwrite by default) |
 | **flutter-deploy-files** `files` / `update` / `--update` / `verify` / `uninstall` / `status` | Target dir exists (**I0** gate); source framework root resolvable; `update` / `--update` needs an existing install with `Mode: files` | - (no-overwrite by default) |
-| **flutter-deploy-repo** `repo` / `update` / `--update` / `verify` / `uninstall` / `status` | Target dir exists (**I0** gate); source framework root resolvable; git for `repo`; `update` / `--update` needs an existing install with `Mode: repo` | - (no-overwrite by default) |
 | **flutter-router** `- <question>` / `help` | - | Read-only. Never writes. |
 | **flutter-director** `- <free-text>` | Framework present with valid `skills/README.md`; `{FLUTTER_HANDOFF}` readable | **Recommended:** read `{FLUTTER_HANDOFF}` + `{FLUTTER_NEXT}` for routing context. **Confirm gate** before any skill invoke (skip with `-y`; render-only with `--dry-run`). Non-Flutter requests are channelled to `@x-director` / `@ai-director` after preflight. |
 | **flutter-director** `- <free-text> -y` | Same as above | Trust-mode: skips the Confirm gate |
@@ -311,7 +310,7 @@ All skills use the same verbs where applicable, so muscle memory stays portable.
 | `run` | Execute (tests / concept prompts) | flutter-test, flutter-concept-run |
 | `list` | Enumerate available items | flutter-concept-run |
 | `task` | Execute a single task by id | flutter-implementation |
-| `update` | Rules-aware merge of existing-but-differing files (never wholesale replace). The deploy skills also accept `--update` as an alias | flutter-deploy-basic, flutter-deploy-files, flutter-deploy-repo |
+| `update` | Rules-aware merge of existing-but-differing files (never wholesale replace). The deploy skills also accept `--update` as an alias | flutter-deploy-basic, flutter-deploy-files |
 | `- <free-text>` | Free-text routing: parse → classify → Confirm gate → execute | flutter-director |
 | `- <free-text> -y` | Trust-mode: skip the Confirm gate | flutter-director |
 | `- <free-text> --dry-run` | Render the routing plan, write nothing, stop | flutter-director |

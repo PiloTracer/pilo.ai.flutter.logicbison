@@ -7,7 +7,7 @@ A new Flutter application from an empty repository to a shipped release. Roughly
 ## 0 — Install
 
 ```bash
-bash /path/to/pilo.ai.flutter/scripts/deploy-basic.sh --target ~/projects/myapp
+bash /path/to/pilo.ai.flutter.logicbison/scripts/deploy-basic.sh --target ~/projects/myapp
 cd ~/projects/myapp
 ```
 

@@ -29,12 +29,12 @@ Sister frameworks are siblings on disk; `.ai.<fw>` (legacy) / `pilo.ai.<fw>.logi
 | Framework | Director | Path | Bootstrap artifact |
 |-----------|----------|------|--------------------|
 | `.ai.flutter` (Flutter Agent OS) | `@flutter-director` | *this directory* | `skills/README.md` |
-| `.ai` (Agent OS) | `@ai-director` | `../.ai` | `../.ai/skills/README.md` |
-| `.ai.biz` (Business OS) | `@biz-director` | `../.ai.biz` | `../.ai.biz/skills/README.md` |
-| `.ai.cto` (CTO Professor OS) | `@cto-director` | `../.ai.cto` | `../.ai.cto/skills/README.md` |
-| `.ai.mlt` (MLT Agent OS) | `@mlt-director` | `../.ai.mlt` | `../.ai.mlt/skills/README.md` |
-| `.ai.soc` (Social OS) | `@soc-director` | `../.ai.soc` | `../.ai.soc/skills/README.md` |
-| `.ai.ui` (UI Design OS) | `@ui-director` | `../.ai.ui` | `../.ai.ui/skills/README.md` |
+| `.ai` (Agent OS) | `@ai-director` | `../.ai` | `skills/README.md` |
+| `.ai.biz` (Business OS) | `@biz-director` | `../.ai.biz` | `skills/README.md` |
+| `.ai.cto` (CTO Professor OS) | `@cto-director` | `../.ai.cto` | `skills/README.md` |
+| `.ai.mlt` (MLT Agent OS) | `@mlt-director` | `../.ai.mlt` | `skills/README.md` |
+| `.ai.soc` (Social OS) | `@soc-director` | `../.ai.soc` | `skills/README.md` |
+| `.ai.ui` (UI Design OS) | `@ui-director` | `../.ai.ui` | `skills/README.md` |
 
 **Path resolution:** (1) use a filled path cell; empty → fall through. (2) Auto-discover: parent = `S/..` with S = this repo (self-hosted) or the thin-client source; sister = `<S basename with <fw> inserted before its last .segment>` (e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source; `.ai`-prefixed sources resolve `.ai.<fw>` directly), else legacy `.ai.<fw>`; missing = "not installed". (3) Before routing, verify the framework dir + its `skills/README.md` exist; if absent, route with `[degraded: <framework> not installed]` — never route into the void. If your source dir name breaks discovery, fill the path cells manually.
 

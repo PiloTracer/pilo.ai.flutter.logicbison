@@ -55,6 +55,10 @@ Arguments are **order-independent**. One argument is the target repository path 
 
 An argument that is neither a path nor a known mode → stop and ask. Never guess. The scripts parse the same way, so `bash scripts/deploy-basic.sh <target> update` and `bash scripts/deploy-basic.sh --target <target> --update` are also identical.
 
+### Source resolution
+
+The scripts derive the framework source root from their own location (`<script>/..`), so they run correctly from an external copy. When the origin directory has moved (or the script is invoked through a path alias), set `AI_FLUTTER_SOURCE=/abs/path/to/flutter-agent-os` to point explicitly at the source root — mirrors `AI_SOURCE` (Agent OS), `AI_UI_ROOT` (UI Design OS) and `SOC_SOURCE` (Security OS). A value that is not a directory aborts with `error: AI_FLUTTER_SOURCE is not a directory` (exit 1); it never falls back silently.
+
 ### Choosing the basic mode
 
 | Situation | Mode | Why |

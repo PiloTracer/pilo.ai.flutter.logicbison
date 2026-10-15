@@ -13,7 +13,13 @@
 
 set -uo pipefail
 
-FRAMEWORK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# AI_FLUTTER_SOURCE: explicit source-root override (operator origin dirs move;
+# mirrors AI_SOURCE / AI_UI_ROOT / SOC_SOURCE in the sibling frameworks).
+if [[ -n "${AI_FLUTTER_SOURCE:-}" ]]; then
+  FRAMEWORK_ROOT="$(cd "$AI_FLUTTER_SOURCE" && pwd)" || { echo "error: AI_FLUTTER_SOURCE is not a directory: $AI_FLUTTER_SOURCE" >&2; exit 1; }
+else
+  FRAMEWORK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 TARGET=""
 QUIET=0
 FAILS=0

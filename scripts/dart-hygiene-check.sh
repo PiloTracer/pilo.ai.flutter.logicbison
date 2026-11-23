@@ -137,8 +137,8 @@ for f in "${FILES[@]}"; do
   case "$f" in
     */domain/*)
       while IFS=: read -r line _; do
-        [ -n "$line" ] && report BLOCKER "$f" "$line" 'Flutter import inside domain/ — layer violation (FLS-03)'
-      done < <(grep -nE "^import 'package:flutter/" "$f" 2>/dev/null | cut -d: -f1)
+        [ -n "$line" ] && report BLOCKER "$f" "$line" 'Flutter/UI-library import inside domain/ — layer violation (FLS-03)'
+      done < <(grep -nE "^import 'package:(flutter|material_ui|cupertino_ui)/" "$f" 2>/dev/null | cut -d: -f1)
       ;;
   esac
 done
@@ -154,10 +154,19 @@ for f in "${FILES[@]}"; do
   case "$f" in
     *_repository.dart|*_repository_impl.dart|*/repositories/*)
       self="$(basename "$f" .dart)"
+      # Interfaces this file implements, as snake_case file stems
+      # (`implements UserRepository` -> user_repository). Importing one of those
+      # is an implementation depending on its own contract, whatever the file is
+      # named (in_memory_*, fake_*, remote_*), not a repository-to-repository edge.
+      own="$(grep -oE 'implements +[A-Z][A-Za-z0-9_]*( *, *[A-Z][A-Za-z0-9_]*)*' "$f" 2>/dev/null \
+             | sed -e 's/^implements *//' | tr ',' '\n' | tr -d ' ' \
+             | sed -E 's/([a-z0-9])([A-Z])/\1_\2/g' | tr '[:upper:]' '[:lower:]')"
       while IFS=: read -r line content; do
         [ -n "$line" ] || continue
         # An implementation importing its own interface is correct, not a violation.
         printf '%s' "$content" | grep -qE "${self%_impl}\.dart" && continue
+        stem="$(printf '%s' "$content" | sed -nE "s#.*/([a-z0-9_]+)\.dart'.*#\1#p; s#^import '([a-z0-9_]+)\.dart'.*#\1#p" | head -1)"
+        if [ -n "$stem" ] && printf '%s\n' "$own" | grep -qx "$stem"; then continue; fi
         report BLOCKER "$f" "$line" 'repository imports another repository — compose in the ViewModel or a use case (FLS-03)'
       done < <(grep -nE "^import .*(repositories/|_repository)\.?.*\.dart'" "$f" 2>/dev/null)
       ;;

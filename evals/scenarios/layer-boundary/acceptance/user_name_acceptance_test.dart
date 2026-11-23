@@ -2,8 +2,8 @@
 import 'package:eval_app/domain/user.dart';
 import 'package:eval_app/domain/user_repository.dart';
 import 'package:eval_app/presentation/home_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 class _FakeUserRepository implements UserRepository {
   @override

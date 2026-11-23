@@ -226,6 +226,10 @@ if [ "$DRY" -eq 0 ]; then
   done
 fi
 
+# AGENTS.md / CLAUDE.md — the contract is useless to agents that never load .cursorrules.
+source "${FRAMEWORK_ROOT}/scripts/agent-files.sh"
+write_agent_pointers "$TARGET" "${INTO}/skills/" "$DRY"
+
 cat <<EOF
 
 deploy-files: installed

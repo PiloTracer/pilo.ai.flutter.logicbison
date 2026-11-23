@@ -70,6 +70,7 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 @flutter-scaffold package - <name>
 @flutter-scaffold flavor - <name>
 @flutter-scaffold ci
+@flutter-scaffold devcontainer             optional .devcontainer/ (Linux toolchain; iOS needs a Mac)
 @flutter-scaffold test-harness
 
 @flutter-implementation plan - F<n>        write the iteration block

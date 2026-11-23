@@ -14,6 +14,7 @@ Each scenario is a small seeded Flutter repository that **tempts one specific fa
 |-----|-----------|
 | `baseline` | base app + scenario seed |
 | `framework` | the same, plus the real adopter install: `deploy-files` then `bootstrap.sh` |
+| `framework-no-agentfiles` | `framework` minus `AGENTS.md` / `CLAUDE.md`: the install as it was before agent-file pointers (experiment E1) |
 
 The harness never tells the agent the framework exists. If an agent does not pick the framework up from what the install writes, that is a measured result about the install, not something the harness should paper over.
 

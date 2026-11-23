@@ -77,7 +77,7 @@ Copy the framework into `<target>/.ai.flutter/` (or a confirmed alternative path
 
 **Never copied:** the framework's own `.git`, its `.work.flutter/`, `plans/`, repo meta (`.github/`, `.vscode/`, the framework's own `.cursorrules` and `.gitignore`), scratch and temp directories, anything in the framework's `.gitignore`.
 
-Then write the pointer with `Mode: files`, register in `.cursorrules`, ensure scripts are executable, and verify.
+Then write the pointer with `Mode: files`, register in `.cursorrules`, append the agent-file pointers to `AGENTS.md` and `CLAUDE.md` (`scripts/agent-files.sh`: merge, never clobber; see `@flutter-deploy-basic` step 5), ensure scripts are executable, and verify.
 
 **Before copying, check for collisions.** Any existing file at a destination path is reported and left alone unless the operator confirms replacement, file by file.
 

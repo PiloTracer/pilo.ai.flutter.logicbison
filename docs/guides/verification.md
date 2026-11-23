@@ -105,7 +105,7 @@ $ flutter test
 
 ### Blockers
 1. **FLS-03** `lib/domain/entities/order.dart:4`
-   `import 'package:flutter/material.dart'` in the domain layer.
+   `import 'package:flutter/material.dart'` (or `package:material_ui/...`) in the domain layer.
    → @flutter-repair
 
 2. **D6 tests** `lib/features/cart/` — no test covers SPEC §6 offline state.

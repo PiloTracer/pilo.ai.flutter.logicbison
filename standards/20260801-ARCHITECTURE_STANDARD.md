@@ -16,7 +16,9 @@ Three layers. Every file belongs to exactly one, and its layer is visible from i
 | **Domain** | Entities, value objects, repository **interfaces**, use cases (when justified), typed failures | Nothing (pure Dart) | Flutter imports, packages, annotations from any framework |
 | **Data** | Repository **implementations**, DTOs, remote/local sources, mappers, caching | Domain | Widgets, `BuildContext`, navigation |
 
-**Domain is pure Dart.** No `package:flutter`, no HTTP library, no database library. This is testable in milliseconds, survives a stack change, and is the reason the layering is worth having. A `import 'package:flutter/material.dart'` in `domain/` is a blocker finding, not a style preference.
+**Domain is pure Dart.** No `package:flutter`, no HTTP library, no database library. This is testable in milliseconds, survives a stack change, and is the reason the layering is worth having. A `package:flutter/...`, `package:material_ui/...` or `package:cupertino_ui/...` import in `domain/` is a blocker finding, not a style preference.
+
+**Material and Cupertino are packages now.** Current stable Flutter deprecates `package:flutter/material.dart` in favour of the `material_ui` package (and Cupertino in favour of `cupertino_ui`), both published by flutter.dev. Under `analyze --fatal-infos` the old import fails the gate. Check, don't recall: if `flutter analyze` reports `deprecated_member_use` on the import, add the package (`flutter pub add material_ui`) and change the import. On an SDK that predates the split, the package will not resolve; keep the old import and record the SDK in `DOCS_FLUTTER_STACK.md`.
 
 Dependency direction is **inward**: UI → Domain ← Data. Data depends on domain because it implements domain interfaces. Domain depends on nothing. The UI never imports from `data/`; it receives domain types through the DI container.
 

@@ -201,6 +201,10 @@ if [ "$DRY" -eq 0 ]; then
   done
 fi
 
+# AGENTS.md / CLAUDE.md — the contract is useless to agents that never load .cursorrules.
+source "${FRAMEWORK_ROOT}/scripts/agent-files.sh"
+write_agent_pointers "$TARGET" "${FRAMEWORK_ROOT}/skills/" "$DRY"
+
 # Collision check with sibling frameworks — a local .ai* framework dir on the
 # target is a fat-client leak: skills would resolve locally instead of from
 # the thin-client source. All six sister names + the bare .ai root.

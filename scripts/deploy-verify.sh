@@ -246,6 +246,20 @@ if [ -n "$BLOCK" ]; then
 fi
 
 # ------------------------------------------------- frameworks registry cells
+# ------------------------------------------------------- agent-file pointers
+# Non-Cursor agents (Claude Code: CLAUDE.md; Codex, opencode: AGENTS.md) never
+# load .cursorrules on their own. A missing pointer is a warning, not a failure:
+# installs made before pointers existed are still valid, just invisible to those
+# agents until `update` re-runs the deploy.
+head_ "Agent-file pointers"
+for af in AGENTS.md CLAUDE.md; do
+  if grep -qF '<!-- FLUTTER_AGENT_OS_BEGIN -->' "${TARGET}/${af}" 2>/dev/null; then
+    pass "${af} points agents at the .cursorrules contract"
+  else
+    warn "${af} has no Flutter Agent OS pointer — agents that read ${af} instead of .cursorrules will not see the framework (re-run the deploy to add it)"
+  fi
+done
+
 # Sister discovery is shipped to targets via the registry table in .cursorrules;
 # the cells are filled by the deploy (REPLACE:AI_*_PATH) or left for runtime
 # auto-discovery. Here: an unfilled cell whose sister IS discoverable is a

@@ -57,6 +57,8 @@ expect 0 "clean fixture produces no findings" -- \
   bash scripts/dart-hygiene-check.sh "$FIX/dart/clean.dart"
 expect 1 "dirty fixture produces findings" -- \
   bash scripts/dart-hygiene-check.sh "$FIX/dart/dirty.dart"
+expect 1 "material_ui import in domain/ is caught" -- \
+  bash scripts/dart-hygiene-check.sh "$FIX/dart/domain_ui_package"
 expect 1 "Flutter import in domain/ is caught" -- \
   bash scripts/dart-hygiene-check.sh "$FIX/dart/domain/entity.dart"
 expect_output 'layer violation' "domain violation names FLS-03" -- \
@@ -102,6 +104,8 @@ else
   PASSED=$((PASSED+1))
   printf '  ok    implementation importing its own interface is not flagged\n'
 fi
+expect_output 'findings: 0' "implementation importing the interface it implements is clean, any file name" -- \
+  bash scripts/dart-hygiene-check.sh "$FIX/dart/repositories/in_memory_user_repository.dart"
 
 head_ "master-plan-verify"
 expect 0 "well-formed plan passes" -- bash scripts/master-plan-verify.sh "$FIX/plan/good-plan.md"
@@ -219,7 +223,28 @@ fi
 sed -i -E 's/REPLACE:(FLUTTER|DART|AI)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
 expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-verify.sh "$D2/app" --quiet
 
-rm -rf "$D1" "$D2" "$D3"
+head_ "Agent-file pointers"
+for af in AGENTS.md CLAUDE.md; do
+  expect_output 'FLUTTER_AGENT_OS_BEGIN' "files install writes the ${af} pointer" -- cat "$D2/app/${af}"
+done
+expect_output '^@\.cursorrules$' "CLAUDE.md imports the contract verbatim" -- cat "$D2/app/CLAUDE.md"
+D4="$(mktemp -d)"; ( cd "$D4" && git init -q )
+printf '# Team notes\n\nKeep this line.\n' > "$D4/CLAUDE.md"
+bash scripts/deploy-basic.sh --target "$D4" >/dev/null 2>&1
+expect_output 'Keep this line\.' "an existing CLAUDE.md is merged, never clobbered" -- cat "$D4/CLAUDE.md"
+expect_output 'FLUTTER_AGENT_OS_BEGIN' "basic install appends the pointer to an existing CLAUDE.md" -- cat "$D4/CLAUDE.md"
+( source scripts/agent-files.sh && write_agent_pointers "$D4" x 0 >/dev/null )
+if [ "$(grep -c 'FLUTTER_AGENT_OS_BEGIN' "$D4/CLAUDE.md")" -eq 1 ] \
+   && [ "$(grep -c 'FLUTTER_AGENT_OS_BEGIN' "$D4/AGENTS.md")" -eq 1 ]; then
+  PASSED=$((PASSED+1)); printf '  ok    re-running the pointer write is idempotent\n'
+else
+  FAILED=$((FAILED+1)); printf '  FAIL  pointer block duplicated on re-run\n' >&2
+fi
+rm "$D2/app/AGENTS.md"
+expect_output 'AGENTS.md has no Flutter Agent OS pointer' "deploy-verify names a missing pointer" -- \
+  bash scripts/deploy-verify.sh "$D2/app"
+
+rm -rf "$D1" "$D2" "$D3" "$D4"
 
 head_ "Lifecycle smokes"
 expect 0 "bootstrap-smoke passes" -- bash scripts/bootstrap-smoke.sh

@@ -91,6 +91,7 @@ Run `@flutter-bootstrap init` next.
 ```
 
 4. **Register in `.cursorrules`** — append a Flutter Agent OS section. If the file exists, **merge**: read it, confirm no conflicting skill ids or contradictory rules, append only the new section, and report exactly what was added. Other frameworks' sections are left untouched.
+5. **Point non-Cursor agents at the contract** — `scripts/agent-files.sh` appends a `FLUTTER_AGENT_OS_BEGIN/END` block to `AGENTS.md` (Codex, opencode) and `CLAUDE.md` (Claude Code, which imports `@.cursorrules`), creating either file when it is missing. Same rule as `.cursorrules`: merge, never clobber; an existing block is kept. Without it, the framework is installed but invisible to every agent that does not read `.cursorrules`.
 5. **Verify** (see below) and report.
 
 Note the tradeoff in the report: a thin install breaks if the source path moves, and does not travel with a clone. If either matters, `@flutter-deploy-files` is the right mode.
@@ -111,7 +112,7 @@ Read the installed pointer for mode and version; read the source version. Same v
 |-------|----------|---------------|
 | **Framework** | `skills/`, `standards/` templates, `scripts/`, `concepts/`, `stacks/` | Replace |
 | **Project** | `.work.flutter/**`, project standards under the work tree, foundation docs, SPECs, plans, `HANDOFF_FLUTTER.md`, `NEXT_FLUTTER.md` | **Never touch** |
-| **Merged** | `.cursorrules`, `analysis_options.yaml`, CI workflows | Merge with report |
+| **Merged** | `.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `analysis_options.yaml`, CI workflows | Merge with report |
 | **Locally modified framework file** | A skill the target edited | **Stop and ask** — never silently discard local work |
 
 In a basic install the framework files live at the source path, so "locally modified framework file" applies to files the *source* owner changed since the pointer was written; classify them as Framework unless the target itself edited something under the source tree, which is a layout the operator must confirm.

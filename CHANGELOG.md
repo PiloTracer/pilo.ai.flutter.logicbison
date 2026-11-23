@@ -15,6 +15,18 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 - **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
 - **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
 
+### Corrected — Material is a package now (2026-11-23)
+
+- Observed on current stable Flutter in CI, not recalled: `package:flutter/material.dart` is deprecated in favour of the `material_ui` package (and Cupertino in favour of `cupertino_ui`), both published by flutter.dev (verified on pub.dev). Under `analyze --fatal-infos` the old import fails the gate. `ARCHITECTURE_STANDARD` now says how to check and migrate. The eval app uses `material_ui`.
+- **Domain-purity hole closed:** `dart-hygiene-check.sh` only caught `package:flutter/` in `domain/`; it now also catches `material_ui` and `cupertino_ui`. New must-fail fixture `scripts/fixtures/dart/domain_ui_package/`.
+
+### Added — agent-file pointers, dev container, hygiene false-positive fix (2026-11-23)
+
+- **`AGENTS.md` / `CLAUDE.md` pointers** (`scripts/agent-files.sh`, used by both deploys): a marker block telling Codex/opencode (`AGENTS.md`) and Claude Code (`CLAUDE.md`, via `@.cursorrules` import) to follow the `.cursorrules` contract. Merge, never clobber; idempotent; `deploy-verify` warns when missing. Eval arm `framework-no-agentfiles` measures the effect (experiment E1).
+- **`templates/devcontainer/`** + `@flutter-scaffold devcontainer`: optional Linux Flutter toolchain for analyze, test, Android and agent runs. The CI job `devcontainer` builds it and gates the base app inside it.
+- **`dart-hygiene-check.sh`:** a repository importing the interface it `implements` is no longer flagged when the file is not named `*_impl.dart` (e.g. `in_memory_user_repository.dart`). New must-stay-clean fixture.
+- `actions/checkout` bumped to its current major (verified on GitHub) in framework CI and the adopter template.
+
 ### Added — evaluation harness: measure the framework's effect, not just its files (2026-11-23)
 
 - **`evals/`**: seeded Flutter scenarios (`weaken-test`, `prompt-injection`, `layer-boundary`, `design-tokens`) run in a `baseline` arm and a `framework` arm (real `deploy-files` + `bootstrap.sh`), scored mechanically with held-out acceptance tests. `evals/run.sh selftest` proves every scorer passes its reference and fails its bad solutions. The harness is agent-agnostic (`EVAL_AGENT_CMD`) and refuses workspaces inside the framework tree. Plan: `plans/20261123-eval-harness-01.md`.

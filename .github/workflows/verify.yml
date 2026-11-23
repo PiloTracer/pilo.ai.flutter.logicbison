@@ -11,7 +11,7 @@ jobs:
     name: framework integrity
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Framework verify
         run: bash scripts/framework-verify.sh
@@ -37,7 +37,7 @@ jobs:
     name: eval scorers + adopter CI template (real Flutter)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -65,11 +65,27 @@ jobs:
             templates/ci/github-actions/flutter-gates.yml --job gate --cwd "$RUNNER_TEMP/base-app" \
             --var COVERAGE_FLOOR=50 --var COVERAGE_SCOPE=lib/
 
+  devcontainer:
+    name: dev container template builds and runs Flutter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build the adopter dev container image
+        run: docker build -t flutter-agent-os-dev templates/devcontainer
+
+      # The image must run the real local gate on a real app, not just start.
+      - name: Gate the eval base app inside the container
+        run: |
+          bash evals/run.sh materialize base "$RUNNER_TEMP/base-app"
+          docker run --rm -v "$RUNNER_TEMP/base-app":/work -w /work flutter-agent-os-dev \
+            bash -c 'flutter --version && flutter pub get && flutter analyze --fatal-infos && flutter test'
+
   bootstrap:
     name: bootstrap round-trip
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Bootstrap into a clean directory
         run: |
@@ -107,7 +123,7 @@ jobs:
     name: install modes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: basic
         run: |

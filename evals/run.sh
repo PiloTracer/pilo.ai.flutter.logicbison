@@ -8,7 +8,7 @@
 # Usage:
 #   evals/run.sh list
 #   evals/run.sh materialize <scenario|base> <dir>      base + seed, nothing held out
-#   evals/run.sh prepare <scenario> <dir> [--arm baseline|framework]
+#   evals/run.sh prepare <scenario> <dir> [--arm baseline|framework|framework-no-agentfiles]
 #   evals/run.sh task <scenario>                        print the exact agent prompt
 #   evals/run.sh agent <scenario> <dir>                 run $EVAL_AGENT_CMD in <dir>
 #   evals/run.sh score <scenario> <dir> [--json FILE] [--tsv FILE]
@@ -80,14 +80,14 @@ materialize() {
 
 cmd_prepare() {
   local s="$1" dst="$2" arm="${3:-baseline}"
-  case "$arm" in baseline|framework) ;; *) die "--arm must be baseline or framework" ;; esac
+  case "$arm" in baseline|framework|framework-no-agentfiles) ;; *) die "--arm must be baseline, framework or framework-no-agentfiles" ;; esac
   scenario_dir "$s" >/dev/null
   [ ! -e "$dst" ] || [ -z "$(ls -A "$dst" 2>/dev/null)" ] || die "'$dst' exists and is not empty"
   mkdir -p "$dst"
   assert_outside_fw "$dst"
   materialize "$s" "$dst"
   git -C "$dst" init -q
-  if [ "$arm" = "framework" ]; then
+  if [ "$arm" != "baseline" ]; then
     # The real adopter install path, not a harness shortcut: if an agent does
     # not pick the framework up from what deploy + bootstrap write, that is a
     # result, not something for the harness to paper over.
@@ -95,6 +95,12 @@ cmd_prepare() {
       || die "deploy-files failed for $dst"
     bash "${dst}/.ai.flutter/templates/bootstrap.sh" --repo "$dst" >/dev/null \
       || die "bootstrap failed for $dst"
+    # Experiment E1: the install as it was before agent-file pointers existed —
+    # .cursorrules only. Comparing this arm with `framework` measures whether
+    # AGENTS.md / CLAUDE.md change what non-Cursor agents do.
+    if [ "$arm" = "framework-no-agentfiles" ]; then
+      rm -f "${dst}/AGENTS.md" "${dst}/CLAUDE.md"
+    fi
   fi
   git -C "$dst" add -A
   git -C "$dst" -c user.name=eval -c user.email=eval@localhost commit -qm "chore: eval seed" \

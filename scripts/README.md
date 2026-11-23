@@ -22,6 +22,9 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 | [`sister-discovery.sh`](sister-discovery.sh) | Sister-framework discovery (legacy `.ai.<fw>` + family naming) — sourced by the deploy scripts, not run directly | `@flutter-deploy-* install` |
 | [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, registry cells, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` |
 | [`last-gate-record.sh`](last-gate-record.sh) | Writes `.work.flutter/reports/last-gate.json` (verifier, verdict, commands/exits) after a verify run | `@flutter-verify uncommitted` on pass / pass with gaps |
+| [`agent-files.sh`](agent-files.sh) | Writes the marker-delimited Flutter Agent OS pointer into `AGENTS.md` and `CLAUDE.md` (merge, never clobber; idempotent) — sourced by the deploy scripts, not run directly | `@flutter-deploy-basic` / `@flutter-deploy-files` |
+| [`desktop-preflight.sh`](desktop-preflight.sh) | DESKTOP_STANDARD failures visible without the target OS: macOS release entitlements vs network/file-dialog use (BLOCKER), plugin parity across desktop OSes from `.flutter-plugins-dependencies`, template window title, minimum window size | `@flutter-verify` D16, `@flutter-release`, `@flutter-scaffold desktop` |
+| [`flutter-sdk.sh`](flutter-sdk.sh) | Finds a Flutter SDK that is installed but not on `PATH` (env vars, fvm, the project's recorded `flutterRoot`, conventional paths); `--env` prints how to load it | `@flutter-doctor env`, `@flutter-verify`, `@flutter-test`, `evals/run.sh` |
 | [`bootstrap-smoke.sh`](bootstrap-smoke.sh) | Temp-repo smoke of `templates/bootstrap.sh` — HANDOFF, NEXT, `.cursorrules` non-empty | `framework-verify.sh` § Lifecycle smokes |
 
 ## Self-test

@@ -2,7 +2,7 @@
 
 > **Not templated.** Applies whenever `REPLACE:FLUTTER_PLATFORMS` (foundation doc 02 §1) names `windows`, `macos` or `linux`. A project may add requirements; it may not drop one without a recorded decision in doc 02 naming the users affected.
 
-**Owned by:** `@flutter-platform` (native), `@flutter-scaffold desktop` (skeleton), `@flutter-release` (packaging) · **Enforced by:** `@flutter-verify` D16, concept FLS-07 (platform parity).
+**Owned by:** `@flutter-platform` (native), `@flutter-scaffold desktop` (skeleton), `@flutter-release` (packaging) · **Enforced by:** `@flutter-verify` D16, concept FLS-07 (platform parity), `scripts/desktop-preflight.sh` (the checks below that need no target OS: macOS release entitlements vs network and file-dialog use, plugin parity across desktop OSes, template window title, minimum window size).
 
 A Flutter desktop app compiles from the same code as the mobile one, and that is exactly how it fails. It ships with phone habits: no keyboard shortcuts, nothing on hover, a layout that only works at one width, text the user cannot select, a release build that cannot reach the network on macOS, and an installer Windows calls dangerous. Desktop users judge an app by those things within a minute. Each rule below exists because skipping it produces one of those failures.
 
@@ -85,7 +85,7 @@ Updater packages wrapping Sparkle/WinSparkle exist (`auto_updater`), but when th
 
 ## 9. CI
 
-Build each targeted desktop OS on its own runner (`templates/ci/github-actions/flutter-gates.yml` jobs `desktop-linux`, `desktop-macos`, `desktop-windows`). Delete the jobs for OSes the project does not target. A job for a targeted OS **fails** when its platform directory is missing, rather than skipping. Each job uploads its build as a downloadable artifact (`desktop-linux.tar.gz`, `desktop-macos.zip`, `desktop-windows.zip`), archived so that the macOS bundle's symlinks and the Linux executable bit survive. These are **unsigned development builds** for testing. Signing and notarization run only on release pipelines with secrets, never on pull requests from forks.
+Build each targeted desktop OS on its own runner (`templates/ci/github-actions/flutter-gates.yml` jobs `desktop-linux`, `desktop-macos`, `desktop-windows`). Delete the jobs for OSes the project does not target. A job for a targeted OS **fails** when its platform directory is missing, rather than skipping. Every build lands in **one versioned tree**, `releases/<version>/<os>/<app>-<version>-<os>.<ext>` (version from `pubspec.yaml`, build number dropped), and a final `releases` job merges the per-OS artifacts into a single download: `gh run download <run-id> -n releases -D releases`. Versioned folders mean a new version never overwrites an old one. `releases/` is gitignored: binaries are downloaded, never committed. Archives keep the macOS bundle's symlinks (`ditto`) and the Linux executable bit (`tar`). These are **unsigned development builds** for testing. Signing and notarization run only on release pipelines with secrets, never on pull requests from forks.
 
 ---
 

@@ -117,7 +117,7 @@ Installing the framework and scaffolding the project are separate steps. Both ar
 
 ## Desktop
 
-Windows, macOS and Linux are first-class targets: [`DESKTOP_STANDARD`](standards/20261123-DESKTOP_STANDARD.md) covers windows, platform-modifier shortcuts, menus, resizable layouts, file access and per-OS packaging and signing; `@flutter-scaffold desktop` sets it up and `@flutter-verify` D16 checks it. Flutter does not cross-compile desktop apps: each OS builds on that OS. The adopter CI template does this on GitHub's runners and uploads each build.
+Windows, macOS and Linux are first-class targets: [`DESKTOP_STANDARD`](standards/20261123-DESKTOP_STANDARD.md) covers windows, platform-modifier shortcuts, menus, resizable layouts, file access and per-OS packaging and signing; `@flutter-scaffold desktop` sets it up and `@flutter-verify` D16 checks it. Flutter does not cross-compile desktop apps: each OS builds on that OS. The adopter CI template does this on GitHub's runners and publishes one download laid out as `releases/<version>/<os>/`; `scripts/desktop-preflight.sh` catches the macOS-sandbox and plugin-parity defects a Linux machine can see before any Mac or Windows build exists.
 
 ---
 

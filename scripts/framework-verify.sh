@@ -45,6 +45,7 @@ done
 for f in LICENSE README.md START_HERE.md skills/README.md skills/SKILL_DEPENDENCIES.md \
          skills/probe-protocol.md standards/PROTECTED_SURFACES.json templates/bootstrap.sh \
          scripts/sister-discovery.sh scripts/last-gate-record.sh scripts/bootstrap-smoke.sh \
+         scripts/flutter-sdk.sh scripts/desktop-preflight.sh scripts/agent-files.sh \
          templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md \
          templates/ci/github-actions/flutter-gates.yml \
          standards/20261123-CICD_CONVENTIONS.md; do

@@ -114,7 +114,7 @@ On pass, append `**Release-ready:** YYYY-MM-DD (<version>)` to `{FLUTTER_HANDOFF
 | Web | `flutter build web --release` (+ the project's renderer and base-href settings) |
 | Desktop | `flutter build <macos\|windows\|linux> --release`, **on that OS** — Flutter does not cross-compile desktop |
 
-**Desktop packaging** (rules: [`DESKTOP_STANDARD`](../../standards/20261123-DESKTOP_STANDARD.md) §8). After the build, per OS:
+**Desktop packaging** (rules: [`DESKTOP_STANDARD`](../../standards/20261123-DESKTOP_STANDARD.md) §8). Before any desktop build, run `scripts/desktop-preflight.sh` and quote it: a BLOCKER (e.g. macOS release entitlements missing for network or file access the app uses) stops the release, because those defects only surface on the target OS. A desktop OS this host cannot build is `not run (needs a <OS> host)`, never skipped silently. After the build, per OS:
 
 | OS | Package and sign | Verify before distributing (quote the output) |
 |----|------------------|-----------------------------------------------|

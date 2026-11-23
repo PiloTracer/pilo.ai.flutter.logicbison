@@ -74,7 +74,7 @@ The same commands CI runs. Take them from `DOCS_FLUTTER_STACK.md`; the shapes be
 
 **Report:** one line per check with the exit code, then `gate: PASS` or `gate: FAIL`. No prose.
 
-Toolchain missing → every command is `not run (toolchain unavailable)` and the verdict is `unverified`, with a route to `@flutter-doctor env`. **`unverified` is not `pass`.**
+`flutter: command not found` is not yet "toolchain missing": run `scripts/flutter-sdk.sh <project>` first — it finds an SDK that is installed but not on `PATH` (via `FLUTTER_ROOT`, fvm, or the `flutterRoot` the project's `.dart_tool/package_config.json` recorded) and `--env` prints how to load it, including an adjacent toolchain `env.sh`. Use what it finds and say where it came from. Only when it finds nothing: toolchain missing → every command is `not run (toolchain unavailable)` and the verdict is `unverified`, with a route to `@flutter-doctor env`. **`unverified` is not `pass`.**
 
 ---
 
@@ -99,7 +99,7 @@ The full audit. Each dimension gets `pass` / `pass with gaps` / `fail` / `not ru
 | D13 | **Performance** | No unbounded rebuilds; lists virtualised; images bounded; heavy work off the UI isolate; NFR budgets held; FLS-01, FLS-08 | when an NFR applies |
 | D14 | **AI-assisted change safety** | FLS-06 run: blast radius, adjacent-code impact, and what the agent could not verify | yes, for agent sessions |
 | D15 | **Visual craft** | UI_CRAFT_STANDARD: spacing from the theme scale; SPEC §5 dominant element honoured at the ratio; accent on the primary action only; no factory palette (hygiene scan quoted); states executed per §6; FLS-13 run on changed screens | yes, when the milestone touches presentation |
-| D16 | **Desktop** | DESKTOP_STANDARD on each targeted desktop OS: primary actions have platform-modifier shortcuts (tested per platform); everything Tab-reachable with visible focus; hover and click cursor on custom controls; layout tested at the minimum window size and an expanded width; breakpoints are tokens; plugins support every targeted desktop OS; macOS release entitlements cover what the app does | yes, when doc 02 targets windows, macos or linux |
+| D16 | **Desktop** | `scripts/desktop-preflight.sh` output quoted (any BLOCKER fails); then DESKTOP_STANDARD on each targeted desktop OS: primary actions have platform-modifier shortcuts (tested per platform); everything Tab-reachable with visible focus; hover and click cursor on custom controls; layout tested at the minimum window size and an expanded width; breakpoints are tokens; plugins support every targeted desktop OS; macOS release entitlements cover what the app does | yes, when doc 02 targets windows, macos or linux |
 
 **Blast radius** (part of D10 and D14): `bash scripts/blast-radius-check.sh` — a diff spanning many areas, touching protected surfaces, or exceeding the line threshold is reported as `risk: high` and requires explicit acknowledgement in the report.
 

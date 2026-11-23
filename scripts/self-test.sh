@@ -279,6 +279,78 @@ else
 fi
 rm -rf "$LGST"
 
+head_ "Adopter .gitignore"
+GT="$(mktemp -d)"; git -C "$GT" init -q
+cp templates/gitignore.flutter.snippet "$GT/.gitignore"
+mkdir -p "$GT/lib/features/orders/domain/failures" "$GT/test/goldens/failures"
+: > "$GT/lib/features/orders/domain/failures/orders_failure.dart"
+: > "$GT/test/goldens/failures/home_masterImage.png"
+if git -C "$GT" check-ignore -q lib/features/orders/domain/failures/orders_failure.dart; then
+  FAILED=$((FAILED+1)); printf '  FAIL  the adopter .gitignore snippet ignores lib/**/domain/failures/ source\n' >&2
+else
+  PASSED=$((PASSED+1)); printf '  ok    the adopter .gitignore keeps lib/**/domain/failures/ source tracked\n'
+fi
+expect 0 "the adopter .gitignore still ignores golden-test failure images" -- \
+  git -C "$GT" check-ignore -q test/goldens/failures/home_masterImage.png
+bash scripts/deploy-basic.sh --target "$GT" >/dev/null 2>&1
+printf '**/failures/\n' >> "$GT/.gitignore"
+expect_output "bare '\*\*/failures/'" "deploy-verify names a bare **/failures/ ignore" -- bash scripts/deploy-verify.sh "$GT"
+expect_output 'source files ignored by .gitignore' "deploy-verify names hand-written Dart that git ignores" -- bash scripts/deploy-verify.sh "$GT"
+rm -rf "$GT"
+
+head_ "Desktop pre-flight"
+DP="$(mktemp -d)"
+for a in bad-app good-app; do
+  cp -R "$FIX/desktop/$a" "$DP/$a"
+  cp "$DP/$a/plugins-dependencies.json" "$DP/$a/.flutter-plugins-dependencies"
+done
+expect 1 "missing macOS entitlements block the pre-flight" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+expect_output 'lacks com.apple.security.network.client' "network use without network.client is named" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+expect_output 'lacks com.apple.security.files.user-selected' "file dialogs without user-selected access are named" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+expect_output "plugin 'barcode_scanner' has no implementation on: macos" "a federated plugin missing on one desktop OS is named" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+expect_output 'template default "bad_app"' "the template default window title is named" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+expect_output 'blockers: 0  majors: 0  minors: 0' "a correctly configured app is clean (federated names normalised)" -- bash scripts/desktop-preflight.sh "$DP/good-app"
+rm "$DP/bad-app/.flutter-plugins-dependencies"
+expect_output 'plugin parity not checked' "missing plugin data is reported as not checked, never as parity" -- bash scripts/desktop-preflight.sh "$DP/bad-app"
+rm -rf "$DP"
+
+head_ "Flutter SDK discovery"
+SD="$(mktemp -d)"
+mkdir -p "$SD/sdks/flutter/bin" "$SD/app/.dart_tool" "$SD/home"
+printf '#!/bin/sh\necho fake flutter\n' > "$SD/sdks/flutter/bin/flutter"; chmod +x "$SD/sdks/flutter/bin/flutter"
+printf '{"configVersion":2,"flutterRoot":"file://%s/sdks/flutter","packages":[]}\n' "$SD" > "$SD/app/.dart_tool/package_config.json"
+expect_output "$SD/sdks/flutter" "an SDK off PATH is found through the project's package_config" -- \
+  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh "$SD/app"
+expect_output 'export PATH=' "--env prepends the SDK bin when there is no toolchain script" -- \
+  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh --env "$SD/app"
+printf 'export PATH="%s/sdks/flutter/bin:$PATH"\n' "$SD" > "$SD/sdks/env.sh"
+expect_output '^source ' "--env sources an adjacent toolchain env.sh" -- \
+  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh --env "$SD/app"
+expect 1 "no SDK anywhere is reported as not found" -- \
+  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh "$SD/home"
+rm -rf "$SD"
+
+head_ "Git hooks find the SDK and never pass a crashed analyzer"
+HK="$(mktemp -d)"
+mkdir -p "$HK/sdk/flutter/bin" "$HK/repo/lib" "$HK/repo/.dart_tool"
+cat > "$HK/sdk/flutter/bin/flutter" <<'STUB'
+#!/bin/sh
+case "$1" in
+  analyze) echo "Error from the analysis server: OS Error: Too many open files, errno = 24"
+           echo "No issues found! (ran in 0.7s)"; echo "Server error(s) occurred. (ran in 0.7s)"; exit 1 ;;
+esac
+exit 0
+STUB
+chmod +x "$HK/sdk/flutter/bin/flutter"
+git -C "$HK/repo" init -q
+printf 'name: hooktest\n' > "$HK/repo/pubspec.yaml"
+printf 'int answer() => 42;\n' > "$HK/repo/lib/a.dart"
+printf '{"configVersion":2,"flutterRoot":"file://%s/sdk/flutter","packages":[]}\n' "$HK" > "$HK/repo/.dart_tool/package_config.json"
+( cd "$HK/repo" && bash "$OLDPWD/scripts/install-git-hooks.sh" >/dev/null 2>&1 && git add pubspec.yaml lib/a.dart )
+expect_output 'analyzer crashed' "pre-commit finds an off-PATH SDK and reports a crashed analyzer as not run" -- \
+  env -i HOME="$HK" PATH=/usr/bin:/bin git -C "$HK/repo" -c user.name=t -c user.email=t@t commit -q -m "chore: hook test"
+rm -rf "$HK"
+
 head_ "Eval harness"
 expect 0 "every eval scorer passes its reference and fails its bad solutions" -- bash evals/run.sh selftest
 EV_WS="$(mktemp -d)/ws"

@@ -64,7 +64,7 @@ bash scripts/self-test.sh           # the verifiers actually catch what they cla
 
 Both must pass. Quote the tail of the output rather than asserting the result.
 
-This repository has **no hosted CI**. Toolchain checks (`evals/run.sh selftest` with Flutter on `PATH`) and desktop builds run only where you run them. A Windows or macOS build claim needs a run on that OS. Otherwise it is `not run`.
+This repository has **no hosted CI**. Toolchain checks (`evals/run.sh selftest`) and desktop builds run only where you run them. "`flutter` not on PATH" is not "no toolchain": run `scripts/flutter-sdk.sh` first (this host has a user-local SDK; `source` the `env.sh` it reports). A Windows or macOS build claim needs a run on that OS. Otherwise it is `not run`.
 
 ### 4. Evidence-first
 Cite file paths and real command output. Anything you could not confirm is marked **Unverified** rather than smoothed over. "Probably fine" is not a verification result.
@@ -106,10 +106,11 @@ If you catch yourself about to write "as of version X" — stop, and describe th
 | `scripts/fixtures/dart/presentation/` | UI importing the data layer |
 | `scripts/fixtures/plan/broken-plan.md` | uncovered requirement, untraced task, residue |
 | `scripts/fixtures/ledger/lying-ledger.md` | confirmed claims with no recorded answers |
+| `scripts/fixtures/desktop/bad-app/` | macOS entitlement blockers, plugin parity gap, template title, no minimum size |
 | `evals/scenarios/*/bad/*` | the check named in its `.eval-expect` |
 | `evals/scenarios/*/seed/` | its held-out `acceptance/` test (the task must not already be done) |
 
-**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
+**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `desktop/good-app/`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
 
 When a fixture legitimately needs to change, change the assertion in `self-test.sh` in the same edit, and say in your summary which behaviour you re-baselined and why.
 

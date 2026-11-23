@@ -111,7 +111,7 @@ Generates the project conforming to the locked stack and the directory map. Stru
 @flutter-implementation complete       close it out
 ```
 
-Each task passes the nine-check gate before it may be marked done. Each milestone ends with `@flutter-verify milestone` — fifteen dimensions plus the applicable FLS lenses, including FLS-06 on everything an agent wrote.
+Each task passes the nine-check gate before it may be marked done. Each milestone ends with `@flutter-verify milestone` — sixteen dimensions plus the applicable FLS lenses, including FLS-06 on everything an agent wrote.
 
 Findings route to `@flutter-repair`, which fixes and then re-runs the originating verifier. A repair that has not been re-verified is a hypothesis.
 

@@ -152,16 +152,19 @@ jobs:
 
       # Archives are UNSIGNED development builds for testing. Distribution builds
       # are signed/packaged in a release workflow (DESKTOP_STANDARD §8).
-      - name: Package Linux bundle
+      - name: Package into releases/<version>/linux
         # tar keeps the executable bit, which upload-artifact alone drops.
         run: |
+          version="$(grep -m1 '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//; s/\+.*//')"
+          app="$(grep -m1 '^name:' pubspec.yaml | sed -E 's/^name:[[:space:]]*//; s/[[:space:]]*$//')"
+          mkdir -p "releases/${version}/linux"
           bundle="$(ls -d build/linux/*/release/bundle | head -1)"
-          tar -czf desktop-linux.tar.gz -C "$bundle" .
+          tar -czf "releases/${version}/linux/${app}-${version}-linux.tar.gz" -C "$bundle" .
 
       - uses: actions/upload-artifact@v7
         with:
           name: desktop-linux
-          path: desktop-linux.tar.gz
+          path: releases/
           if-no-files-found: error
 
   desktop-macos:
@@ -185,18 +188,21 @@ jobs:
           flutter pub get
           flutter build macos --release
 
-      - name: Package macOS app
+      - name: Package into releases/<version>/macos
         # ditto keeps the bundle's symlinks and permissions; a raw .app upload
         # arrives broken. Unsigned and unnotarized: Gatekeeper blocks it on
         # other Macs until the release workflow signs and notarizes it.
         run: |
-          app="$(ls -d build/macos/Build/Products/Release/*.app | head -1)"
-          ditto -c -k --keepParent "$app" desktop-macos.zip
+          version="$(grep -m1 '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//; s/\+.*//')"
+          app="$(grep -m1 '^name:' pubspec.yaml | sed -E 's/^name:[[:space:]]*//; s/[[:space:]]*$//')"
+          mkdir -p "releases/${version}/macos"
+          bundle="$(ls -d build/macos/Build/Products/Release/*.app | head -1)"
+          ditto -c -k --keepParent "$bundle" "releases/${version}/macos/${app}-${version}-macos.zip"
 
       - uses: actions/upload-artifact@v7
         with:
           name: desktop-macos
-          path: desktop-macos.zip
+          path: releases/
           if-no-files-found: error
 
   desktop-windows:
@@ -223,14 +229,42 @@ jobs:
           flutter pub get
           flutter build windows --release
 
-      - name: Package Windows build
+      - name: Package into releases/<version>/windows
         # The .exe needs the DLLs and data/ folder beside it; ship the folder.
         run: |
+          version="$(grep -m1 '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//; s/\+.*//')"
+          app="$(grep -m1 '^name:' pubspec.yaml | sed -E 's/^name:[[:space:]]*//; s/[[:space:]]*$//')"
+          mkdir -p "releases/${version}/windows"
+          zip_path="$(pwd)/releases/${version}/windows/${app}-${version}-windows.zip"
           release="$(ls -d build/windows/*/runner/Release | head -1)"
-          (cd "$release" && 7z a -tzip "$OLDPWD/desktop-windows.zip" . >/dev/null)
+          (cd "$release" && 7z a -tzip "$zip_path" . >/dev/null)
 
       - uses: actions/upload-artifact@v7
         with:
           name: desktop-windows
-          path: desktop-windows.zip
+          path: releases/
+          if-no-files-found: error
+
+  # One downloadable tree for every desktop OS kept above:
+  #   releases/<version>/{linux,macos,windows}/<app>-<version>-<os>.<ext>
+  # Download: gh run download <run-id> -n releases -D releases
+  # Remove an OS from `needs` when you delete its job.
+  releases:
+    name: combined releases tree
+    needs: [desktop-linux, desktop-macos, desktop-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: desktop-*
+          path: releases
+          merge-multiple: true
+
+      - name: Show the tree
+        run: find releases -type f -exec ls -l {} \;
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: releases
+          path: releases/
           if-no-files-found: error

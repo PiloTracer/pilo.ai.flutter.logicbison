@@ -28,6 +28,16 @@ BASE="${EVALS}/apps/base"
 die() { echo "evals: $*" >&2; exit 2; }
 have_flutter() { command -v flutter >/dev/null 2>&1; }
 
+# An SDK that is installed but not on PATH is still a toolchain. Load it the
+# same way the skills do (scripts/flutter-sdk.sh), so toolchain checks run
+# instead of reporting NOT_RUN on a machine that can run them.
+if ! have_flutter; then
+  if sdk_env="$(bash "${FW}/scripts/flutter-sdk.sh" --env "${FW}" 2>/dev/null)"; then
+    eval "$sdk_env"
+    echo "evals: using Flutter at $(command -v flutter) (found by scripts/flutter-sdk.sh)" >&2
+  fi
+fi
+
 scenario_dir() {
   local s="$1"
   [ -n "$s" ] && [ -d "${SCEN}/${s}" ] || die "unknown scenario '${s}' (evals/run.sh list)"
@@ -218,7 +228,7 @@ score_into() {
 
   # 6. Toolchain checks on a scratch copy, so scoring never mutates the workspace.
   if ! have_flutter; then
-    for c in $TOOLCHAIN_CHECKS; do record "$c" NOT_RUN "flutter not on PATH"; done
+    for c in $TOOLCHAIN_CHECKS; do record "$c" NOT_RUN "no Flutter SDK found (scripts/flutter-sdk.sh)"; done
   else
     local work
     work="$(mktemp -d "${TMPDIR:-/tmp}/eval-score.XXXXXX")"
@@ -231,7 +241,14 @@ score_into() {
       wants() { case " $TOOLCHAIN_CHECKS " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
       if ! wants analyze; then :
       elif ( cd "$work" && flutter analyze --fatal-infos >"$log" 2>&1 ); then record analyze PASS "zero issues"
-      else record analyze FAIL "$(grep -E '(error|warning|info) [-•]' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
+      elif grep -q 'Server error(s) occurred' "$log"; then
+        # The analysis server crashed: the run is incomplete, whatever it printed.
+        # An environment failure is not a code defect (e.g. the Linux inotify
+        # instance limit exhausted: "Too many open files"). See @flutter-doctor env.
+        record analyze NOT_RUN "analyzer crashed: $(grep -m1 -oE 'OS Error: [^,]*' "$log" || echo 'server error') — environment, see @flutter-doctor env"
+      else
+        record analyze FAIL "$( { grep -E '^[[:space:]]*(error|warning|info)[[:space:]]+[-•]' "$log" || grep -v '^[[:space:]]*$' "$log"; } | head -5 | sed 's/^ *//' | tr '\n' '|')"
+      fi
       if ! wants format; then :
       elif ( cd "$work" && dart format --output=none --set-exit-if-changed lib test >"$log" 2>&1 ); then record format PASS "formatted"
       else record format FAIL "$(grep -i 'changed' "$log" | head -5 | tr '\n' '|')"; fi
@@ -308,7 +325,7 @@ has_fail()  { printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$2 == "FAIL" { f=1 } E
 cmd_selftest() {
   local list s d tmp ws b expect id
   if [ $# -gt 0 ]; then list="$*"; else list="$(all_scenarios)"; fi
-  have_flutter || printf '  note  flutter not on PATH — toolchain assertions not run (run selftest on a host with Flutter)\n'
+  have_flutter || printf '  note  no Flutter SDK found by scripts/flutter-sdk.sh — toolchain assertions not run (run selftest on a host with Flutter)\n'
   for s in $list; do
     d="$(scenario_dir "$s")"
     printf '\n%s\n' "$s"

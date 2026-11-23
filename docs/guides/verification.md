@@ -29,17 +29,17 @@ Not "does it look right", not "did the agent say it passed". Every claim needs a
 | `@flutter-verify gate` | after a task | mechanical chain only, seconds |
 | `@flutter-verify uncommitted` | before committing | your diff: secrets, scope, review |
 | `@flutter-verify last` | after committing | commit hygiene, evidence |
-| `@flutter-verify milestone` | before closing a milestone | 15 dimensions, minutes |
+| `@flutter-verify milestone` | before closing a milestone | 16 dimensions, minutes |
 
 Use the narrowest scope that answers the question. A milestone audit before every commit is not thoroughness, it is friction that gets disabled.
 
 ---
 
-## The 15 dimensions
+## The 16 dimensions
 
 `@flutter-verify milestone`:
 
-Requirement coverage · SPEC conformance · UI states · architecture · state management · error handling · data integrity · test coverage · mechanical gate · scope discipline · security & privacy · accessibility · performance · AI-assisted change safety · visual craft.
+Requirement coverage · SPEC conformance · UI states · architecture · state management · error handling · data integrity · test coverage · mechanical gate · scope discipline · security & privacy · accessibility · performance · AI-assisted change safety · visual craft · desktop (when Windows, macOS or Linux is targeted; `scripts/desktop-preflight.sh` quoted).
 
 Each produces findings with file and line, a severity, and a route. Each finding names the skill that fixes it.
 

@@ -52,16 +52,25 @@ if [ -n "$STAGED_DART" ] && command -v dart >/dev/null 2>&1; then
 fi
 
 # ------------------------------------------------------------ 4. analyzer
+# An SDK installed off PATH is still a toolchain: load it the way the skills
+# do (scripts/flutter-sdk.sh) before reporting anything as not run.
+if ! command -v flutter >/dev/null 2>&1 && [ -f "${AOS_ROOT}/scripts/flutter-sdk.sh" ]; then
+  if sdk_env="$(bash "${AOS_ROOT}/scripts/flutter-sdk.sh" --env . 2>/dev/null)"; then eval "$sdk_env"; fi
+fi
 if [ -n "$STAGED_DART" ] && command -v flutter >/dev/null 2>&1; then
   OUT="$(flutter analyze --no-pub 2>&1 || true)"
-  if printf '%s' "$OUT" | grep -qE '^ *(error|warning|info) •'; then
+  if printf '%s' "$OUT" | grep -q 'Server error(s) occurred'; then
+    # A crashed analysis server prints no issue lines; reading that as "ok"
+    # is a false pass. Typical cause on Linux: inotify instances exhausted.
+    say "  warn  analyzer crashed ($(printf '%s' "$OUT" | grep -m1 -oE 'OS Error: [^,]*' || echo 'server error')) — not run (unverified, not passed); see @flutter-doctor env"
+  elif printf '%s' "$OUT" | grep -qE '^ *(error|warning|info) •'; then
     bad "analyzer issues — the gate is zero issues"
     printf '%s\n' "$OUT" | grep -E '^ *(error|warning|info) •' | head -10 >&2
   else
     say "  ok    analyze"
   fi
 elif [ -n "$STAGED_DART" ]; then
-  say "  warn  flutter not on PATH — analyzer not run (unverified, not passed)"
+  say "  warn  no Flutter SDK found (PATH, FLUTTER_ROOT, .fvm, .dart_tool) — analyzer not run (unverified, not passed)"
 fi
 
 # ------------------------------------------------------------- 5. hygiene

@@ -53,8 +53,13 @@ if [ ! -d "$REPO/test" ] && [ ! -d "$REPO/integration_test" ]; then
   exit 0
 fi
 
+# An SDK installed off PATH is still a toolchain: load it the way the skills
+# do (scripts/flutter-sdk.sh) before reporting anything as not run.
+if ! command -v flutter >/dev/null 2>&1 && [ -f "${AOS_ROOT}/scripts/flutter-sdk.sh" ]; then
+  if sdk_env="$(bash "${AOS_ROOT}/scripts/flutter-sdk.sh" --env . 2>/dev/null)"; then eval "$sdk_env"; fi
+fi
 if ! command -v flutter >/dev/null 2>&1; then
-  printf 'pre-push: flutter not on PATH — tests NOT run (unverified, not passed)\n' >&2
+  printf 'pre-push: no Flutter SDK found (PATH, FLUTTER_ROOT, .fvm, .dart_tool) — tests NOT run (unverified, not passed)\n' >&2
   exit 0
 fi
 

@@ -25,8 +25,15 @@ coverage/
 symbols/
 debug-info/
 
-# Golden test failures (the reference images ARE committed)
-**/failures/
+# Golden test failures (the reference images ARE committed). Scoped to test
+# trees on purpose: a bare `**/failures/` also ignores lib/**/domain/failures/,
+# the DIRECTORY_MAP home of failure types, so those sources never get committed
+# and the app builds only on the machine that wrote them.
+test/**/failures/
+integration_test/**/failures/
+
+# Desktop build outputs downloaded from CI: releases/<version>/<os>/ (DESKTOP_STANDARD §9)
+releases/
 
 # iOS
 ios/Pods/

@@ -49,7 +49,7 @@ Never-commit paths · secret scan · format · analyze · hygiene · touch-scope
 
 ## G3 — Milestone gate
 
-`@flutter-verify milestone` — 15 dimensions: requirement coverage, SPEC conformance, UI states, architecture, state management, error handling, data integrity, test coverage, mechanical gate, scope discipline, security & privacy, accessibility, performance, AI-assisted change safety, visual craft.
+`@flutter-verify milestone` — 16 dimensions: requirement coverage, SPEC conformance, UI states, architecture, state management, error handling, data integrity, test coverage, mechanical gate, scope discipline, security & privacy, accessibility, performance, AI-assisted change safety, visual craft, desktop (when targeted).
 
 Plus the applicable FLS lenses, and `blast-radius-check.sh` against protected surfaces.
 

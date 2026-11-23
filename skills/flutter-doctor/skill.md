@@ -89,6 +89,8 @@ Confidence `low` → run one more discriminator rather than guessing.
 
 ## env protocol
 
+**Locate before diagnosing.** When `flutter` is not on `PATH`, run `scripts/flutter-sdk.sh <project>` first — it finds an SDK that is installed but not on `PATH` (via `FLUTTER_ROOT`, fvm, or the `flutterRoot` the project's `.dart_tool/package_config.json` recorded) and `--env` prints how to load it, including an adjacent toolchain `env.sh`. Use what it finds and say where it came from. A machine with a user-local SDK (and its own compiler wrappers, as desktop builds often need) is a PATH problem, not a missing toolchain.
+
 | Check | Command | Looking for |
 |-------|---------|-------------|
 | Toolchain health | `flutter doctor -v` | Missing components, licenses, toolchain versions |
@@ -97,6 +99,7 @@ Confidence `low` → run one more discriminator rather than guessing.
 | Multiple SDKs | `which -a flutter`, version manager state | Two SDKs on PATH resolving differently per shell |
 | Platform toolchains | `flutter doctor -v` detail | JDK version and location, Android SDK and build-tools, Xcode and command-line tools, CocoaPods version |
 | CI parity | The workflow's setup step | A different SDK version than local — the classic CI divergence |
+| File watchers (Linux) | `cat /proc/sys/fs/inotify/max_user_instances`; count `anon_inode:inotify` fds under `/proc/*/fd` | `analyze` prints `No issues found!` yet exits non-zero with `Server error(s) occurred` / `OS Error: Too many open files`: the inotify instance limit is exhausted, usually by editors. Not a code defect and not `ulimit -n`. Fix is the operator's: `sudo sysctl fs.inotify.max_user_instances=512` (persist in `/etc/sysctl.d/`), or close editors. Until then `analyze` is `not run`, never `fail` |
 
 **Version mismatch handling:** report the required version, the found version, and the source of the requirement. Propose the change; do not apply an SDK switch without confirmation — it affects every project on the machine.
 

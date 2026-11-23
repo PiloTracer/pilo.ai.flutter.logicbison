@@ -182,7 +182,7 @@ Register the route (K2), the DI bindings (K3), and the test mirror. Then run the
 6. macOS `Release.entitlements` matching what the SPECs need (network client, user-selected files). Protected surface: show the diff and get approval.
 7. Test helpers: `setWindowSize(tester, Size)` with `addTearDown(tester.view.reset)`, and a shortcut helper that presses the platform modifier under `TargetPlatformVariant`.
 
-Then route to `@flutter-scaffold ci` for the desktop build jobs, and to `@flutter-platform parity` for the per-OS matrix. Never build or claim a desktop OS this host cannot build (§1); report it `not run (needs a <OS> host)`.
+Then run `scripts/desktop-preflight.sh` and quote it (zero BLOCKERs expected after step 6), route to `@flutter-scaffold ci` for the desktop build jobs, and to `@flutter-platform parity` for the per-OS matrix. Never build or claim a desktop OS this host cannot build (§1); report it `not run (needs a <OS> host)`.
 
 **`devcontainer`** (optional) — copy `templates/devcontainer/` to the adopter's `.devcontainer/` (merge if one exists — never clobber without asking). Tell the operator to replace the `:stable` image tag with the tag matching the SDK pin in `DOCS_FLUTTER_STACK.md`, and that iOS/macOS builds still need a Mac. Purpose: one toolchain for developers, agents and CI, so fewer checks end `unverified`.
 

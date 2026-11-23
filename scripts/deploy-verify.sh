@@ -336,6 +336,24 @@ else
   warn ".gitignore does not exclude .work.flutter/analysis/tmp/ yet — @flutter-bootstrap init appends the entries"
 fi
 
+# Hand-written Dart that .gitignore excludes never reaches a commit: the app
+# builds on the machine that wrote it and fails on every clone and CI runner.
+# The framework's own snippet once shipped `**/failures/`, which swallows the
+# DIRECTORY_MAP's lib/**/domain/failures/. Generated files are excluded from
+# this check — ignoring them and regenerating in CI is a legitimate choice.
+if [ -f "$GI" ] && grep -qxE '[*][*]/failures/?' "$GI"; then
+  fail ".gitignore has a bare '**/failures/' — it also ignores lib/**/domain/failures/ (DIRECTORY_MAP). Replace it with 'test/**/failures/' and 'integration_test/**/failures/'"
+fi
+if git -C "$TARGET" rev-parse --git-dir >/dev/null 2>&1; then
+  IGNORED_SRC="$(git -C "$TARGET" ls-files --others --ignored --exclude-standard -- lib test integration_test 2>/dev/null \
+    | grep -E '\.dart$' | grep -vE '\.(g|freezed|mocks|gr|config)\.dart$|/generated/' || true)"
+  if [ -n "$IGNORED_SRC" ]; then
+    fail "source files ignored by .gitignore (never committed, so clones and CI cannot build): $(printf '%s' "$IGNORED_SRC" | tr '\n' ' ')"
+  else
+    pass "no hand-written Dart under lib/ test/ integration_test/ is gitignored"
+  fi
+fi
+
 if [ -d "${TARGET}/.work.flutter" ]; then
   pass "project memory .work.flutter/ present"
 else

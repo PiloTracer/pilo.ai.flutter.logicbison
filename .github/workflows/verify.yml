@@ -59,9 +59,13 @@ jobs:
       # would fail every adopter on day one.
       - name: Adopter CI template on the base app
         run: |
-          python3 -c 'import yaml' 2>/dev/null || pip install --quiet pyyaml
+          PY=python3
+          if ! "$PY" -c 'import yaml' 2>/dev/null; then
+            "$PY" -m venv "$RUNNER_TEMP/ci-venv" && PY="$RUNNER_TEMP/ci-venv/bin/python"
+            "$PY" -m pip install --quiet pyyaml
+          fi
           bash evals/run.sh materialize base "$RUNNER_TEMP/base-app"
-          FLUTTER_AGENT_OS_SOURCE="$GITHUB_WORKSPACE" python3 evals/tools/run-workflow-steps.py \
+          FLUTTER_AGENT_OS_SOURCE="$GITHUB_WORKSPACE" "$PY" evals/tools/run-workflow-steps.py \
             templates/ci/github-actions/flutter-gates.yml --job gate --cwd "$RUNNER_TEMP/base-app" \
             --var COVERAGE_FLOOR=50 --var COVERAGE_SCOPE=lib/
 
@@ -98,9 +102,24 @@ jobs:
       - name: Adopter template job ${{ matrix.job }}, step by step
         run: |
           PY=python3; command -v python3 >/dev/null 2>&1 || PY=python
-          "$PY" -c 'import yaml' 2>/dev/null || "$PY" -m pip install --quiet pyyaml
+          # PEP 668: runner system Pythons (macOS Homebrew) refuse pip installs.
+          # A throwaway venv works on every OS without overriding that guard.
+          if ! "$PY" -c 'import yaml' 2>/dev/null; then
+            "$PY" -m venv ../ci-venv
+            if [ -x ../ci-venv/bin/python ]; then PY=../ci-venv/bin/python; else PY=../ci-venv/Scripts/python; fi
+            "$PY" -m pip install --quiet pyyaml
+          fi
           "$PY" evals/tools/run-workflow-steps.py templates/ci/github-actions/flutter-gates.yml \
             --job ${{ matrix.job }} --cwd ../desktop-app
+
+      # The template's packaging steps must leave a real, non-empty archive —
+      # the thing an adopter downloads. (upload-artifact itself is a uses: step
+      # the step runner skips, so the archive is asserted here.)
+      - name: Packaged artifact exists
+        run: |
+          f="$(ls ../desktop-app/desktop-${{ matrix.platform }}.* 2>/dev/null | head -1)"
+          [ -n "$f" ] && [ -s "$f" ] || { echo "no packaged artifact for ${{ matrix.platform }}"; exit 1; }
+          ls -l "$f"
 
   devcontainer:
     name: dev container template builds and runs Flutter

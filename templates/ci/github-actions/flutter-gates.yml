@@ -152,6 +152,20 @@ jobs:
           flutter pub get
           flutter build linux --release
 
+      # Archives are UNSIGNED development builds for testing. Distribution builds
+      # are signed/packaged in a release workflow (DESKTOP_STANDARD §8).
+      - name: Package Linux bundle
+        # tar keeps the executable bit, which upload-artifact alone drops.
+        run: |
+          bundle="$(ls -d build/linux/*/release/bundle | head -1)"
+          tar -czf desktop-linux.tar.gz -C "$bundle" .
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-linux
+          path: desktop-linux.tar.gz
+          if-no-files-found: error
+
   desktop-macos:
     name: desktop build (macOS)
     runs-on: macos-latest
@@ -172,6 +186,20 @@ jobs:
           fi
           flutter pub get
           flutter build macos --release
+
+      - name: Package macOS app
+        # ditto keeps the bundle's symlinks and permissions; a raw .app upload
+        # arrives broken. Unsigned and unnotarized: Gatekeeper blocks it on
+        # other Macs until the release workflow signs and notarizes it.
+        run: |
+          app="$(ls -d build/macos/Build/Products/Release/*.app | head -1)"
+          ditto -c -k --keepParent "$app" desktop-macos.zip
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-macos
+          path: desktop-macos.zip
+          if-no-files-found: error
 
   desktop-windows:
     name: desktop build (Windows)
@@ -196,3 +224,15 @@ jobs:
           fi
           flutter pub get
           flutter build windows --release
+
+      - name: Package Windows build
+        # The .exe needs the DLLs and data/ folder beside it; ship the folder.
+        run: |
+          release="$(ls -d build/windows/*/runner/Release | head -1)"
+          (cd "$release" && 7z a -tzip "$OLDPWD/desktop-windows.zip" . >/dev/null)
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-windows
+          path: desktop-windows.zip
+          if-no-files-found: error

@@ -85,7 +85,7 @@ Updater packages wrapping Sparkle/WinSparkle exist (`auto_updater`), but when th
 
 ## 9. CI
 
-Build each targeted desktop OS on its own runner (`templates/ci/github-actions/flutter-gates.yml` jobs `desktop-linux`, `desktop-macos`, `desktop-windows`). Delete the jobs for OSes the project does not target. A job for a targeted OS **fails** when its platform directory is missing, rather than skipping. Signing and notarization run only on release pipelines with secrets, never on pull requests from forks.
+Build each targeted desktop OS on its own runner (`templates/ci/github-actions/flutter-gates.yml` jobs `desktop-linux`, `desktop-macos`, `desktop-windows`). Delete the jobs for OSes the project does not target. A job for a targeted OS **fails** when its platform directory is missing, rather than skipping. Each job uploads its build as a downloadable artifact (`desktop-linux.tar.gz`, `desktop-macos.zip`, `desktop-windows.zip`), archived so that the macOS bundle's symlinks and the Linux executable bit survive. These are **unsigned development builds** for testing. Signing and notarization run only on release pipelines with secrets, never on pull requests from forks.
 
 ---
 

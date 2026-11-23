@@ -15,6 +15,11 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 - **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
 - **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
 
+### Changed — desktop builds are downloadable; macOS CI job fixed (2026-11-23)
+
+- Adopter template desktop jobs now package and upload each build (`tar` for Linux keeps the executable bit; `ditto` for macOS keeps the `.app` bundle intact; the Windows release folder with its DLLs). Framework CI asserts each archive exists and is non-empty.
+- Framework CI installs PyYAML in a throwaway venv: the macOS runner's Python refuses `pip install` (PEP 668), which failed the macOS desktop job before Flutter ran. Linux and Windows desktop builds were already proven on real runners.
+
 ### Added — desktop as a first-class target: Windows, macOS, Linux (2026-11-23)
 
 - **`standards/20261123-DESKTOP_STANDARD.md`**: build hosts (no cross-compiling), window sizing, platform-modifier shortcuts, focus/hover/right-click/selectable text, menus (`PlatformMenuBar` on macOS), resizable layout with breakpoint tokens, files and sandbox entitlements, per-OS testing, and packaging (macOS sign + notarize + staple and release entitlements, Windows signing/MSIX, Linux glibc baseline and formats, update path).

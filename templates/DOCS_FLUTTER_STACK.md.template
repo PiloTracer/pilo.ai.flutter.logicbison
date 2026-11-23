@@ -70,6 +70,11 @@ Golden platform of record: `REPLACE:GOLDEN_PLATFORM`. Goldens generated elsewher
 | Android APKs | `REPLACE:FLUTTER_BUILD_APK_CMD` |
 | iOS | `REPLACE:FLUTTER_BUILD_IOS_CMD` |
 | Web | `REPLACE:FLUTTER_BUILD_WEB_CMD` |
+| Windows (on Windows) | `REPLACE:FLUTTER_BUILD_WINDOWS_CMD` |
+| macOS (on macOS) | `REPLACE:FLUTTER_BUILD_MACOS_CMD` |
+| Linux (on Linux) | `REPLACE:FLUTTER_BUILD_LINUX_CMD` |
+
+Delete the rows for platforms doc 02 does not target. Desktop packaging and signing: `DESKTOP_STANDARD` §8.
 
 Release builds always carry `--obfuscate --split-debug-info=REPLACE:SYMBOLS_DIR`. **Symbols are archived per release and uploaded to the crash reporter**, or every crash report is unreadable.
 

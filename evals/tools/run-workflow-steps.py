@@ -18,6 +18,7 @@ Framework-development tool only: never installed into adopter repositories.
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -53,6 +54,14 @@ def main() -> int:
         print(f"run-workflow-steps: job {args.job!r} not found", file=sys.stderr)
         return 2
 
+    # Resolve bash through PATH. A bare "bash" on Windows can resolve to the
+    # System32 WSL launcher before Git Bash, because CreateProcess searches the
+    # system directory ahead of PATH.
+    shell = os.environ.get("WORKFLOW_SHELL") or shutil.which("bash")
+    if not shell:
+        print("run-workflow-steps: bash not found on PATH", file=sys.stderr)
+        return 2
+
     ran = 0
     for step in steps:
         name = step.get("name") or step.get("uses") or "(unnamed)"
@@ -70,7 +79,7 @@ def main() -> int:
                     val = m.group(1) if m else ""
             env[k] = val
         print(f"--- run   {name}", flush=True)
-        rc = subprocess.run(["bash", "-eo", "pipefail", "-c", step["run"]], cwd=args.cwd, env=env).returncode
+        rc = subprocess.run([shell, "-eo", "pipefail", "-c", step["run"]], cwd=args.cwd, env=env).returncode
         ran += 1
         if rc != 0:
             print(f"--- FAIL  {name} (exit {rc})", flush=True)

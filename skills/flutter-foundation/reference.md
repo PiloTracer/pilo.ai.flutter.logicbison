@@ -266,6 +266,7 @@ Ranked by yield. Ask the blocking ones; obey the ≤5-per-pass and quality-bar r
 3. Phones only, or tablets and foldables too?
 4. What is the lowest-tier device this must feel good on?
 5. Do you need web or desktop, and is that the same UX or a different product?
+6. Desktop: which of Windows, macOS, Linux? Minimum window size? Native look per OS or one design? Distribution per OS (store or direct), and who holds the Apple Developer ID and Windows signing certificate? (DESKTOP_STANDARD)
 
 ### D4 Connectivity & offline ★
 

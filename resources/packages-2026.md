@@ -72,7 +72,7 @@ Free, open source, commercial-use-permitted packages, organised by the problem t
 | `shared_preferences` | BSD-3 | Scalar preferences. **Plaintext on disk** — never secrets. Use `SharedPreferencesAsync` / `SharedPreferencesWithCache`; the legacy `SharedPreferences` singleton is slated for deprecation, and on Android the new APIs sit on DataStore. Migrate with `migrateLegacySharedPreferencesToSharedPreferencesAsyncIfNecessary` (idempotent, safe on every launch) |
 | `flutter_secure_storage` | BSD-3 | Keychain / Keystore. The **only** place for tokens and keys |
 | `drift` | MIT | SQLite with typed queries, reactive streams, real migrations. The default for relational data |
-| `sqlite3` | MIT | Native SQLite bindings used by Drift on desktop/mobile. **Use package `sqlite3` ≥3.x.** Do **not** add `sqlite3_flutter_libs` — that package is EOL (`0.6.0+eol`); pub.dev directs consumers to `sqlite3` 3.x instead |
+| `sqlite3` | MIT | Native SQLite bindings used by Drift on desktop/mobile. Check its README for how the current major ships native libraries. Do **not** add `sqlite3_flutter_libs`: its latest release on pub.dev is tagged end-of-life (check the version suffix on its page) |
 | `sqflite` | BSD-2 | Raw SQLite when you want no abstraction. What the official persistence recipe uses |
 | `path_provider` | BSD-3 | Platform directories |
 | `hive_ce` | Apache-2.0 / BSD-3 | **Migration target only.** The maintained successor to the abandoned `hive`. Its own maintainer advises against it for greenfield work — take that at face value |
@@ -92,6 +92,43 @@ Free, open source, commercial-use-permitted packages, organised by the problem t
 | `app_links` | Apache-2.0 | Deep and app link handling |
 | `flutter_local_notifications` | BSD-3 | Local notifications |
 | `geolocator` | MIT | Location — high privacy sensitivity; declare and justify |
+
+---
+
+## Desktop (Windows, macOS, Linux)
+
+Rules: [`DESKTOP_STANDARD`](../standards/20261123-DESKTOP_STANDARD.md). Checked on pub.dev on 2026-11-23: publisher, licence, last publish, discontinued flag, platform tags (W/M/L). **Re-check before adopting**: desktop packages hook into native runners and break on Flutter upgrades faster than pure-Dart ones.
+
+| Package | Publisher | Licence | Desktop | Use for |
+|---------|-----------|---------|---------|---------|
+| `window_manager` | leanflutter.dev | MIT | W M L | Window size, minimum size, position, title, frameless / hidden title bar (custom title bars), always-on-top. **The maintained choice for what `bitsdojo_window` used to do** |
+| `screen_retriever` | leanflutter.dev | MIT | W M L | Displays and their bounds, e.g. to check a restored window position still fits a screen |
+| `tray_manager` | leanflutter.dev | MIT | W M L | System tray / menu bar icon and menu |
+| `hotkey_manager` | leanflutter.dev | MIT | W M L | **Global** hotkeys (app not focused). In-app shortcuts use Flutter's `Shortcuts`/`Actions`, no package |
+| `protocol_handler` | leanflutter.dev | MIT | W M | Custom URL schemes (`myapp://`) for desktop deep links. No Linux tag at check time |
+| `launch_at_startup` | leanflutter.dev | MIT | W M L | Start with the OS (opt-in, user-visible setting) |
+| `desktop_multi_window` | mixin.dev | Apache-2.0 | W M L | Additional native windows (each runs its own engine; plan state sharing) |
+| `desktop_drop` | mixin.dev | Apache-2.0 | W M L | Drop files from the OS onto the app |
+| `super_drag_and_drop` / `super_clipboard` | nativeshell.dev | MIT | W M L | Rich drag-and-drop out of the app and clipboard formats beyond text. Last publish 2025-06: check activity |
+| `file_selector` | flutter.dev | BSD-3 | W M L | Native open/save dialogs |
+| `desktop_webview_window` | mixin.dev | Apache-2.0 | W M L | Web content in a separate native window |
+| `media_kit` | media-kit.dev | MIT | W M L | Audio/video playback on desktop (the mobile-first players lack desktop support) |
+| `flutter_secure_storage` | steenbakker.dev | BSD-3 | W M L | Secrets in the OS keychain / credential store / libsecret |
+| `local_auth` | flutter.dev | BSD-3 | W M | Windows Hello / Touch ID. No Linux tag at check time |
+| `sentry_flutter` | sentry.io | MIT | W M L | Crash and error reporting including native desktop crashes |
+| `msix` | kremer.software | MIT | W | Build signed MSIX packages for Windows |
+| `win32` | halildurmus.dev | BSD-3 | W | Windows APIs from Dart via FFI, without writing C++ |
+| `ffigen` | tools.dart.dev | BSD-3 | W M L | Generate Dart FFI bindings for native C libraries |
+| `dynamic_color` | material.io | Apache-2.0 | W M L | Follow the OS accent colour in a Material theme |
+| `system_theme` | bdlukaa.dev | BSD-3 | W M L | Read the OS accent colour and light/dark preference |
+
+**Native look per OS** (a product decision: one cross-platform design, or each OS's own design language; record it in doc 02):
+
+| Package | Publisher | Licence | OS | Notes |
+|---------|-----------|---------|----|-------|
+| `fluent_ui` | bdlukaa.dev | BSD-3 | Windows (runs on all) | Microsoft Fluent design widgets |
+| `macos_ui` | macosui.dev | MIT | macOS | macOS-style widgets; pairs with `macos_window_utils` for window materials and toolbar |
+| `yaru` | ubuntu.com | MPL-2.0 | Linux | Ubuntu's design system. MPL-2.0 is allowed as a dependency (PACKAGE_LICENSE_STANDARD §1) |
 
 ---
 
@@ -140,7 +177,7 @@ Whatever the choice: **verify symbol upload on an obfuscated release build**, or
 | `very_good_analysis` | MIT | Strict lint set. The recommended default |
 | `flutter_lints` | BSD-3 | The SDK's baseline set |
 | Stack-specific lints (`riverpod_lint`, `bloc_lint`) | MIT | Catch state-management misuse at analysis time. See the plugin note below |
-| `melos` | Apache-2.0 | Monorepo management. **Melos 7+ has no `melos.yaml`** — it delegates linking to native pub workspaces, config moves under a `melos:` key in the root `pubspec.yaml`, every member needs `resolution: workspace`, and `melos analyze` is gone |
+| `melos` | Apache-2.0 | Monorepo management. **Current Melos majors have no `melos.yaml`** (check its changelog for the major that changed this) — it delegates linking to native pub workspaces, config moves under a `melos:` key in the root `pubspec.yaml`, every member needs `resolution: workspace`, and `melos analyze` is gone |
 | `flutter_launcher_icons`, `flutter_native_splash` | MIT | Icon and splash generation |
 | `flutter_flavorizr` | MIT | One-time generation of native flavor scaffolding. Own and review the output; do not keep it as a runtime dependency |
 
@@ -173,6 +210,11 @@ Two categories: licence, and abandonment. Both are hard refusals — the waiver 
 | `redux` / `flutter_redux` | Frozen since 2021/2022. `BlocObserver` covers the time-travel-debugging argument |
 | `dart_code_metrics` | **Went commercial.** Repo archived, pub package discontinued, successor is paid DCM. MIT alternatives exist but are too young to gate on |
 | `golden_toolkit` | Discontinued. Use `alchemist` |
+| `flutter_distributor` | **Marked discontinued on pub.dev** (checked 2026-11-23), though still widely recommended for multi-format desktop packaging. Package per OS instead: `msix` on Windows, notarized `.dmg`/`.pkg` on macOS, Snap/Flatpak tooling on Linux (DESKTOP_STANDARD §8) |
+| `contextual_menu` | **Marked discontinued on pub.dev** (checked 2026-11-23). Use Flutter's `MenuAnchor` / context-menu APIs |
+| `bitsdojo_window` | Last release 2023-12 (checked 2026-11-23), yet it patches each OS's native runner, which breaks across Flutter upgrades. Use `window_manager` for custom frames and title bars. Migration only |
+| `flutter_acrylic` | Last release 2024-06 and no verified publisher (checked 2026-11-23). For macOS window materials use `macos_window_utils`; elsewhere treat translucent window effects as optional polish, not a dependency to gate on |
+| `adwaita`, `libadwaita` | Last releases 2023 (checked 2026-11-23). For a native Linux look, `yaru` (ubuntu.com) is maintained |
 
 **Permissive licence, still refused under a free/OSS constraint.** The licence on the visible part is not the licence on the part that matters:
 

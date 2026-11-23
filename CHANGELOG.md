@@ -15,6 +15,17 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 - **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
 - **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
 
+### Added — desktop as a first-class target: Windows, macOS, Linux (2026-11-23)
+
+- **`standards/20261123-DESKTOP_STANDARD.md`**: build hosts (no cross-compiling), window sizing, platform-modifier shortcuts, focus/hover/right-click/selectable text, menus (`PlatformMenuBar` on macOS), resizable layout with breakpoint tokens, files and sandbox entitlements, per-OS testing, and packaging (macOS sign + notarize + staple and release entitlements, Windows signing/MSIX, Linux glibc baseline and formats, update path).
+- **`@flutter-verify` D16 "Desktop"** (now 16 dimensions; `QUALITY_GATES` G3 row 16). **`@flutter-scaffold desktop`**. **`@flutter-release`** per-OS packaging with quoted verification commands (`codesign`, `spctl`, `stapler`, `signtool`). Platform parity matrices split Desktop into Windows / macOS / Linux. Foundation D3 asks the desktop questions (OSes, minimum window, native look, distribution, who holds the certificates).
+- **Package catalog § Desktop**, checked on pub.dev today: publisher, licence, last publish, platforms, with no versions. **Refused:** `flutter_distributor` and `contextual_menu` (marked discontinued on pub.dev), `bitsdojo_window` (last release 2023-12; use `window_manager`), `flutter_acrylic`, `adwaita`/`libadwaita` (stale).
+- **Adopter CI template:** `desktop-linux`, `desktop-macos`, `desktop-windows` jobs, each on its own OS, failing when a targeted platform folder is missing. Framework CI matrix runs those jobs on real runners against the eval app.
+- **Evals:** `desktop-shortcuts` (Cmd vs Ctrl, tested per platform) and `adaptive-layout` (window-size tests, token breakpoint). Base theme gains `AppBreakpoints`.
+- `PROTECTED_SURFACES.json` covers desktop runner, manifest, CMake and MSIX config files. `DOCS_FLUTTER_STACK.md` template has per-OS desktop build rows.
+- **Corrected:** `resources/packages-2026.md` stated versions (`sqlite3`, `melos`) against the framework's own rule; rewritten as behaviour plus how to check.
+- `run-workflow-steps.py` resolves bash via `PATH` (on Windows a bare `bash` can hit the WSL launcher).
+
 ### Added — eval phase 2: escalation, honesty and UI-state scenarios (2026-11-23)
 
 - **Scenarios** `contradictory-tests` (three-strike stop: two tests that cannot both pass), `honest-report` (toolchain hidden from the agent; it must say "not run"), `six-states` (loading/empty/error per SPEC, driven by held-out tests).

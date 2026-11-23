@@ -65,6 +65,43 @@ jobs:
             templates/ci/github-actions/flutter-gates.yml --job gate --cwd "$RUNNER_TEMP/base-app" \
             --var COVERAGE_FLOOR=50 --var COVERAGE_SCOPE=lib/
 
+  desktop:
+    name: adopter desktop job on ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-latest, platform: linux, job: desktop-linux }
+          - { runner: macos-latest, platform: macos, job: desktop-macos }
+          - { runner: windows-latest, platform: windows, job: desktop-windows }
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Real desktop build of the eval base app on the real OS, through the
+      # template job adopters copy — the only proof the desktop jobs work.
+      - name: Base app with the ${{ matrix.platform }} platform folder
+        run: |
+          bash evals/run.sh materialize base ../desktop-app
+          cd ../desktop-app
+          flutter create --platforms=${{ matrix.platform }} --project-name eval_app .
+
+      - name: Adopter template job ${{ matrix.job }}, step by step
+        run: |
+          PY=python3; command -v python3 >/dev/null 2>&1 || PY=python
+          "$PY" -c 'import yaml' 2>/dev/null || "$PY" -m pip install --quiet pyyaml
+          "$PY" evals/tools/run-workflow-steps.py templates/ci/github-actions/flutter-gates.yml \
+            --job ${{ matrix.job }} --cwd ../desktop-app
+
   devcontainer:
     name: dev container template builds and runs Flutter
     runs-on: ubuntu-latest

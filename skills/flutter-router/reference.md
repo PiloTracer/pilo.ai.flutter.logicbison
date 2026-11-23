@@ -11,6 +11,7 @@ Authoritative routing table for [`skill.md`](skill.md). When a skill or standard
 | `orientation` | "where do I start?" · "what is this framework?" · "what should I do now?" | `@flutter-director status` | `START_HERE.md` · `README.md` |
 | `install` | "how do I add this to my repo?" · "thin vs fat install?" | thin → `@flutter-deploy-basic - <path>`; fat → `@flutter-deploy-files - <path>` | `skills/flutter-deploy-basic/skill.md` · `skills/flutter-deploy-files/skill.md` |
 | `bootstrap` | "how do I set up `.work.flutter/`?" · "what does init create?" | `@flutter-bootstrap init` | `skills/flutter-bootstrap/skill.md` · `templates/bootstrap.sh` |
+| `desktop` | "Windows/macOS/Linux app?" · "keyboard shortcuts?" · "notarize / MSIX?" · "custom title bar?" | `@flutter-scaffold desktop` | `standards/20261123-DESKTOP_STANDARD.md` · `resources/packages-2026.md` § Desktop |
 | `quickstart` | "30-minute onboarding" · "lite path" · "quickstart playbook" | `@flutter-bootstrap quickstart - lite` | `.quick/onboarding-30min.md` · `templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md` |
 | `stack-choice` | "Riverpod or Bloc?" · "which router?" · "how do I pick packages?" · "can I change the stack later?" | `@flutter-stack probe` then `set` | `stacks/README.md` · `standards/20260801-STATE_MANAGEMENT_STANDARD.md` |
 | `packages` | "is package X allowed?" · "what's the license policy?" · "recommended JSON library?" | `@flutter-router - <specific package>` | `resources/packages-2026.md` · `standards/20260801-PACKAGE_LICENSE_STANDARD.md` |

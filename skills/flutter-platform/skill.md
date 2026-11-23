@@ -123,13 +123,13 @@ The Dart/native boundary is where "works on my simulator" turns into a productio
 
 Read-only audit. Build the matrix and fail on any undefined cell.
 
-| Capability | Android | iOS | Web | Desktop | Divergence recorded |
+| Capability | Android | iOS | Web | Windows | macOS | Linux | Divergence recorded |
 |------------|---------|-----|-----|---------|---------------------|
-| <channel/permission/link/background item> | supported / degraded / unsupported | … | … | … | doc 02 § / SPEC § |
+| <channel/permission/link/background item> | supported / degraded / unsupported | … | … | … | … | … | doc 02 § / SPEC § |
 
 **Fail conditions:** a cell is empty or "unknown"; a capability is `supported` on one platform and undefined on another target platform; a divergence exists in code with no record in doc 02 or the SPEC.
 
-Also check the classic divergence points: back-button and swipe-back semantics, keyboard inset and dismissal behaviour, date/time and locale formatting, file-system access, notification permission and presentation, biometric prompts, app lifecycle events (iOS suspension vs Android process death), and text scaling defaults.
+Also check the classic divergence points: back-button and swipe-back semantics, keyboard inset and dismissal behaviour, date/time and locale formatting, file-system access, notification permission and presentation, biometric prompts, app lifecycle events (iOS suspension vs Android process death), and text scaling defaults. On desktop also: platform modifier key (Cmd vs Ctrl), menu bar (native on macOS), window minimum size, file dialogs and sandbox entitlements, app-data location, and whether every plugin declares the desktop OS at all — see [`DESKTOP_STANDARD`](../../standards/20261123-DESKTOP_STANDARD.md).
 
 ---
 

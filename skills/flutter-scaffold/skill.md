@@ -39,6 +39,7 @@ Structure decided once and generated consistently beats structure argued about i
 | `flavor - <name>` | A build flavor across Dart entrypoint, Android and iOS |
 | `ci` | A CI workflow running the same gates as `@flutter-verify gate` |
 | `devcontainer` | Optional `.devcontainer/` with a pinned Linux Flutter toolchain (analyze, test, Android, agent runs) |
+| `desktop` | Desktop skeleton for the doc 02 desktop targets: platform folders, window size and title, shortcuts and menus, breakpoint tokens, test helpers |
 | `test-harness` | Shared test setup: `flutter_test_config.dart`, fixtures, golden helpers, fakes |
 | `status` | Read-only: what exists, what conforms to the map, what is missing |
 
@@ -169,7 +170,19 @@ Register the route (K2), the DI bindings (K3), and the test mirror. Then run the
 
 **`flavor - <name>`** — generate `lib/main_<name>.dart`, the Android product flavor (`build.gradle(.kts)` with an `applicationIdSuffix`), the iOS scheme and xcconfig, the `AppConfig` values, and the `--dart-define-from-file` config file. **Never put a secret in a flavor config file** — see SECURITY_PRIVACY_STANDARD § Build-time configuration.
 
-**`ci`** — copy/adapt `templates/ci/github-actions/flutter-gates.yml` into the adopter's `.github/workflows/` (or merge if a workflow already exists — never clobber without asking). It runs exactly the gates `@flutter-verify gate` runs locally: setup with the SDK pin from `DOCS_FLUTTER_STACK.md`, `pub get`, `dart format --set-exit-if-changed`, `analyze --fatal-infos`, `test --coverage`, the coverage threshold check, and hygiene via `dart-hygiene-check.sh`. Enable codegen and platform builds when the stack/foundation requires them. Divergence between CI and the local gate is a defect in itself. Tell the operator to set the `COVERAGE_FLOOR` repository variable (from TESTING_STANDARD): Q6 fails until it exists, by design. Binding rules: [`CICD_CONVENTIONS`](../../standards/20261123-CICD_CONVENTIONS.md). Do not copy this framework repo's `.github/workflows/verify.yml` into apps.
+**`ci`** — copy/adapt `templates/ci/github-actions/flutter-gates.yml` into the adopter's `.github/workflows/` (or merge if a workflow already exists — never clobber without asking). Keep the `desktop-<os>` jobs only for the desktop OSes doc 02 targets, and delete the rest. It runs exactly the gates `@flutter-verify gate` runs locally: setup with the SDK pin from `DOCS_FLUTTER_STACK.md`, `pub get`, `dart format --set-exit-if-changed`, `analyze --fatal-infos`, `test --coverage`, the coverage threshold check, and hygiene via `dart-hygiene-check.sh`. Enable codegen and platform builds when the stack/foundation requires them. Divergence between CI and the local gate is a defect in itself. Tell the operator to set the `COVERAGE_FLOOR` repository variable (from TESTING_STANDARD): Q6 fails until it exists, by design. Binding rules: [`CICD_CONVENTIONS`](../../standards/20261123-CICD_CONVENTIONS.md). Do not copy this framework repo's `.github/workflows/verify.yml` into apps.
+
+**`desktop`** — requires doc 02 §1 to name at least one of `windows`, `macos`, `linux`; otherwise stop and route to `@flutter-foundation` (target platforms are a product decision, not a scaffold default). Rules: [`DESKTOP_STANDARD`](../../standards/20261123-DESKTOP_STANDARD.md). Generate, for the targeted OSes only:
+
+1. Platform folders: `flutter create --platforms=<targets> .` (adds folders, never overwrites `lib/`). Report every file it created.
+2. Window: initial size, minimum size and title (§2), via the runner files or the window package the stack locked. Record the minimum size in doc 02.
+3. `AppBreakpoints` tokens in the theme (compact/medium/expanded per §5), and an adaptive shell that switches navigation at `expanded`.
+4. Shortcuts: an app-level `Shortcuts`/`Actions` skeleton with one helper that picks the platform modifier (meta on macOS, control elsewhere), wired to the SPEC's primary actions.
+5. Menus: `PlatformMenuBar` on macOS with Quit/Close/About; an in-app `MenuBar` on Windows/Linux when the app has more than a handful of commands.
+6. macOS `Release.entitlements` matching what the SPECs need (network client, user-selected files). Protected surface: show the diff and get approval.
+7. Test helpers: `setWindowSize(tester, Size)` with `addTearDown(tester.view.reset)`, and a shortcut helper that presses the platform modifier under `TargetPlatformVariant`.
+
+Then route to `@flutter-scaffold ci` for the desktop build jobs, and to `@flutter-platform parity` for the per-OS matrix. Never build or claim a desktop OS this host cannot build (§1); report it `not run (needs a <OS> host)`.
 
 **`devcontainer`** (optional) — copy `templates/devcontainer/` to the adopter's `.devcontainer/` (merge if one exists — never clobber without asking). Tell the operator to replace the `:stable` image tag with the tag matching the SDK pin in `DOCS_FLUTTER_STACK.md`, and that iOS/macOS builds still need a Mac. Purpose: one toolchain for developers, agents and CI, so fewer checks end `unverified`.
 

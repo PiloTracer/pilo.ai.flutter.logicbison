@@ -82,7 +82,7 @@ The full path in [`START_HERE.md`](START_HERE.md) is the greenfield case. Most r
 **You have:** code that works and no idea whether it is safe to ship.
 
 ```
-@flutter-verify milestone            the 15 dimensions
+@flutter-verify milestone            the 16 dimensions
 @flutter-security audit
 @flutter-a11y audit
 @flutter-perf audit → profile        static findings are hypotheses; measure them

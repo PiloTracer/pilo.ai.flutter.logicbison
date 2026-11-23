@@ -1,4 +1,4 @@
-# Adopter CI — mirrors @flutter-verify gate (Q1–Q8).
+# Adopter CI — mirrors @flutter-verify gate (Q1–Q8), plus per-OS desktop builds.
 # Installed by @flutter-scaffold ci. Do not diverge from the local gate commands
 # in DOCS_FLUTTER_STACK.md / flutter-verify gate protocol.
 #
@@ -115,3 +115,84 @@ jobs:
         # advisory; that judgement is not mechanised here. This step reports
         # outdated packages for a human — it is not a gate and must not be read as one.
         run: flutter pub outdated
+
+  # ---------------------------------------------------------------- desktop
+  # One job per desktop OS, each on its own OS: Flutter does not cross-compile
+  # desktop apps. KEEP ONLY THE JOBS FOR THE OSes doc 02 TARGETS and delete the
+  # rest (@flutter-scaffold ci does this). A kept job fails when its platform
+  # directory is missing: a targeted OS with no build is a defect, not a skip.
+  # Signing / notarization belong in a release workflow with secrets, never here
+  # (DESKTOP_STANDARD §8, §9).
+
+  desktop-linux:
+    name: desktop build (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Linux build toolchain
+        # Package list follows Flutter's Linux desktop setup docs; re-check
+        # there when a build fails on missing headers.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Linux release build
+        run: |
+          if [ ! -d linux ]; then
+            echo "FAIL: no linux/ directory. Run 'flutter create --platforms=linux .' or delete this job if Linux is not targeted."
+            exit 1
+          fi
+          flutter pub get
+          flutter build linux --release
+
+  desktop-macos:
+    name: desktop build (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: macOS release build
+        run: |
+          if [ ! -d macos ]; then
+            echo "FAIL: no macos/ directory. Run 'flutter create --platforms=macos .' or delete this job if macOS is not targeted."
+            exit 1
+          fi
+          flutter pub get
+          flutter build macos --release
+
+  desktop-windows:
+    name: desktop build (Windows)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Windows release build
+        run: |
+          if [ ! -d windows ]; then
+            echo "FAIL: no windows/ directory. Run 'flutter create --platforms=windows .' or delete this job if Windows is not targeted."
+            exit 1
+          fi
+          flutter pub get
+          flutter build windows --release

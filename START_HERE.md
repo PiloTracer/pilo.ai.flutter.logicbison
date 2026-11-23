@@ -61,7 +61,7 @@ It reads the project state, picks the skill chain, shows you the plan, and waits
 @flutter-implementation plan - F1
                        start / continue / complete     ← repeat per milestone
         ↓
-@flutter-verify milestone        15-dimension audit
+@flutter-verify milestone        16-dimension audit
 @flutter-repair repair           fix what it found
         ↓
 @flutter-release certify → build → distribute

@@ -33,6 +33,7 @@ Binding rules for Flutter code, plans and process. Skills cite these; they do no
 | [`MASTER_PLAN_STANDARD`](20260801-MASTER_PLAN_STANDARD.md) | no | Plan shape | plan-master, plan-verify |
 | [`DOCUMENTATION_STANDARD`](20260801-DOCUMENTATION_STANDARD.md) | no | Docs accuracy | docs |
 | [`GIT_WORKFLOW_STANDARD`](20260801-GIT_WORKFLOW_STANDARD.md) | yes | Branches, commits, PRs | session, verify, release |
+| [`DESKTOP_STANDARD`](20261123-DESKTOP_STANDARD.md) | no | Windows/macOS/Linux: windows, input, menus, layout, files, packaging | scaffold desktop, platform, release, verify |
 | [`CICD_CONVENTIONS`](20261123-CICD_CONVENTIONS.md) | no | Adopter CI ≡ local gate; thin/fat script paths; no secrets in YAML | scaffold ci, release, verify |
 | [`PROTECTED_SURFACES.json`](PROTECTED_SURFACES.json) | yes | Files needing approval | every writing skill |
 

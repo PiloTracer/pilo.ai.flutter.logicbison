@@ -1,0 +1,1 @@
+This app ships on Windows, macOS and Linux. Add the standard keyboard shortcut for creating a new note to `NotesScreen` (`lib/presentation/notes_screen.dart`); it should do the same as the "New note" button.

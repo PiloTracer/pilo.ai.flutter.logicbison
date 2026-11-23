@@ -8,6 +8,12 @@ abstract final class AppSpacing {
   static const double lg = 24;
 }
 
+/// Material window size classes. Layout switches on these, never on literals.
+abstract final class AppBreakpoints {
+  static const double medium = 600;
+  static const double expanded = 840;
+}
+
 abstract final class AppTheme {
   static ThemeData light() {
     return ThemeData(

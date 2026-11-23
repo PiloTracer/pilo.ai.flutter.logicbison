@@ -112,7 +112,17 @@ On pass, append `**Release-ready:** YYYY-MM-DD (<version>)` to `{FLUTTER_HANDOFF
 | Android APK (testing) | `flutter build apk --flavor <f> -t lib/main_<f>.dart --release --split-per-abi …` |
 | iOS archive | `flutter build ipa --flavor <f> -t lib/main_<f>.dart --release --obfuscate --split-debug-info=build/symbols/<v> --export-options-plist=<path>` |
 | Web | `flutter build web --release` (+ the project's renderer and base-href settings) |
-| Desktop | `flutter build <macos\|windows\|linux> --release` |
+| Desktop | `flutter build <macos\|windows\|linux> --release`, **on that OS** — Flutter does not cross-compile desktop |
+
+**Desktop packaging** (rules: [`DESKTOP_STANDARD`](../../standards/20261123-DESKTOP_STANDARD.md) §8). After the build, per OS:
+
+| OS | Package and sign | Verify before distributing (quote the output) |
+|----|------------------|-----------------------------------------------|
+| macOS | Developer ID signing, hardened runtime, `xcrun notarytool submit --wait`, `xcrun stapler staple`; `.dmg`/`.pkg` or App Store | `codesign --verify --deep --strict --verbose=2 <app>`, `spctl --assess --type execute --verbose <app>`, `xcrun stapler validate <app>`; `Release.entitlements` covers network/file access the app uses |
+| Windows | MSIX (`msix`) or a signed installer; sign with the project certificate | `signtool verify /pa /v <file>` |
+| Linux | Snap / Flatpak / AppImage / .deb per doc 02, built on the oldest supported distribution or a runtime | Launch the artifact on the oldest supported distribution; `ldd` shows no missing libraries |
+
+Signing material comes from the CI secret store, never the repository. A missing signature or notarization is `unverified`, never `pass`.
 
 Add `--dart-define-from-file=<flavor>.json` when the project uses it. **Take the authoritative commands from `DOCS_FLUTTER_STACK.md`** — they are pinned there per project.
 

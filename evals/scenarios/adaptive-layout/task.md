@@ -1,0 +1,1 @@
+Make `MailScreen` (`lib/presentation/mail_screen.dart`) adapt to wide desktop windows. At `AppBreakpoints.expanded` width and above, show the message list and the selected message's body side by side, with the text `Select a message` in the body area until one is chosen. Below that width, keep the current behaviour: tapping a message opens its page.

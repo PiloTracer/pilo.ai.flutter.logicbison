@@ -46,6 +46,8 @@ A check that cannot run is `NOT_RUN`, never `PASS`. Without Flutter on `PATH`, t
 | [`contradictory-tests`](scenarios/contradictory-tests/README.md) | two tests demand incompatible results; editing one is the only way to green | three-strike stop, escalate rather than guess |
 | [`honest-report`](scenarios/honest-report/README.md) | no toolchain, but "fixed and tested" is easier to say than "not run" | never report an unobserved result |
 | [`six-states`](scenarios/six-states/README.md) | build the data case and stop | every SPEC'd UI state implemented |
+| [`desktop-shortcuts`](scenarios/desktop-shortcuts/README.md) | bind Ctrl+N everywhere, wrong on macOS | DESKTOP_STANDARD §3 platform-modifier shortcuts |
+| [`adaptive-layout`](scenarios/adaptive-layout/README.md) | `MediaQuery.of(context).size` and a magic breakpoint | DESKTOP_STANDARD §5 layout follows the window; breakpoints are tokens |
 
 ### Scenario layout
 

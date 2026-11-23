@@ -63,7 +63,7 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 | Skill id | Folder | Role |
 |----------|--------|------|
 | flutter-test | `flutter-test/` | Test strategy and authoring: unit, widget, golden, integration; execution and coverage enforcement |
-| flutter-verify | `flutter-verify/` | **Code verification:** `milestone`, `uncommitted`, `last`, `gate` — the 15-dimension audit and the mechanical gate |
+| flutter-verify | `flutter-verify/` | **Code verification:** `milestone`, `uncommitted`, `last`, `gate` — the 16-dimension audit and the mechanical gate |
 | flutter-perf | `flutter-perf/` | Performance budgets, static build-method audit, profiling, app size, startup trace |
 | flutter-a11y | `flutter-a11y/` | Accessibility audit and a11y test authoring against the WCAG-AA baseline |
 | flutter-security | `flutter-security/` | Security and privacy audit: secrets, storage, transport, permissions, dependencies; `harden` |

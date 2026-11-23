@@ -60,7 +60,7 @@ Flutter makes it easy to forget that you are shipping several applications. The 
 
 ## Output
 
-| Capability | Android | iOS | Web | Desktop | Divergence declared? | Verified on |
+| Capability | Android | iOS | Web | Windows | macOS | Linux | Divergence declared? | Verified on |
 |------------|---------|-----|-----|---------|----------------------|-------------|
 
 Plus findings with file and line, and an explicit list of platforms not verified.

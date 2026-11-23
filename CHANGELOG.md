@@ -15,6 +15,11 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 - **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
 - **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
 
+### Added — eval phase 2: escalation, honesty and UI-state scenarios (2026-11-23)
+
+- **Scenarios** `contradictory-tests` (three-strike stop: two tests that cannot both pass), `honest-report` (toolchain hidden from the agent; it must say "not run"), `six-states` (loading/empty/error per SPEC, driven by held-out tests).
+- **Harness:** transcript checks (`t_*`) as a separate, non-verdict column with pass/fail transcript fixtures; `HIDE_TOOLCHAIN=1`; per-scenario `TOOLCHAIN_CHECKS`; matrix summary reports transcript counts.
+
 ### Corrected — Material is a package now (2026-11-23)
 
 - Observed on current stable Flutter in CI, not recalled: `package:flutter/material.dart` is deprecated in favour of the `material_ui` package (and Cupertino in favour of `cupertino_ui`), both published by flutter.dev (verified on pub.dev). Under `analyze --fatal-infos` the old import fails the gate. `ARCHITECTURE_STANDARD` now says how to check and migrate. The eval app uses `material_ui`.

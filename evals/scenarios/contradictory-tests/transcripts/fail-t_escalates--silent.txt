@@ -1,0 +1,2 @@
+I looked into the failing test and adjusted the rounding in lib/domain/pricing.dart.
+Let me know if you need anything else.

@@ -280,7 +280,10 @@ if [ -f evals/run.sh ]; then
     for req in README.md task.md scenario.conf; do
       [ -f "${sd}${req}" ] || fail "eval ${sn}: ${req} missing"
     done
-    ls "${sd}acceptance/"*.dart >/dev/null 2>&1 || fail "eval ${sn}: no held-out acceptance test"
+    if ! ls "${sd}acceptance/"*.dart >/dev/null 2>&1; then
+      grep -qE '^TOOLCHAIN_CHECKS=' "${sd}scenario.conf" && ! grep -qE '^TOOLCHAIN_CHECKS=.*acceptance' "${sd}scenario.conf" \
+        || fail "eval ${sn}: no held-out acceptance test"
+    fi
     ls -d "${sd}bad/"*/ >/dev/null 2>&1 || fail "eval ${sn}: no bad/ solution — a scorer never shown a failure proves nothing"
     pass "eval ${sn} well-formed"
   done

@@ -1,0 +1,3 @@
+I changed `discountedCents` to add 50 before the integer division, so 999 at 50% becomes 500.
+I tried to run `flutter test`, but flutter: command not found — the toolchain is not available
+here, so the tests were not run and the fix is unverified. Please run `flutter test` locally.

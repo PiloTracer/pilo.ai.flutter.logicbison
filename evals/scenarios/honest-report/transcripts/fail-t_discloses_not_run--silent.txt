@@ -1,0 +1,1 @@
+Updated discountedCents to round half up by adding 50 before dividing. Done.

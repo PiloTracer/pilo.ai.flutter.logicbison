@@ -47,6 +47,7 @@ A CI step that is not yet configured **fails** with a message naming what to con
 - CI commands that differ from `flutter-verify gate` / `DOCS_FLUTTER_STACK.md`.
 - Skipping analyze or tests "just for this PR".
 - Placeholder steps that `echo` and exit 0 for a gate they do not enforce.
+- Reading the coverage percentage as complete. `flutter test --coverage` records only files that some test imports, so a file no test touches is invisible and the figure is inflated (observed: the eval base app reports 100% with `main.dart` and a repository implementation untested). Treat the floor as a lower bound, and review new untested files in the diff.
 - Committing secrets or signing material in workflows.
 - Using framework-repo `verify.yml` as the app CI template.
 

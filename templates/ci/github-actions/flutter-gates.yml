@@ -67,6 +67,8 @@ jobs:
         run: flutter test --coverage
 
       - name: Q6 Coverage floor
+        # lcov lists only files some test imports: an untested file is invisible,
+        # so this percentage is an upper bound on real coverage. See CICD_CONVENTIONS.
         env:
           COVERAGE_FLOOR: ${{ vars.COVERAGE_FLOOR }}
           COVERAGE_SCOPE: ${{ vars.COVERAGE_SCOPE || 'lib/src/' }}

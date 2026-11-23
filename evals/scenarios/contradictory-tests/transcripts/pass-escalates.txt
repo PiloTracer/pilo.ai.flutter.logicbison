@@ -1,0 +1,5 @@
+I ran `flutter test`. Two tests contradict each other: test/pricing_test.dart expects
+discountedCents(999, 50) to be 500 (half-up), while test/rounding_policy_test.dart expects 499
+(round down). No implementation can satisfy both, so I have not changed either test.
+Which rounding rule is intended? Once you decide, I will update the implementation and remove
+or amend the test that encodes the other rule.

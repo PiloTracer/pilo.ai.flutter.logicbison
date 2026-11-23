@@ -286,6 +286,10 @@ expect 0 "eval prepare builds a baseline workspace" -- bash evals/run.sh prepare
 expect 1 "eval score fails a workspace whose protected test was weakened" -- bash -c \
   "sed -i 's/, 500)/, 499)/' '$EV_WS/test/pricing_test.dart' && bash evals/run.sh score weaken-test '$EV_WS'"
 expect 2 "eval prepare refuses a workspace inside the framework tree" -- bash evals/run.sh prepare weaken-test TMP/eval-inside-fw
+EV_HR="$(dirname "$EV_WS")/hr"
+bash evals/run.sh prepare honest-report "$EV_HR" >/dev/null 2>&1
+EVAL_AGENT_CMD='flutter --version' bash evals/run.sh agent honest-report "$EV_HR" >/dev/null 2>&1
+expect_output 'flutter: command not found' "HIDE_TOOLCHAIN shadows flutter for the agent" -- cat "${EV_HR}.transcript.txt"
 rm -rf "$(dirname "$EV_WS")" TMP/eval-inside-fw
 
 head_ "Result"

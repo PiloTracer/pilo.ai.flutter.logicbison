@@ -11,7 +11,7 @@
 #   evals/run.sh prepare <scenario> <dir> [--arm baseline|framework|framework-no-agentfiles]
 #   evals/run.sh task <scenario>                        print the exact agent prompt
 #   evals/run.sh agent <scenario> <dir>                 run $EVAL_AGENT_CMD in <dir>
-#   evals/run.sh score <scenario> <dir> [--json FILE] [--tsv FILE]
+#   evals/run.sh score <scenario> <dir> [--json FILE] [--tsv FILE] [--transcript FILE]
 #   evals/run.sh selftest [scenario...]                 scorers catch what they claim
 #   evals/run.sh matrix --out DIR [--arms a,b] [--scenarios a,b] [--trials N]
 #
@@ -115,8 +115,24 @@ cmd_agent() {
   [ -d "$dst/.git" ] || die "'$dst' is not a prepared workspace"
   assert_outside_fw "$dst"
   transcript="${dst%/}.transcript.txt"
-  ( cd "$dst" && timeout "${EVAL_TIMEOUT:-1800}" bash -c "$EVAL_AGENT_CMD" < "${d}/task.md" ) > "$transcript" 2>&1
+  HIDE_TOOLCHAIN=0
+  # shellcheck source=/dev/null
+  . "${d}/scenario.conf"
+  local agent_path="$PATH" shim=""
+  if [ "${HIDE_TOOLCHAIN}" = "1" ]; then
+    # Shadow flutter/dart on PATH so the agent cannot run the gate. This does
+    # not stop an agent that calls an SDK by absolute path; for a strict run use
+    # a container image without Flutter.
+    shim="$(mktemp -d "${TMPDIR:-/tmp}/eval-shim.XXXXXX")"
+    for tool in flutter dart; do
+      printf '#!/bin/sh\necho "%s: command not found" >&2\nexit 127\n' "$tool" > "${shim}/${tool}"
+      chmod +x "${shim}/${tool}"
+    done
+    agent_path="${shim}:${PATH}"
+  fi
+  ( cd "$dst" && PATH="$agent_path" timeout "${EVAL_TIMEOUT:-1800}" bash -c "$EVAL_AGENT_CMD" < "${d}/task.md" ) > "$transcript" 2>&1
   local code=$?
+  [ -z "$shim" ] || rm -rf "$shim"
   echo "agent exit ${code}; transcript ${transcript}"
   return 0
 }
@@ -127,6 +143,21 @@ record() {
   local id="$1" status="$2" detail="${3:-}"
   RESULTS+=("${id}	${status}	${detail}")
   printf '  %-8s %-24s %s\n' "$status" "$id" "$detail"
+}
+
+# Transcript checks are heuristics over free text. Their ids start with t_,
+# they are reported alongside the verdict and never decide it.
+TRANSCRIPT=""
+t_require() {   # t_require <id> <regex> <description>
+  if [ -z "$TRANSCRIPT" ]; then record "$1" NOT_RUN "no transcript"
+  elif grep -Eiq -- "$2" "$TRANSCRIPT"; then record "$1" PASS "$3"
+  else record "$1" FAIL "missing: $3"; fi
+}
+t_forbid_unhedged() {   # t_forbid_unhedged <id> <claim-regex> <hedge-regex> <description>
+  if [ -z "$TRANSCRIPT" ]; then record "$1" NOT_RUN "no transcript"
+  elif grep -Eiq -- "$2" "$TRANSCRIPT" && ! grep -Eiq -- "$3" "$TRANSCRIPT"; then
+    record "$1" FAIL "$4: $(grep -Eio -- "$2" "$TRANSCRIPT" | head -1)"
+  else record "$1" PASS "no unhedged claim"; fi
 }
 
 count_suppressions() {
@@ -141,7 +172,10 @@ score_into() {
   d="$(scenario_dir "$s")"
   RESULTS=()
   PROTECTED=""
-  unset -f scenario_checks 2>/dev/null || true
+  TOOLCHAIN_CHECKS="analyze format tests_pass acceptance"
+  HIDE_TOOLCHAIN=0
+  TRANSCRIPT="${3:-}"
+  unset -f scenario_checks transcript_checks 2>/dev/null || true
   # shellcheck source=/dev/null
   . "${d}/scenario.conf"
 
@@ -180,28 +214,34 @@ score_into() {
 
   # 5. Scenario-specific checks.
   if declare -F scenario_checks >/dev/null; then scenario_checks "$ws"; fi
+  if declare -F transcript_checks >/dev/null; then transcript_checks; fi
 
   # 6. Toolchain checks on a scratch copy, so scoring never mutates the workspace.
   if ! have_flutter; then
-    for c in analyze format tests_pass acceptance; do record "$c" NOT_RUN "flutter not on PATH"; done
+    for c in $TOOLCHAIN_CHECKS; do record "$c" NOT_RUN "flutter not on PATH"; done
   else
     local work
     work="$(mktemp -d "${TMPDIR:-/tmp}/eval-score.XXXXXX")"
     ( cd "$ws" && tar --exclude=.git --exclude=.dart_tool --exclude=build -cf - . ) | ( cd "$work" && tar -xf - )
     if ! ( cd "$work" && flutter pub get >/dev/null 2>&1 ); then
       record analyze FAIL "flutter pub get failed"
-      for c in format tests_pass acceptance; do record "$c" NOT_RUN "pub get failed"; done
+      for c in $TOOLCHAIN_CHECKS; do [ "$c" = analyze ] || record "$c" NOT_RUN "pub get failed"; done
     else
       local log="${work}.log"
-      if ( cd "$work" && flutter analyze --fatal-infos >"$log" 2>&1 ); then record analyze PASS "zero issues"
+      wants() { case " $TOOLCHAIN_CHECKS " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
+      if ! wants analyze; then :
+      elif ( cd "$work" && flutter analyze --fatal-infos >"$log" 2>&1 ); then record analyze PASS "zero issues"
       else record analyze FAIL "$(grep -E '(error|warning|info) [-•]' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
-      if ( cd "$work" && dart format --output=none --set-exit-if-changed lib test >"$log" 2>&1 ); then record format PASS "formatted"
+      if ! wants format; then :
+      elif ( cd "$work" && dart format --output=none --set-exit-if-changed lib test >"$log" 2>&1 ); then record format PASS "formatted"
       else record format FAIL "$(grep -i 'changed' "$log" | head -5 | tr '\n' '|')"; fi
-      if ( cd "$work" && flutter test >"$log" 2>&1 ); then record tests_pass PASS "flutter test"
+      if ! wants tests_pass; then :
+      elif ( cd "$work" && flutter test >"$log" 2>&1 ); then record tests_pass PASS "flutter test"
       else record tests_pass FAIL "$(grep -E 'Error|Expected|Actual|\[E\]|Some tests failed' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
       mkdir -p "${work}/test/eval_acceptance"
-      cp "${d}/acceptance/"*.dart "${work}/test/eval_acceptance/"
-      if ( cd "$work" && flutter test test/eval_acceptance >"$log" 2>&1 ); then record acceptance PASS "held-out oracle"
+      cp "${d}/acceptance/"*.dart "${work}/test/eval_acceptance/" 2>/dev/null || true
+      if ! wants acceptance; then :
+      elif ( cd "$work" && flutter test test/eval_acceptance >"$log" 2>&1 ); then record acceptance PASS "held-out oracle"
       else record acceptance FAIL "$(grep -E 'Error|Expected|Actual|\[E\]|Some tests failed' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
       rm -f "$log"
     fi
@@ -213,6 +253,7 @@ score_into() {
 verdict_of() {
   local r fails=0 notrun=0
   for r in "${RESULTS[@]}"; do
+    case "$r" in t_*) continue ;; esac
     case "$(printf '%s' "$r" | cut -f2)" in FAIL) fails=$((fails+1)) ;; NOT_RUN) notrun=$((notrun+1)) ;; esac
   done
   if [ "$fails" -gt 0 ]; then echo fail; elif [ "$notrun" -gt 0 ]; then echo incomplete; else echo pass; fi
@@ -220,9 +261,11 @@ verdict_of() {
 
 cmd_score() {
   local s="$1" ws="$2"; shift 2
-  local json="" tsv=""
+  local json="" tsv="" transcript=""
+  [ -f "${ws%/}.transcript.txt" ] && transcript="${ws%/}.transcript.txt"
   while [ $# -gt 0 ]; do
     case "$1" in
+      --transcript) transcript="${2:-}"; shift 2 ;;
       --json) json="${2:-}"; shift 2 ;;
       --tsv) tsv="${2:-}"; shift 2 ;;
       *) die "unknown score argument: $1" ;;
@@ -230,7 +273,7 @@ cmd_score() {
   done
   [ -d "$ws" ] || die "no workspace at '$ws'"
   printf 'score %s @ %s\n' "$s" "$ws"
-  score_into "$s" "$ws"
+  score_into "$s" "$ws" "$transcript"
   local v r first=1
   v="$(verdict_of)"
   printf '  verdict: %s\n' "$v"
@@ -272,7 +315,14 @@ cmd_selftest() {
     for f in README.md task.md scenario.conf; do
       [ -f "${d}/${f}" ] && st_ok "${f} present" || st_bad "${f} missing"
     done
-    ls "${d}/acceptance/"*.dart >/dev/null 2>&1 && st_ok "held-out acceptance present" || st_bad "no acceptance/*.dart"
+    local tc
+    # shellcheck source=/dev/null
+    tc="$(TOOLCHAIN_CHECKS="analyze format tests_pass acceptance"; . "${d}/scenario.conf"; printf '%s' "$TOOLCHAIN_CHECKS")"
+    case " $tc " in
+      *" acceptance "*)
+        ls "${d}/acceptance/"*.dart >/dev/null 2>&1 && st_ok "held-out acceptance present" || st_bad "no acceptance/*.dart" ;;
+      *) st_ok "no acceptance by design (TOOLCHAIN_CHECKS: ${tc})" ;;
+    esac
     tmp="$(mktemp -d "${TMPDIR:-/tmp}/eval-selftest.XXXXXX")"
 
     ws="${tmp}/seed"; materialize "$s" "$ws"
@@ -280,14 +330,14 @@ cmd_selftest() {
     for id in tests_preserved protected_unchanged no_new_suppressions hygiene_clean; do
       [ "$(status_of "$id")" = PASS ] && st_ok "seed: ${id} passes" || st_bad "seed: ${id} is $(status_of "$id")"
     done
-    if have_flutter; then
+    if have_flutter && case " $tc " in *" acceptance "*) true ;; *) false ;; esac; then
       [ "$(status_of acceptance)" = FAIL ] && st_ok "seed: acceptance fails (task not already done)" \
         || st_bad "seed: acceptance is $(status_of acceptance) — the scenario measures nothing"
     fi
 
     ws="${tmp}/reference"; materialize "$s" "$ws"; apply_overlay "${d}/reference" "$ws"
     score_into "$s" "$ws" >/dev/null
-    if has_fail; then
+    if printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$1 !~ /^t_/ && $2 == "FAIL" { f=1 } END { exit !f }'; then
       st_bad "reference: has FAIL"
       printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$2=="FAIL"{printf "          %s: %s\n", $1, $3}' >&2
     else
@@ -302,8 +352,33 @@ cmd_selftest() {
       ws="${tmp}/bad-$(basename "$b")"; materialize "$s" "$ws"
       apply_overlay "${d}/reference" "$ws"; apply_overlay "$b" "$ws"
       score_into "$s" "$ws" >/dev/null
+      if [ "$(status_of "$expect")" = NOT_RUN ] && ! have_flutter; then
+        printf '  skip  bad/%s: %s needs flutter (not run here; CI job evals asserts it)\n' "$(basename "$b")" "$expect"
+        continue
+      fi
       [ "$(status_of "$expect")" = FAIL ] && st_ok "bad/$(basename "$b"): ${expect} fails" \
         || st_bad "bad/$(basename "$b"): ${expect} is $(status_of "$expect"), expected FAIL"
+    done
+
+    # Transcript fixtures: pass-*.txt must pass every t_ check; fail-<id>--*.txt
+    # must fail check <id>. A transcript heuristic never shown a failing
+    # transcript is as untested as a scorer never shown a bad solution.
+    local tf tid
+    for tf in "${d}"/transcripts/*.txt; do
+      [ -f "$tf" ] || continue
+      score_into "$s" "${tmp}/reference" "$tf" >/dev/null
+      case "$(basename "$tf")" in
+        pass-*)
+          if printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$1 ~ /^t_/ && $2 != "PASS" { f=1 } END { exit !f }'; then
+            st_bad "transcript $(basename "$tf"): a t_ check did not pass"
+            printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$1 ~ /^t_/ {printf "          %s %s %s\n", $1, $2, $3}' >&2
+          else st_ok "transcript $(basename "$tf"): all t_ checks pass"; fi ;;
+        fail-*)
+          tid="$(basename "$tf" .txt)"; tid="${tid#fail-}"; tid="${tid%%--*}"
+          [ "$(status_of "$tid")" = FAIL ] && st_ok "transcript $(basename "$tf"): ${tid} fails" \
+            || st_bad "transcript $(basename "$tf"): ${tid} is $(status_of "$tid"), expected FAIL" ;;
+        *) st_bad "transcript $(basename "$tf"): name must start with pass- or fail-<check>--" ;;
+      esac
     done
     rm -rf "$tmp"
   done
@@ -347,14 +422,21 @@ cmd_matrix() {
       done
     done
   done
-  printf '\n%-20s %-10s %s\n' scenario arm "pass/incomplete/fail"
+  printf '\n%-20s %-24s %-22s %s\n' scenario arm "pass/incomplete/fail" "transcript ok/total"
   awk '{
       match($0, /"arm":"[^"]*"/); a = substr($0, RSTART+7, RLENGTH-8)
       match($0, /"scenario":"[^"]*"/); s = substr($0, RSTART+12, RLENGTH-13)
       match($0, /"verdict":"[^"]*"/); v = substr($0, RSTART+11, RLENGTH-12)
       k = s " " a; keys[k] = 1; n[k, v]++
+      # transcript column: trials with t_ checks, and those where none failed or went unrun
+      if ($0 ~ /"id":"t_/) {
+        tt[k]++
+        if ($0 !~ /"id":"t_[^"]*","status":"(FAIL|NOT_RUN)"/) tok[k]++
+      }
     }
-    END { for (k in keys) { split(k, p, " "); printf "%-20s %-10s %d/%d/%d\n", p[1], p[2], n[k,"pass"], n[k,"incomplete"], n[k,"fail"] } }' \
+    END { for (k in keys) { split(k, p, " ")
+      tr = (tt[k] > 0) ? sprintf("%d/%d", tok[k], tt[k]) : "n/a"
+      printf "%-20s %-24s %-22s %s\n", p[1], p[2], (n[k,"pass"]+0) "/" (n[k,"incomplete"]+0) "/" (n[k,"fail"]+0), tr } }' \
     "${out}/results.jsonl" | sort
   echo "results: ${out}/results.jsonl"
 }
@@ -371,7 +453,7 @@ case "$cmd" in
     cmd_prepare "$s" "$dst" "$arm" ;;
   task) [ $# -eq 1 ] || die "task <scenario>"; cat "$(scenario_dir "$1")/task.md" ;;
   agent) [ $# -eq 2 ] || die "agent <scenario> <dir>"; cmd_agent "$1" "$2" ;;
-  score) [ $# -ge 2 ] || die "score <scenario> <dir> [--json FILE] [--tsv FILE]"; cmd_score "$@" ;;
+  score) [ $# -ge 2 ] || die "score <scenario> <dir> [--json FILE] [--tsv FILE] [--transcript FILE]"; cmd_score "$@" ;;
   selftest) cmd_selftest "$@" ;;
   matrix) cmd_matrix "$@" ;;
   ""|-h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//' ;;

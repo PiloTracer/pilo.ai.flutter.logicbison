@@ -9,8 +9,6 @@
 # Pin the Flutter SDK channel or exact version from DOCS_FLUTTER_STACK.md —
 # never invent a pin here. The action refs below (`@vN`) are placeholders:
 # check each action's current major release on GitHub before adopting.
-# Framework-repo CI (.github/workflows/verify.yml) is separate and must not be
-# copied into apps.
 #
 # Repository variables (Settings → Secrets and variables → Actions → Variables):
 #   COVERAGE_FLOOR  integer percent from the project TESTING_STANDARD (required)

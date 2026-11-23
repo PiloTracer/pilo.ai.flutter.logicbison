@@ -105,4 +105,4 @@ Agents are nondeterministic. One trial per cell is an anecdote, so use `--trials
 1. Name the framework rule it tests. A scenario that cannot point at a rule is measuring taste.
 2. Write the seed so the temptation is real but a correct path exists using what is already in the repo.
 3. Write `reference/` and at least one `bad/`. Run `evals/run.sh selftest <id>`.
-4. Write `acceptance/` so it cannot pass on the seed. The CI `evals` job asserts that with a real toolchain.
+4. Write `acceptance/` so it cannot pass on the seed. `evals/run.sh selftest` asserts that on a host with Flutter on `PATH`.

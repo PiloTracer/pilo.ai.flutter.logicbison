@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Execute the `run:` steps of a GitHub Actions workflow file, in order, locally.
 
-Framework CI uses this to test the adopter CI template
-(templates/ci/github-actions/flutter-gates.yml) against the eval base app —
-the YAML adopters copy is the thing under test, not a hand-maintained replica
-of its commands.
+Tests the adopter CI template (templates/ci/github-actions/flutter-gates.yml)
+locally against the eval base app — the YAML adopters copy is the thing under
+test, not a hand-maintained replica of its commands. Run it on a host with
+Flutter; desktop jobs only on their own OS.
 
   run-workflow-steps.py WORKFLOW --job JOB --cwd DIR [--var NAME=VALUE]...
 

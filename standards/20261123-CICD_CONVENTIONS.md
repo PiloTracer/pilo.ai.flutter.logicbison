@@ -38,7 +38,7 @@ A CI step that is not yet configured **fails** with a message naming what to con
 
 ## 7. Framework repo CI
 
-`.github/workflows/verify.yml` in this framework source repo verifies the **framework** (`framework-verify`, `self-test`, bootstrap round-trip). It is not an adopter app template. Do not copy it into apps.
+This framework source repo has **no hosted CI** (removed at the operator's request on 2026-11-23). The framework is verified locally: `scripts/framework-verify.sh`, `scripts/self-test.sh`, and `evals/run.sh selftest` on a host with Flutter on `PATH`. Desktop build claims need a run on that OS. Without one they are `not run`, never `pass` (DESKTOP_STANDARD §1). `evals/tools/run-workflow-steps.py` executes this template's jobs locally on such a host.
 
 ---
 
@@ -49,7 +49,6 @@ A CI step that is not yet configured **fails** with a message naming what to con
 - Placeholder steps that `echo` and exit 0 for a gate they do not enforce.
 - Reading the coverage percentage as complete. `flutter test --coverage` records only files that some test imports, so a file no test touches is invisible and the figure is inflated (observed: the eval base app reports 100% with `main.dart` and a repository implementation untested). Treat the floor as a lower bound, and review new untested files in the diff.
 - Committing secrets or signing material in workflows.
-- Using framework-repo `verify.yml` as the app CI template.
 
 ## Next action
 

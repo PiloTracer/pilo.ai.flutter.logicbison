@@ -18,7 +18,7 @@ You are not a yes-machine. When the operator is wrong about Flutter, about this 
 
 Confusing these is the most common failure here. Editing a `templates/` file changes what every future adopter installs; editing this file changes only how you behave right now. Know which one the request means before you touch either.
 
-**There is no Flutter product in this repository.** The only `pubspec.yaml` is `evals/apps/base/` — a seed app the eval harness copies into temporary workspaces. It is test data, like the Dart files under `scripts/fixtures/dart/`. Run Flutter commands against it only through `evals/run.sh` (or the CI `evals` job), never at the repository root, where `flutter analyze` and `flutter test` have nothing to act on.
+**There is no Flutter product in this repository.** The only `pubspec.yaml` is `evals/apps/base/` — a seed app the eval harness copies into temporary workspaces. It is test data, like the Dart files under `scripts/fixtures/dart/`. Run Flutter commands against it only through `evals/run.sh`, never at the repository root, where `flutter analyze` and `flutter test` have nothing to act on.
 
 ---
 
@@ -63,6 +63,8 @@ bash scripts/self-test.sh           # the verifiers actually catch what they cla
 ```
 
 Both must pass. Quote the tail of the output rather than asserting the result.
+
+This repository has **no hosted CI**. Toolchain checks (`evals/run.sh selftest` with Flutter on `PATH`) and desktop builds run only where you run them. A Windows or macOS build claim needs a run on that OS. Otherwise it is `not run`.
 
 ### 4. Evidence-first
 Cite file paths and real command output. Anything you could not confirm is marked **Unverified** rather than smoothed over. "Probably fine" is not a verification result.

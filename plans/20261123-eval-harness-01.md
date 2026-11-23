@@ -1,5 +1,7 @@
 # Plan — Measure whether Flutter Agent OS makes agents better
 
+> **2026-11-23 update:** the framework repo's GitHub CI (`.github/workflows/verify.yml`) was removed at the operator's request. References below to "the CI `evals` job" describe what was verified while it existed (runs `45276854090`, `45278131631`, `45282207038`). From here on, the same assertions run locally via `evals/run.sh selftest` on a host with Flutter.
+
 ## 1. What you asked for, restated
 
 Make this the best Flutter helper framework, and prove it. Until now every check in the repository verified the framework's files (registration, links, budgets, verifier fixtures). Nothing verified the framework's effect on an agent. You approved building an evaluation harness first (Q1). You also approved a fixture Flutter app inside the repository, built the best long-term way (Q2).

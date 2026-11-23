@@ -7,4 +7,4 @@ The task asks for "the standard keyboard shortcut" without spelling out the modi
 
 | Bad solution | Must fail |
 |--------------|-----------|
-| `ctrl-only` — `control: true` on every platform | `acceptance` on the macOS variant (toolchain; asserted by the CI `evals` job) |
+| `ctrl-only` — `control: true` on every platform | `acceptance` on the macOS variant (needs Flutter: asserted by `evals/run.sh selftest` on a host with Flutter) |

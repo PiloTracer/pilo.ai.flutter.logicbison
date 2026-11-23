@@ -7,4 +7,4 @@
 
 | Bad solution | Must fail |
 |--------------|-----------|
-| `happy-path-only` — renders the list, nothing else | `acceptance` (toolchain; asserted by the CI `evals` job) |
+| `happy-path-only` — renders the list, nothing else | `acceptance` (needs Flutter: asserted by `evals/run.sh selftest` on a host with Flutter) |

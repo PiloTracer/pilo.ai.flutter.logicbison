@@ -287,11 +287,11 @@ if [ -f evals/run.sh ]; then
     ls -d "${sd}bad/"*/ >/dev/null 2>&1 || fail "eval ${sn}: no bad/ solution — a scorer never shown a failure proves nothing"
     pass "eval ${sn} well-formed"
   done
-elif [ -d .github ]; then
+elif [ -e .git ] || [ -d plans ]; then
   fail "evals/run.sh missing"
 else
-  # Installed copies (deploy-files) carry neither .github/ nor evals/: the eval
-  # harness is framework-source tooling, not something adopters run.
+  # Installed copies (deploy-files) carry neither .git, plans/ nor evals/: the
+  # eval harness is framework-source tooling, not something adopters run.
   pass "evals not present — installed copy, harness is framework-source only"
 fi
 

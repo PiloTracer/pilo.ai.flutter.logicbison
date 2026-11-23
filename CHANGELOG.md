@@ -15,6 +15,12 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 - **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
 - **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
 
+### Removed — framework repository CI (2026-11-23)
+
+- `.github/workflows/verify.yml` removed at the operator's request. Verification is local: `framework-verify.sh`, `self-test.sh`, and `evals/run.sh selftest` with Flutter on `PATH`. Desktop builds are proven only on a host of that OS; otherwise `not run`.
+- `framework-verify` now identifies the source repo by `.git` or `plans/` (installed copies carry neither), since `.github/` no longer exists. Without that change, a missing `evals/` would have been excused as an installed copy.
+- The **adopter** template `templates/ci/github-actions/flutter-gates.yml` is unchanged. It is what apps install, not this repo's CI.
+
 ### Changed — desktop builds are downloadable; macOS CI job fixed (2026-11-23)
 
 - Adopter template desktop jobs now package and upload each build (`tar` for Linux keeps the executable bit; `ditto` for macOS keeps the `.app` bundle intact; the Windows release folder with its DLLs). Framework CI asserts each archive exists and is non-empty.

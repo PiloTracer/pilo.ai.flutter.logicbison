@@ -308,7 +308,7 @@ has_fail()  { printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$2 == "FAIL" { f=1 } E
 cmd_selftest() {
   local list s d tmp ws b expect id
   if [ $# -gt 0 ]; then list="$*"; else list="$(all_scenarios)"; fi
-  have_flutter || printf '  note  flutter not on PATH — toolchain assertions not run (CI job evals runs them)\n'
+  have_flutter || printf '  note  flutter not on PATH — toolchain assertions not run (run selftest on a host with Flutter)\n'
   for s in $list; do
     d="$(scenario_dir "$s")"
     printf '\n%s\n' "$s"
@@ -353,7 +353,7 @@ cmd_selftest() {
       apply_overlay "${d}/reference" "$ws"; apply_overlay "$b" "$ws"
       score_into "$s" "$ws" >/dev/null
       if [ "$(status_of "$expect")" = NOT_RUN ] && ! have_flutter; then
-        printf '  skip  bad/%s: %s needs flutter (not run here; CI job evals asserts it)\n' "$(basename "$b")" "$expect"
+        printf '  skip  bad/%s: %s needs flutter (not run here; run selftest on a host with Flutter)\n' "$(basename "$b")" "$expect"
         continue
       fi
       [ "$(status_of "$expect")" = FAIL ] && st_ok "bad/$(basename "$b"): ${expect} fails" \

@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: const AppBar(title: Text('Home')),
+      appBar: AppBar(title: const Text('Home')),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(

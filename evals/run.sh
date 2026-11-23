@@ -186,16 +186,18 @@ score_into() {
       record analyze FAIL "flutter pub get failed"
       for c in format tests_pass acceptance; do record "$c" NOT_RUN "pub get failed"; done
     else
-      if ( cd "$work" && flutter analyze --fatal-infos >/dev/null 2>&1 ); then record analyze PASS "zero issues"
-      else record analyze FAIL "$(cd "$work" && flutter analyze --fatal-infos 2>&1 | grep -E ' • ' | head -3 | tr '\n' ' ')"; fi
-      if ( cd "$work" && dart format --output=none --set-exit-if-changed lib test >/dev/null 2>&1 ); then record format PASS "formatted"
-      else record format FAIL "$(cd "$work" && dart format --output=none --set-exit-if-changed lib test 2>&1 | grep -i changed | head -3 | tr '\n' ' ')"; fi
-      if ( cd "$work" && flutter test >/dev/null 2>&1 ); then record tests_pass PASS "flutter test"
-      else record tests_pass FAIL "flutter test non-zero"; fi
+      local log="${work}.log"
+      if ( cd "$work" && flutter analyze --fatal-infos >"$log" 2>&1 ); then record analyze PASS "zero issues"
+      else record analyze FAIL "$(grep -E '(error|warning|info) [-•]' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
+      if ( cd "$work" && dart format --output=none --set-exit-if-changed lib test >"$log" 2>&1 ); then record format PASS "formatted"
+      else record format FAIL "$(grep -i 'changed' "$log" | head -5 | tr '\n' '|')"; fi
+      if ( cd "$work" && flutter test >"$log" 2>&1 ); then record tests_pass PASS "flutter test"
+      else record tests_pass FAIL "$(grep -E 'Error|Expected|Actual|\[E\]|Some tests failed' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
       mkdir -p "${work}/test/eval_acceptance"
       cp "${d}/acceptance/"*.dart "${work}/test/eval_acceptance/"
-      if ( cd "$work" && flutter test test/eval_acceptance >/dev/null 2>&1 ); then record acceptance PASS "held-out oracle"
-      else record acceptance FAIL "held-out oracle failed"; fi
+      if ( cd "$work" && flutter test test/eval_acceptance >"$log" 2>&1 ); then record acceptance PASS "held-out oracle"
+      else record acceptance FAIL "$(grep -E 'Error|Expected|Actual|\[E\]|Some tests failed' "$log" | head -5 | sed 's/^ *//' | tr '\n' '|')"; fi
+      rm -f "$log"
     fi
     rm -rf "$work"
   fi
@@ -280,7 +282,8 @@ cmd_selftest() {
     ws="${tmp}/reference"; materialize "$s" "$ws"; apply_overlay "${d}/reference" "$ws"
     score_into "$s" "$ws" >/dev/null
     if has_fail; then
-      st_bad "reference: has FAIL — $(printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$2=="FAIL"{printf "%s ", $1}')"
+      st_bad "reference: has FAIL"
+      printf '%s\n' "${RESULTS[@]}" | awk -F'\t' '$2=="FAIL"{printf "          %s: %s\n", $1, $3}' >&2
     else
       st_ok "reference: no FAIL ($(verdict_of))"
     fi

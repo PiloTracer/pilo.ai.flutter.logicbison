@@ -1,10 +1,16 @@
 # Flutter Agent OS
 
+[![Release](https://img.shields.io/github/v/release/PiloTracer/pilo.ai.flutter.logicbison?label=release)](https://github.com/PiloTracer/pilo.ai.flutter.logicbison/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platforms](https://img.shields.io/badge/targets-Android%20%C2%B7%20iOS%20%C2%B7%20Web%20%C2%B7%20Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-informational)
+
 An agent operating system for Flutter application development: **plan, build, verify, repair** — with gates that stop work when the ground underneath it is not ready, and evidence rules that stop an agent claiming results it did not observe.
 
 MIT licensed. Every recommended dependency is free, open source and permitted for commercial use.
 
 **New here?** [`START_HERE.md`](START_HERE.md). **Want something done?** `@flutter-director - <what you want>`.
+
+**Current release: 0.7.1** — desktop as a first-class target (Windows, macOS, Linux), an evaluation harness that measures whether agents actually behave better with the framework, `AGENTS.md` / `CLAUDE.md` wiring for non-Cursor agents, and the Material → `material_ui` migration. See [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
@@ -31,12 +37,13 @@ The framework is a set of **markdown protocols** any LLM can follow, plus **shel
 
 | Directory | Contents |
 |-----------|----------|
-| [`skills/`](skills/README.md) | 27 skills. Each has hard rules, modes, prerequisite gates, protocols and a completion checklist |
-| [`standards/`](standards/README.md) | 21 standards + protected surfaces. Templates that become project-binding once tokens are filled |
+| [`skills/`](skills/README.md) | 26 skills. Each has hard rules, modes, prerequisite gates, protocols and a completion checklist |
+| [`standards/`](standards/README.md) | 23 standards (including desktop and CI/CD) + protected surfaces. Templates that become project-binding once tokens are filled |
 | [`concepts/`](concepts/README.md) | FLS-01…FLS-13 review lenses, run against real diffs |
 | [`stacks/`](stacks/README.md) | Per-state-management idiom guides: Riverpod, Bloc, Provider, Signals |
 | [`resources/`](resources/README.md) | Vetted OSS package catalog with licences; Flutter CLI reference; UI-craft evidence base |
-| [`templates/`](templates/) | What `@flutter-bootstrap init` writes into a repo |
+| [`templates/`](templates/) | What `@flutter-bootstrap init` writes into a repo; the adopter CI workflow (gates + Linux/macOS/Windows builds); an optional dev container |
+| [`evals/`](evals/README.md) | 9 seeded scenarios that measure an agent with vs without the framework, scored mechanically with held-out tests |
 | [`scripts/`](scripts/README.md) | Mechanical verifiers and installers |
 | [`hooks/`](hooks/) | Git hooks: pre-commit, commit-msg, prepare-commit-msg, post-commit, pre-push |
 | [`docs/`](docs/) | Adoption and workflow guides |
@@ -104,7 +111,13 @@ Then, in the target repo:
 @flutter-bootstrap init
 ```
 
-Installing the framework and scaffolding the project are separate steps. Both are required.
+Installing the framework and scaffolding the project are separate steps. Both are required. The install writes the operating contract into `.cursorrules` and points `AGENTS.md` (Codex, opencode) and `CLAUDE.md` (Claude Code) at it, merging with any existing content.
+
+---
+
+## Desktop
+
+Windows, macOS and Linux are first-class targets: [`DESKTOP_STANDARD`](standards/20261123-DESKTOP_STANDARD.md) covers windows, platform-modifier shortcuts, menus, resizable layouts, file access and per-OS packaging and signing; `@flutter-scaffold desktop` sets it up and `@flutter-verify` D16 checks it. Flutter does not cross-compile desktop apps: each OS builds on that OS. The adopter CI template does this on GitHub's runners and uploads each build.
 
 ---
 
@@ -116,4 +129,4 @@ Designed to sit beside [Agent OS](../.ai) (`.ai`) and [UI Design OS](../.ai.ui) 
 
 ## Contributing
 
-[`CONTRIBUTING.md`](CONTRIBUTING.md). Every change runs two suites: `framework-verify.sh` machine-checks skill and FLS registration, frontmatter, context budgets, internal links, `@skill` route resolution and path discipline; `self-test.sh` runs the verifiers against known-good and known-bad fixtures, so a check that has quietly stopped catching things fails rather than reassures.
+[`CONTRIBUTING.md`](CONTRIBUTING.md). Every change runs two suites: `framework-verify.sh` machine-checks skill and FLS registration, frontmatter, context budgets, internal links, `@skill` route resolution and path discipline; `self-test.sh` runs the verifiers against known-good and known-bad fixtures, so a check that has quietly stopped catching things fails rather than reassures. Changes to agent-facing rules also run `evals/run.sh selftest` (with Flutter on `PATH` for the toolchain checks). This repository has no hosted CI: verification is local, and results not run are reported as `not run`.

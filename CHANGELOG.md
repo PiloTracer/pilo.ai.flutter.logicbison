@@ -6,7 +6,9 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 
 ---
 
-## [Unreleased]
+## [0.7.1] — 2026-11-23
+
+_Highlights: desktop (Windows, macOS, Linux) as a first-class target; an evaluation harness that measures the framework's effect on agents; `AGENTS.md` / `CLAUDE.md` pointers; Material → `material_ui`; honest CI gates. Desktop builds of the eval app were proven on real Linux, Windows and macOS runners (run `45285007075`) before the framework's own CI was removed._
 
 ### Added — lifecycle quickstart, last-gate ledger, adopter CI template (2026-11-23)
 

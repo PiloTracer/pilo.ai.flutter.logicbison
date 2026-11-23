@@ -118,6 +118,7 @@ Working-tree audit, optimised for the pre-commit moment.
 6. **Mechanical gate** scoped to the changed files where possible; the full suite when the change is cross-cutting.
 7. **Diff review** — for each changed file: does it match its task, does it follow CONVENTIONS, are new public APIs documented, are new code paths tested, are the six states preserved on touched screens.
 8. Verdict + routing.
+9. **Last-gate record** — whenever any mechanical check ran, whatever the verdict, run `bash scripts/last-gate-record.sh --verifier flutter-verify-uncommitted --verdict <v>` where `<v>` is the report verdict spelled `pass` / `pass_with_gaps` / `fail` / `unverified`, plus one `--command <cmd> --exit <code>` pair per check in the order it ran (touch-scope, blast-radius, format, analyze, test, hygiene as applicable; `--exit not_run` for a check that could not execute). The script refuses unpaired or non-numeric exits rather than recording a misleading ledger. Output: `.work.flutter/reports/last-gate.json`, stamped with HEAD **and** `worktree_dirty` — an uncommitted verify audits changes HEAD does not contain. Skip only when the tree was empty ("nothing to verify"). A failing record is as valuable as a passing one: it is the audit trail of what was known. `@flutter-session close` does **not** read this file.
 
 ---
 

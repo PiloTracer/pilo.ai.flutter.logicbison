@@ -143,6 +143,7 @@ foundation-complete → plan-ready → implementation-ready → release-ready
 |--------------|------------|------|
 | **flutter-bootstrap** `init` | Repo is (or will hold) a Dart/Flutter package; **B0** brownfield gate detects existing `.work.flutter/` / `.cursorrules` / stack doc | - (brownfield prompts overwrite-all / overwrite-missing / keep / abort) |
 | **flutter-bootstrap** `status` | - | Read-only |
+| **flutter-bootstrap** `quickstart - lite\|brownfield\|full` | `.work.flutter/plans/` exists (else stop → `init`); destination playbook absent unless `overwrite-playbook` | Writes only `QUICKSTART-PLAYBOOK.md` |
 | **flutter-stack** `set` | `{FLUTTER_HANDOFF}` present (SK0 gate) | **Recommended:** `@flutter-bootstrap init` |
 | **flutter-stack** `probe` | `{FLUTTER_HANDOFF}` present | - (7 stack dimensions, ≤5 questions/pass) |
 | **flutter-stack** `status` / `show` | - | Read-only |

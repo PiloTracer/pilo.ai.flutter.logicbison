@@ -37,6 +37,10 @@ Runs after **every** task, before it may be marked done.
 
 **A task is not done because the code was written.** It is done when the gate passes and the evidence is recorded.
 
+## Last-gate ledger
+
+Whenever `@flutter-verify uncommitted` runs any mechanical check — pass or fail — `scripts/last-gate-record.sh` writes `.work.flutter/reports/last-gate.json` (timestamp, branch, commit, `worktree_dirty`, verifier, verdict, command exit codes). Verdicts: `pass` / `pass_with_gaps` / `fail` / `unverified`. The file is gitignored (it is overwritten every run). Session close does not read it — it is an audit trail for humans and CI.
+
 ## G2 — Commit gate
 
 Enforced by `pre-commit`, `commit-msg`, `prepare-commit-msg`.

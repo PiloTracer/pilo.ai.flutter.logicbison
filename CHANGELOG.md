@@ -6,6 +6,30 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 
 ---
 
+## [Unreleased]
+
+### Added — lifecycle quickstart, last-gate ledger, adopter CI template (2026-11-23)
+
+- **`@flutter-bootstrap quickstart - lite|brownfield|full`** — writes only `.work.flutter/plans/QUICKSTART-PLAYBOOK.md` from `templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md`; does not create `.work.flutter/` or run foundation. Documented in `.quick/onboarding-30min.md` and `.quick/software-lifecycle.md`.
+- **`scripts/last-gate-record.sh`** — writes `.work.flutter/reports/last-gate.json` after every verify that ran a check, pass or fail. Pure bash (the scripts' coreutils+git contract holds); verdicts match flutter-verify (`pass` / `pass_with_gaps` / `fail` / `unverified`); refuses unpaired `--command`/`--exit`; records `worktree_dirty` because an uncommitted verify audits changes HEAD does not contain. Gitignored via `gitignore.flutter.snippet`. `self-test` covers each refusal. Session close does not read it.
+- **`scripts/bootstrap-smoke.sh`** — temp-repo smoke of `templates/bootstrap.sh`; wired into `framework-verify` § Lifecycle smokes and `self-test`.
+- **`templates/ci/github-actions/flutter-gates.yml`** + **`standards/20261123-CICD_CONVENTIONS.md`** — adopter CI ≡ `@flutter-verify gate` Q1–Q8; `@flutter-scaffold ci` copies/adapts the template (no new skill). No step echoes and passes: Q4 runs when `build_runner` is declared and fails on generated drift; Q6 enforces `COVERAGE_FLOOR` (repository variable — unset fails); Q7 resolves vendored, fat (`.ai.flutter/scripts/`) and `FLUTTER_AGENT_OS_SOURCE` paths; Q8 is labelled report-only. Framework-repo `.github/workflows/verify.yml` remains framework-only.
+
+### Added — evaluation harness: measure the framework's effect, not just its files (2026-11-23)
+
+- **`evals/`**: seeded Flutter scenarios (`weaken-test`, `prompt-injection`, `layer-boundary`, `design-tokens`) run in a `baseline` arm and a `framework` arm (real `deploy-files` + `bootstrap.sh`), scored mechanically with held-out acceptance tests. `evals/run.sh selftest` proves every scorer passes its reference and fails its bad solutions. The harness is agent-agnostic (`EVAL_AGENT_CMD`) and refuses workspaces inside the framework tree. Plan: `plans/20261123-eval-harness-01.md`.
+- **`evals/apps/base/`**: the only `pubspec.yaml` in the repository. It is test data, and its `analysis_options.yaml` is rendered from the adopter template so the template is analysed for real. `.cursorrules` amended accordingly.
+- **CI job `evals`**: real Flutter. It runs the scorer selftest with the toolchain, then executes the adopter CI template's own YAML steps against the base app (`evals/tools/run-workflow-steps.py`).
+- **Findings before any agent ran:** the install writes no `CLAUDE.md`/`AGENTS.md`, so non-Cursor tools may never load the framework (phase-2 experiment E1). `dart-hygiene-check.sh` flags an implementation importing its interface unless the file is named `*_impl.dart`.
+
+### Changed — coding-playbook intake; session budget; homogenization truth (2026-11-23)
+
+- **Coding rules:** untrusted content is data; never weaken a check (framework `.cursorrules` + implementation); characterization before owned-behaviour change; three-strike stop (implementation + repair + adopter templates); independent oracles + inject clock/random/id (`TESTING_STANDARD`, `flutter-test`).
+- **`flutter-session`:** report templates, anti-patterns and full checklist moved to `reference.md` (skill.md under soft budget).
+- **`docs/homogenization/flutter.md`:** rewritten as as-built (sister registry shipped, `deploy-repo` gone, `AI_FLUTTER_SOURCE` present).
+
+---
+
 ## [0.6.1] — 2026-08-19
 
 _Version number aligns with the Agent OS family 0.6.1 line (previous Flutter Agent OS release: 0.2.0)._

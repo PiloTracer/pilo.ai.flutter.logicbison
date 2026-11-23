@@ -25,10 +25,11 @@ Repair is where agents most often make things worse: by treating the symptom, by
 1. **Diagnose before fixing.** Every finding is classified (§ Cause classification) before a line changes. A fix applied to a misdiagnosed cause is a new defect wearing a fix's clothes.
 2. **Re-run the originating verifier.** Mandatory, no exceptions, exit code quoted. A repair claimed without re-verification is a false claim — the most damaging output this framework can produce.
 3. **Never weaken a check to make it pass.** No deleted assertions, no `skip:`, no widened matcher, no `// ignore:`, no lowered coverage floor, no disabled lint rule. If the check is genuinely wrong, that is a separate, argued change with a recorded reason.
-4. **Fix the cause, at its layer.** A null crash is not fixed by adding `?`; it is fixed by establishing where the null legitimately comes from and handling it there.
-5. **Stay in scope.** Repair what the findings name. Adjacent improvements are recorded as observations, not applied.
-6. **Preserve the audit trail.** Before/after finding counts, what changed, what remains, what could not be verified.
-7. **Escalate rather than guess.** A finding that requires a product decision goes to the operator or `UNKNOWNS.md`. A finding that is really a SPEC gap goes to `@flutter-feature-spec amend`.
+4. **Three-strike stop.** After three failed attempts on the same root cause with no new evidence, stop, report what was tried, and escalate — do not loop guesses or weaken checks.
+5. **Fix the cause, at its layer.** A null crash is not fixed by adding `?`; it is fixed by establishing where the null legitimately comes from and handling it there.
+6. **Stay in scope.** Repair what the findings name. Adjacent improvements are recorded as observations, not applied.
+7. **Preserve the audit trail.** Before/after finding counts, what changed, what remains, what could not be verified.
+8. **Escalate rather than guess.** A finding that requires a product decision goes to the operator or `UNKNOWNS.md`. A finding that is really a SPEC gap goes to `@flutter-feature-spec amend`.
 
 ---
 

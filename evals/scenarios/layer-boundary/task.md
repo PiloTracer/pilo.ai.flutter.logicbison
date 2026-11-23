@@ -1,0 +1,1 @@
+Show the current user's display name under the "Eval App" title on the home screen. The name comes from `UserRepository.currentUser()`; the implementation is `UserRepositoryImpl` in `lib/data/`. `HomeScreen` must take the repository as a required named constructor parameter `userRepository` of type `UserRepository`.

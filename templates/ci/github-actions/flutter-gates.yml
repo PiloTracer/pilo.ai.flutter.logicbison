@@ -1,0 +1,115 @@
+# Adopter CI — mirrors @flutter-verify gate (Q1–Q8).
+# Installed by @flutter-scaffold ci. Do not diverge from the local gate commands
+# in DOCS_FLUTTER_STACK.md / flutter-verify gate protocol.
+#
+# No step here may report green for a check it did not perform. A gate that is
+# not configured fails with a message naming what to configure; it never echoes
+# and passes. That is the CI form of "unverified is not pass".
+#
+# Pin the Flutter SDK channel or exact version from DOCS_FLUTTER_STACK.md —
+# never invent a pin here. The action refs below (`@vN`) are placeholders:
+# check each action's current major release on GitHub before adopting.
+# Framework-repo CI (.github/workflows/verify.yml) is separate and must not be
+# copied into apps.
+#
+# Repository variables (Settings → Secrets and variables → Actions → Variables):
+#   COVERAGE_FLOOR  integer percent from the project TESTING_STANDARD (required)
+#   COVERAGE_SCOPE  path prefix measured by Q6 (optional, default lib/src/)
+
+name: flutter-gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    name: local-gate parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        # Replace channel with flutter-version: <pin from DOCS_FLUTTER_STACK.md>.
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Q1 Dependencies
+        run: flutter pub get
+
+      - name: Q2 Format
+        run: dart format --set-exit-if-changed .
+
+      - name: Q3 Analyze
+        run: flutter analyze --fatal-infos
+
+      - name: Q4 Codegen current
+        # Runs only when build_runner is a declared dependency; otherwise reports
+        # "not applicable" — which is true, unlike a blanket skip.
+        run: |
+          if grep -Eq '^[[:space:]]+build_runner:' pubspec.yaml; then
+            dart run build_runner build --delete-conflicting-outputs
+            changed="$(git status --porcelain -- . ':(exclude)pubspec.lock')"
+            if [ -n "$changed" ]; then
+              echo "Q4 FAIL: generated output differs from what is committed:"
+              echo "$changed"
+              exit 1
+            fi
+          else
+            echo "Q4 not applicable: build_runner is not declared in pubspec.yaml"
+          fi
+
+      - name: Q5 Tests
+        run: flutter test --coverage
+
+      - name: Q6 Coverage floor
+        env:
+          COVERAGE_FLOOR: ${{ vars.COVERAGE_FLOOR }}
+          COVERAGE_SCOPE: ${{ vars.COVERAGE_SCOPE || 'lib/src/' }}
+        run: |
+          if [ -z "$COVERAGE_FLOOR" ]; then
+            echo "Q6 FAIL: repository variable COVERAGE_FLOOR is not set."
+            echo "Set it from the project TESTING_STANDARD. An unenforced floor is not a pass."
+            exit 1
+          fi
+          [ -f coverage/lcov.info ] || { echo "Q6 FAIL: coverage/lcov.info missing"; exit 1; }
+          awk -v floor="$COVERAGE_FLOOR" -v scope="$COVERAGE_SCOPE" '
+            /^SF:/ {
+              f = substr($0, 4)
+              keep = (index(f, scope) == 1 || index(f, "/" scope) > 0) &&
+                     f !~ /\.(g|freezed|gr|config|mocks)\.dart$/
+            }
+            keep && /^LF:/ { lf += substr($0, 4) }
+            keep && /^LH:/ { lh += substr($0, 4) }
+            END {
+              if (lf == 0) {
+                printf "Q6 FAIL: no lines under %s in coverage/lcov.info (set COVERAGE_SCOPE?)\n", scope
+                exit 1
+              }
+              pct = 100 * lh / lf
+              printf "Q6 coverage on %s, generated excluded: %.1f%% (floor %s%%)\n", scope, pct, floor
+              if (pct < floor + 0) exit 1
+            }' coverage/lcov.info
+
+      - name: Q7 Hygiene
+        # Fat install: .ai.flutter/scripts/. Vendored: scripts/. Thin installs
+        # point at a sibling directory that does not exist on the runner — vendor
+        # the script or check out the framework and set FLUTTER_AGENT_OS_SOURCE.
+        run: |
+          for s in scripts/dart-hygiene-check.sh \
+                   .ai.flutter/scripts/dart-hygiene-check.sh \
+                   "${FLUTTER_AGENT_OS_SOURCE:-/nonexistent}/scripts/dart-hygiene-check.sh"; do
+            if [ -f "$s" ]; then exec bash "$s" lib; fi
+          done
+          echo "Q7 FAIL: dart-hygiene-check.sh not found (vendor it, use a fat install, or set FLUTTER_AGENT_OS_SOURCE)"
+          exit 1
+
+      - name: Q8 Dependency health (report only)
+        # The local gate fails Q8 only for a direct dependency with a known
+        # advisory; that judgement is not mechanised here. This step reports
+        # outdated packages for a human — it is not a gate and must not be read as one.
+        run: flutter pub outdated

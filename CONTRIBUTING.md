@@ -15,6 +15,12 @@ Green before, green after. A change that breaks either is not ready, regardless 
 
 ---
 
+## Measuring behaviour, not just structure
+
+The two scripts above prove the framework is well-formed. They cannot prove it changes what an agent does. `evals/` can: seeded Flutter repos that tempt a specific failure, scored mechanically, baseline arm against framework arm. Adding a hard rule? Add the scenario that would catch its violation. See [`evals/README.md`](evals/README.md).
+
+---
+
 ## Writing for an LLM reader
 
 **Be decidable.** Every rule must be checkable by the agent from what it can see. "Keep widgets small" is unactionable. "A `build` method longer than 60 lines must extract a widget" is a rule.

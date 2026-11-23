@@ -1,86 +1,58 @@
-# `.ai.flutter` (Flutter Agent OS) — upgrade directions for the deploy skills
+# Flutter Agent OS — sister registry and deploy parity (as-built)
 
-**Status:** Ready · **Needs:** none · **Repo:** `/mnt/work/Projects/.ai.flutter` (clean git)
+**Status:** Implemented (see `CHANGELOG.md` 0.6.1+) · **Needs:** none for registry/deploy parity  
+**Repo:** `/mnt/work/Projects/pilo.ai.flutter.logicbison`
 
-Goal: make the deploy skills produce targets whose `.cursorrules` discover all six sisters under both namings — same as the current framework. Note: flutter uses a **custom template set** (`cursorrules.flutter.template` + snippet) and a heavily customized `.cursorrules`; treat its files as bespoke.
+This document describes the **current** sister-framework and deploy contract. Historical upgrade steps from 2026-08-19 are retired; do not treat the old "registry never shipped" prose as live state.
 
-## Current state (measured 2026-08-19)
+---
 
-- `scripts/deploy-basic.sh` (188 L): merges the snippet template (`cursorrules.flutter.snippet.template`) into the full template (`cursorrules.flutter.template`); tokens like `REPLACE:FLUTTER_SNIPPET_BLOCK`, `REPLACE:FLUTTER_FRAMEWORK_PATH`. Has a hardcoded collision note `${TARGET}/.ai` + `${TARGET}/.ai.ui` (`:177`).
-- `scripts/deploy-files.sh` (205 L), `deploy-repo.sh` (186 L), `deploy-verify.sh` (264 L): **no sister logic**; deploy-verify does not check siblings.
-- **Sister discovery exists only as prose** in `skills/SKILL_DEPENDENCIES.md:89-104` (resolution order: registry → auto-discovery → preflight) — **the registry artifact is never shipped** to `.cursorrules` or templates.
-- `.cursorrules`: **no registry** (natural insertion point: before `## Core principles`, `:25`).
-- Templates: **no registry in either** `cursorrules.flutter.template` or `cursorrules.flutter.snippet.template`.
-- `scripts/framework-verify.sh` (251 L): structure/registration checks; no sister checks.
+## As-built
 
-## Steps
+| Surface | State |
+|---------|--------|
+| Discovery lib | `scripts/sister-discovery.sh` — legacy `.ai.<fw>` + family `pilo.ai.<fw>.logicbison`; `find_agent_os_dir` for the bare `.ai` slot |
+| Framework `.cursorrules` | 7-row Frameworks registry (self-hosted Flutter row + six sisters) before Core principles |
+| Adopter snippet | `templates/cursorrules.flutter.snippet.template` — registry with `REPLACE:AI_PATH` + `REPLACE:AI_*_PATH` cells |
+| Full template | Gets the registry via `REPLACE:FLUTTER_SNIPPET_BLOCK` expansion |
+| Deploy modes | **basic** (thin) and **files** (fat) only — `deploy-repo` removed |
+| Deploy fill | `deploy-basic.sh` / `deploy-files.sh` fill sister cells at install; missing sisters stay `REPLACE:` |
+| Source override | `AI_FLUTTER_SOURCE=/abs/path` — when the origin dir moves; bogus value aborts (exit 1), never silent fallback |
+| Verify | `deploy-verify.sh` Frameworks registry section; `framework-verify.sh` + `self-test.sh` |
 
-### 1. Copy the discovery lib
+Bootstrap artifact for every sister cell: that framework's `skills/README.md` (file, not directory).
+
+---
+
+## Modes and skills
+
+| Mode | Skill | Script |
+|------|-------|--------|
+| basic | `@flutter-deploy-basic` | `scripts/deploy-basic.sh` |
+| files | `@flutter-deploy-files` | `scripts/deploy-files.sh` |
+
+The former `deploy-repo` skill and `scripts/deploy-repo.sh` do not exist. A target still advertising `Mode: repo` fails `deploy-verify` with a migration instruction to reinstall via basic or files.
+
+---
+
+## Residual gaps
+
+| Gap | Notes |
+|-----|-------|
+| Pre-0.6.1 thin installs | Consumers such as OfficeToolCombo may still point at a moved/missing source path and lack the registry — fix with `AI_FLUTTER_SOURCE=… bash scripts/deploy-basic.sh --target <repo> update` |
+| `SKILL_DEPENDENCIES.md` prose | Keep registry resolution text aligned with the six sisters when editing that section |
+
+---
+
+## Verify
+
 ```bash
-cp /mnt/work/Projects/pilo.ai.logicbison/scripts/sister-discovery.sh scripts/sister-discovery.sh
-```
-
-### 2. `.cursorrules` — add the Frameworks registry (Layer 1, required)
-Insert before `## Core principles` (line 25):
-
-```markdown
-### Frameworks registry (cross-framework discovery)
-
-Sister frameworks are siblings on disk; `.ai.<fw>` (legacy) / `pilo.ai.<fw>.logicbison` (family) naming — see path resolution below. `.ai.flutter` is this framework (self-hosted).
-
-| Framework | Director | Path | Bootstrap artifact |
-|-----------|----------|------|--------------------|
-| `.ai.flutter` (Flutter Agent OS) | `@flutter-director` | *this directory* | `skills/README.md` |
-| `.ai` (Agent OS) | `@ai-director` | `../.ai` | `../.ai/skills/README.md` |
-| `.ai.biz` (Business OS) | `@biz-director` | `../.ai.biz` | `../.ai.biz/skills/README.md` |
-| `.ai.cto` (CTO Professor OS) | `@cto-director` | `../.ai.cto` | `../.ai.cto/skills/README.md` |
-| `.ai.mlt` (MLT Agent OS) | `@mlt-director` | `../.ai.mlt` | `../.ai.mlt/skills/README.md` |
-| `.ai.soc` (Social OS) | `@soc-director` | `../.ai.soc` | `../.ai.soc/skills/README.md` |
-| `.ai.ui` (UI Design OS) | `@ui-director` | `../.ai.ui` | `../.ai.ui/skills/README.md` |
-
-**Path resolution:** (1) use a filled path cell; empty → fall through. (2) Auto-discover: parent = `S/..` with S = this repo (self-hosted) or the thin-client source; sister = `<S basename with <fw> inserted before its last .segment>` (e.g. `pilo.ai.ui.logicbison` for a `pilo.ai.logicbison` source; `.ai`-prefixed sources resolve `.ai.<fw>` directly), else legacy `.ai.<fw>`; missing = "not installed". (3) Before routing, verify the framework dir + its `skills/README.md` exist; if absent, route with `[degraded: <framework> not installed]` — never route into the void. If your source dir name breaks discovery, fill the path cells manually.
-```
-
-### 3. Templates — add the registry to the full template (optional but recommended)
-In `templates/cursorrules.flutter.template`, add the same 7-row registry (consumer-style cells: `REPLACE:AI_UI_PATH (default \`../.ai.ui\`)` etc., self-excluded) + resolution text. If you add it, also add the same block to `templates/cursorrules.flutter.snippet.template` so snippet-merged targets get it.
-
-### 4. `deploy-basic.sh` — wire the six-slot fill (Layer 2, only if step 3 done)
-Mirror `pilo.ai.logicbison/scripts/deploy-basic.sh` step 2 inside the merge/substitution step: `source scripts/sister-discovery.sh`; loop `$FRAMEWORK_SLOTS`; `find_sister_dir "<source-root>" "$fw" "$(dirname "<source-root>")"`; fill the `REPLACE:AI_<FW>_PATH` cells → `<abs> (discovered at deploy time)`; else print checked candidates. Also replace the hardcoded `.ai`/`.ai.ui` collision note (`:177`) with a generic "a local `.ai*` framework dir exists — fat-client leak" warning (six names, not two).
-
-### 5. Verify
-```bash
-source scripts/sister-discovery.sh
-sister_names ui "$PWD"     # → .ai.ui
-for s in biz cto flutter mlt soc ui; do test -d "../.ai.$s/skills/README.md" && echo "$s ok"; done
-bash scripts/deploy-basic.sh /tmp/smoke-flutter   # inspect /tmp/smoke-flutter/.cursorrules
 bash scripts/framework-verify.sh
+bash scripts/self-test.sh
+AI_FLUTTER_SOURCE=/mnt/work/Projects/pilo.ai.flutter.logicbison \
+  bash scripts/deploy-verify.sh --target <adopter-repo>
 ```
-
-## Gaps found (include in a follow-up)
-
-- The registry is **prose-only** (`SKILL_DEPENDENCIES.md:89-104`) — the artifact is never shipped; targets cannot discover sisters (fixed by steps 2–3).
-- `SKILL_DEPENDENCIES.md`'s registry table is fixed to `.ai` + `.ai.ui` only (`:89-104`) — extend the table to the six (or reference the `.cursorrules` registry as authoritative).
-- Deploy modes are inconsistent (basic merges snippets; files/repo do not) — sister discovery should be added in all three or documented as basic-only.
-- Hardcoded collision note `${TARGET}/.ai` + `${TARGET}/.ai.ui` (`:177`).
-- No env-var path resolution for thin clients in `SKILL_DEPENDENCIES.md` (prose says "if set, use it" without naming the var).
-- `.ai` row points at the old on-disk Agent OS snapshot; update when the family rename lands.
-
-## Checklist
-- [x] `scripts/sister-discovery.sh` copied (byte-identical to the Agent OS lib; registered in `scripts/README.md` + framework-verify required tree)
-- [x] `.cursorrules` registry + resolution (Layer 1)
-- [x] Template registry (step 3): added to `cursorrules.flutter.snippet.template`; full-template installs get it via the existing `REPLACE:FLUTTER_SNIPPET_BLOCK` expansion — adding it to both templates would have duplicated it in full-template targets
-- [x] `deploy-basic.sh` six-slot fill + generic collision note (step 4); same fill mirrored in `deploy-files.sh` / `deploy-repo.sh` (target-side, `../`-relative) so the three modes stay consistent
-- [x] `deploy-verify.sh` registry section: `REPLACE:AI*_PATH` pending-warn with owner; "installed but unfilled" warn only where the install itself looks (per-mode parents); dangling filled cell named
-- [x] Verify commands pass: `framework-verify.sh` 360 checks / 0 failures; `self-test.sh` 54 passed / 0 failed; deploy smoke + verify on basic and files targets exit 0
-- [x] Nothing committed/staged
-
-## Implementation notes (decisions taken where the doc was ambiguous)
-
-- **"self-excluded"** read as: the consumer registry drops the `.ai.flutter` row — the Flutter framework is pinned by the block's `Framework:` line, so the deployable cell set is `REPLACE:AI_PATH` (bare Agent OS slot) + the five `REPLACE:AI_*_PATH` sisters. The framework's own `.cursorrules` keeps all 7 rows per the doc.
-- **Fill scope by mode:** basic (thin) discovers next to the source framework and fills absolute paths; files/repo (fat) discover next to the target and fill `../.ai.<fw>` (source-machine absolutes would dangle on the target machine). `deploy-verify.sh` mirrors the per-mode parents so an "unfilled" warning always corresponds to a re-run that can fill it.
-- **Unresolved `REPLACE:AI*_PATH` is a warn, never a fail** — a missing sister is legitimate; it degrades to runtime auto-discovery (`[degraded: …]` routing).
-- **`test -d` in the doc's step-5 loop is wrong** — `skills/README.md` is a file; use `test -f` (the doc's `test -d "../.ai.$s/skills/README.md"` reports everything missing).
-- The `.ai` row points at `../.ai`, which is **not installed on this machine** (the six legacy `.ai.<fw>` sisters are) — the registry and verifier handle it as "not installed" until the Agent OS rename lands (doc gap, unchanged).
 
 ## Next action
-Run steps 1–2 + 5 inside `/mnt/work/Projects/.ai.flutter`; steps 3–4 complete deploy parity.
+
+Next action: none — registry and deploy parity are shipped; refresh stale consumers with `@flutter-deploy-basic update`.

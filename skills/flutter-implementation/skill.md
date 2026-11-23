@@ -26,6 +26,9 @@ Execute implementation iterations derived from an **Approved master plan**. Each
 - **No implementation without a valid iteration block.** Missing or invalid → run `plan` first.
 - **No code without reading the SPEC and the standards first.** Evidence-first: read before writing.
 - **No task is `done` until its gate passes.** `dart format` clean, `flutter analyze` zero issues, and the relevant tests green — all with observed exit codes.
+- **Never weaken a check to force a pass.** No deleted/skipped tests, lowered thresholds, or suppressions without same-message approval and a recorded reason.
+- **Characterize before changing owned behaviour.** When altering behaviour you do not fully own, add or extend a test (or golden) that locks current observable output, watch it pass on the old code, then change the implementation and keep it green. Docs-only and framework shell work are exempt.
+- **Three-strike stop.** After three failed attempts on the same root cause with no new evidence, stop, report what was tried, and escalate — do not loop or weaken checks.
 - **Scope discipline.** Do not modify a file that is not in the task's `Files` list. Any accidental change is reverted and documented.
 - **Follow the locked stack.** Read `{FLUTTER_STACK_LOCK}` and the matching [`stacks/`](../../stacks/) idiom file. Do not introduce a second state-management approach, router or serialization strategy.
 - **Data-layer and native work delegate.** Schema and model changes go through `@flutter-data`; channels, permissions and native config go through `@flutter-platform`.

@@ -32,12 +32,15 @@ Non-negotiable coverage, regardless of the percentage:
 - Every guard and every deep-link shape.
 - Every accessibility requirement the SPEC §12 states.
 - Every regression: a bug fix without a test that fails before the fix is not a fix.
+- Every behaviour change you do not fully own: a characterization test (or golden) that locks current observable output and passes on the old code before the change lands.
 
 ---
 
 ## 3. Test quality
 
 **Behaviour, not implementation.** A test that asserts a private method was called breaks on every refactor and catches nothing. Assert observable outcomes: rendered output, returned values, emitted states, calls to boundaries the system does not own.
+
+**Independent oracles.** When a SPEC defines a formula, expected values come from an independent source or a fixture — never by re-implementing the production logic in the test. Inject clock, randomness and ID generation the same way architecture requires one clock helper.
 
 **Arrange–Act–Assert**, visibly separated. A test with the arrangement scattered through the assertions cannot be read at 3am.
 

@@ -21,6 +21,9 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 @flutter-bootstrap init                    scaffold .work.flutter/ (idempotent)
 @flutter-bootstrap status                  what is scaffolded
 @flutter-bootstrap hooks                   install git hooks only
+@flutter-bootstrap quickstart - lite       write QUICKSTART-PLAYBOOK (session + NEXT loop)
+@flutter-bootstrap quickstart - brownfield playbook for recover-from-code path
+@flutter-bootstrap quickstart - full       playbook for greenfield foundation → F1
 
 @flutter-stack probe                       interrogate the 7 dimensions
 @flutter-stack set - <dimension>=<choice>  lock a choice

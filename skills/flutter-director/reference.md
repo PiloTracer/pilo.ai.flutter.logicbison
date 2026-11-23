@@ -11,6 +11,7 @@ Full signal lists. Match on **intent**; the phrases are examples, not a keyword 
 | Bucket | Example phrasings | Lead skill | Typical follow-on |
 |--------|-------------------|------------|-------------------|
 | `bootstrap` | "start a new Flutter project" · "set this repo up" · "nothing exists yet" | `@flutter-bootstrap init` | `@flutter-stack set` |
+| `quickstart` | "onboard in 30 minutes" · "lite adoption" · "quickstart playbook" | `@flutter-bootstrap quickstart - lite` (or `brownfield` / `full`) | `@flutter-session start` |
 | `stack` | "Riverpod or Bloc?" · "which packages should we use" · "lock our choices" · "what's our DI" | `@flutter-stack set` | `@flutter-foundation greenfield` |
 | `foundation` | "what are we building" · "write the blueprint" · "foundation docs" · "capture requirements" | `@flutter-foundation greenfield` | `probe` → `certify` |
 | `foundation-probe` | "I'm not sure what we need" · "help me think this through" · "the scope is fuzzy" · "grill me" | `@flutter-foundation probe` | `certify` |

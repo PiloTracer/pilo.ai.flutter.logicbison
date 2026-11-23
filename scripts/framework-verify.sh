@@ -44,7 +44,10 @@ for d in skills standards concepts templates scripts hooks stacks resources docs
 done
 for f in LICENSE README.md START_HERE.md skills/README.md skills/SKILL_DEPENDENCIES.md \
          skills/probe-protocol.md standards/PROTECTED_SURFACES.json templates/bootstrap.sh \
-         scripts/sister-discovery.sh; do
+         scripts/sister-discovery.sh scripts/last-gate-record.sh scripts/bootstrap-smoke.sh \
+         templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md \
+         templates/ci/github-actions/flutter-gates.yml \
+         standards/20261123-CICD_CONVENTIONS.md; do
   [ -f "$f" ] && pass "$f present" || fail "$f missing"
 done
 
@@ -241,6 +244,52 @@ if grep -rqn 'NEXT_FLUTTER\.md' skills/ 2>/dev/null; then
   pass "skills use NEXT_FLUTTER.md"
 else
   warn "no skill references NEXT_FLUTTER.md"
+fi
+
+# ---------------------------------------------------------- 9. lifecycle smoke
+head_ "Lifecycle smokes"
+if bash scripts/bootstrap-smoke.sh >/dev/null 2>&1; then
+  pass "bootstrap-smoke.sh"
+else
+  fail "bootstrap-smoke.sh"
+fi
+
+LG_TMP="$(mktemp -d "${TMPDIR:-/tmp}/flutter-last-gate.XXXXXX")"
+git -C "${LG_TMP}" init -q
+if LAST_GATE_ROOT="${LG_TMP}" bash scripts/last-gate-record.sh \
+     --verifier framework-verify-smoke --verdict pass \
+     --command "true" --exit 0 >/dev/null 2>&1 \
+   && LAST_GATE_ROOT="${LG_TMP}" bash scripts/last-gate-record.sh \
+     --verifier framework-verify-smoke-empty --verdict pass >/dev/null 2>&1 \
+   && [ -s "${LG_TMP}/.work.flutter/reports/last-gate.json" ]; then
+  pass "last-gate-record.sh"
+else
+  fail "last-gate-record.sh"
+fi
+rm -rf "${LG_TMP}"
+
+# ------------------------------------------------------------------ 10. evals
+head_ "Evals"
+if [ -f evals/run.sh ]; then
+  bash -n evals/run.sh 2>/dev/null && pass "evals/run.sh parses" || fail "evals/run.sh has syntax errors"
+  [ -x evals/run.sh ] && pass "evals/run.sh is executable" || fail "evals/run.sh not executable"
+  [ -f evals/apps/base/pubspec.yaml ] && pass "eval base app present" || fail "evals/apps/base/pubspec.yaml missing"
+  for sd in evals/scenarios/*/; do
+    [ -d "$sd" ] || continue
+    sn="$(basename "$sd")"
+    for req in README.md task.md scenario.conf; do
+      [ -f "${sd}${req}" ] || fail "eval ${sn}: ${req} missing"
+    done
+    ls "${sd}acceptance/"*.dart >/dev/null 2>&1 || fail "eval ${sn}: no held-out acceptance test"
+    ls -d "${sd}bad/"*/ >/dev/null 2>&1 || fail "eval ${sn}: no bad/ solution — a scorer never shown a failure proves nothing"
+    pass "eval ${sn} well-formed"
+  done
+elif [ -d .github ]; then
+  fail "evals/run.sh missing"
+else
+  # Installed copies (deploy-files) carry neither .github/ nor evals/: the eval
+  # harness is framework-source tooling, not something adopters run.
+  pass "evals not present — installed copy, harness is framework-source only"
 fi
 
 # ------------------------------------------------------------------ summary

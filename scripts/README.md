@@ -21,6 +21,8 @@ All are POSIX-ish bash with no dependencies beyond coreutils and git. Nothing he
 | [`self-test.sh`](self-test.sh) | The verifiers themselves, against fixtures | CI, `CONTRIBUTING` |
 | [`sister-discovery.sh`](sister-discovery.sh) | Sister-framework discovery (legacy `.ai.<fw>` + family naming) — sourced by the deploy scripts, not run directly | `@flutter-deploy-* install` |
 | [`deploy-verify.sh`](deploy-verify.sh) | A target repo's install: pointer, recorded framework location, `.cursorrules` block (markers, unresolved `REPLACE:` tokens with their owners, framework path, registry cells, `@flutter-*` routes), gitignore scratch exclusions | `@flutter-deploy-basic verify` / `@flutter-deploy-files verify` |
+| [`last-gate-record.sh`](last-gate-record.sh) | Writes `.work.flutter/reports/last-gate.json` (verifier, verdict, commands/exits) after a verify run | `@flutter-verify uncommitted` on pass / pass with gaps |
+| [`bootstrap-smoke.sh`](bootstrap-smoke.sh) | Temp-repo smoke of `templates/bootstrap.sh` — HANDOFF, NEXT, `.cursorrules` non-empty | `framework-verify.sh` § Lifecycle smokes |
 
 ## Self-test
 

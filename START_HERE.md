@@ -20,7 +20,8 @@ It reads the project state, picks the skill chain, shows you the plan, and waits
 |-----------|----------|
 | Brand new repository, nothing exists yet | `@flutter-bootstrap init` |
 | Framework installed, no `.work.flutter/` | `@flutter-bootstrap init` |
-| Existing Flutter app, adopting the framework | `@flutter-bootstrap init` then `@flutter-plan-verify brownfield` |
+| Want a 30-minute lite path (playbook only) | `@flutter-bootstrap quickstart - lite` (requires `.work.flutter/plans/`) |
+| Existing Flutter app, adopting the framework | `@flutter-bootstrap init` then `@flutter-plan-verify brownfield` (or `quickstart - brownfield`) |
 | Bootstrapped, stack not chosen | `@flutter-stack probe` |
 | Stack locked, no plan | `@flutter-foundation greenfield` |
 | Foundation done, no master plan | `@flutter-plan-master greenfield` |

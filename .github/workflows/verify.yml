@@ -33,6 +33,38 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
           shellcheck -S warning scripts/*.sh hooks/* templates/*.sh || true
 
+  evals:
+    name: eval scorers + adopter CI template (real Flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Toolchain
+        run: flutter --version
+
+      # Every scenario: seed must fail its held-out acceptance test, the
+      # reference solution must pass every check (analyze, format, tests,
+      # acceptance), and every bad solution must fail the check it names.
+      - name: Eval selftest with toolchain
+        run: bash evals/run.sh selftest
+
+      # The adopter template is the thing under test, executed step by step
+      # against the eval base app. A template that cannot pass on a clean app
+      # would fail every adopter on day one.
+      - name: Adopter CI template on the base app
+        run: |
+          python3 -c 'import yaml' 2>/dev/null || pip install --quiet pyyaml
+          bash evals/run.sh materialize base "$RUNNER_TEMP/base-app"
+          FLUTTER_AGENT_OS_SOURCE="$GITHUB_WORKSPACE" python3 evals/tools/run-workflow-steps.py \
+            templates/ci/github-actions/flutter-gates.yml --job gate --cwd "$RUNNER_TEMP/base-app" \
+            --var COVERAGE_FLOOR=50 --var COVERAGE_SCOPE=lib/
+
   bootstrap:
     name: bootstrap round-trip
     runs-on: ubuntu-latest

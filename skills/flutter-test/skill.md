@@ -22,9 +22,10 @@ Tests are the only mechanism by which a claim about behaviour becomes evidence. 
 1. **Never report a test result you did not observe.** No toolchain or device → `not run (<reason>)` and route to `@flutter-doctor env`. A fabricated green suite is the worst possible output of this skill.
 2. **Test behaviour, not implementation.** Assert what the user or caller observes. A test that breaks on a harmless refactor is a liability.
 3. **Never weaken a test to make it pass.** Deleting an assertion, adding `skip:`, or widening a matcher to accommodate a bug is falsification. Fix the code, or record the failure.
-4. **Determinism is mandatory.** No real network, no real clock, no real randomness, no `Future.delayed` as synchronisation. Flaky tests get quarantined and fixed, never re-run until green.
-5. **Goldens are deterministic or they are disabled.** Fixed surface size, loaded test fonts, no platform-dependent rendering. Goldens are regenerated deliberately and the diff is reviewed — never `--update-goldens` to make CI pass.
-6. **Coverage is a floor, not a goal.** 100% coverage of getters proves nothing. The six UI states, every error path, and every business rule matter more than the percentage.
+4. **Determinism is mandatory.** No real network, no real clock, no real randomness, no `Future.delayed` as synchronisation. Flaky tests get quarantined and fixed, never re-run until green. Inject `Clock`, randomness and ID generation at the boundary under test.
+5. **Independent oracles.** Assert against independently computed expectations or fixture oracles — never mirror the production formula under test inside the assertion.
+6. **Goldens are deterministic or they are disabled.** Fixed surface size, loaded test fonts, no platform-dependent rendering. Goldens are regenerated deliberately and the diff is reviewed — never `--update-goldens` to make CI pass.
+7. **Coverage is a floor, not a goal.** 100% coverage of getters proves nothing. The six UI states, every error path, and every business rule matter more than the percentage.
 
 ---
 

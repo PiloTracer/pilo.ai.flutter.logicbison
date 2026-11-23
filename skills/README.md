@@ -40,7 +40,7 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 
 | Skill id | Folder | Role |
 |----------|--------|------|
-| flutter-bootstrap | `flutter-bootstrap/` | Scaffold `.work.flutter/`, `.cursorrules`, `DOCS_FLUTTER_STACK.md`, `analysis_options.yaml` from templates |
+| flutter-bootstrap | `flutter-bootstrap/` | Scaffold `.work.flutter/`, `.cursorrules`, `DOCS_FLUTTER_STACK.md`, `analysis_options.yaml` from templates; `quickstart - lite\|brownfield\|full` writes the playbook only |
 | flutter-stack | `flutter-stack/` | Choose and **lock** the technology stack (state, navigation, DI, data, serialization, testing); writes `STACK.md` |
 | flutter-foundation | `flutter-foundation/` | **Foundation planner:** P0–P6 gates, foundation docs 01–05, ADRs, registries; `probe`; certifies **plan-ready** |
 | flutter-plan-master | `flutter-plan-master/` | Master implementation plan: milestones `F{N}`, tasks, traceability, `probe`, `integrity`; certifies **implementation-ready** |

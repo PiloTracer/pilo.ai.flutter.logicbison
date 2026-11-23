@@ -1,0 +1,19 @@
+name: eval_app
+description: Seed application for Flutter Agent OS evaluations. Test data, not a product.
+publish_to: none
+
+# The SDK floor is the minimum the fixture's syntax needs (Dart 3 class
+# modifiers), not a recommendation. Dependencies are deliberately unpinned and
+# no pubspec.lock is committed: CI resolves against the current stable SDK, and
+# each eval run records the toolchain it actually used.
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter

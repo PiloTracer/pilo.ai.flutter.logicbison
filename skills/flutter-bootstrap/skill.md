@@ -35,6 +35,9 @@ Create the project-memory scaffold that every other skill reads and writes. Idem
 | `init - <path>` | Same, targeting a different repo root |
 | `status` | Read-only: what exists, what is missing, which tokens are unreplaced |
 | `hooks` | Install or reinstall git hooks only |
+| `quickstart - lite\|brownfield\|full` | Write `.work.flutter/plans/QUICKSTART-PLAYBOOK.md` from template; print that mode's 7-step table (no HANDOFF/NEXT/cursorrules edits) |
+
+**quickstart modes:** `lite` = session + manual NEXT; `brownfield` = plan-verify brownfield path; `full` = stack → foundation → master → F1. See [`.quick/onboarding-30min.md`](../../.quick/onboarding-30min.md).
 
 ---
 
@@ -194,6 +197,20 @@ Run `scripts/install-git-hooks.sh` only. Report which hooks were installed or re
 
 ---
 
+## Quickstart protocol
+
+Writes **one** file: `.work.flutter/plans/QUICKSTART-PLAYBOOK.md`. Does not edit HANDOFF, NEXT, or `.cursorrules`. Does not run foundation or stack.
+
+1. Mode must be `lite`, `brownfield`, or `full`. Anything else → stop and print the three modes.
+2. If `.work.flutter/plans/` is missing → stop. **Next step:** `@flutter-bootstrap init`. Do not create `.work.flutter/` from this mode.
+3. Template: `$FLUTTER_AGENT_OS_SOURCE/templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md` when that env var is set and the file exists; else `templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md` from the framework root (or `AI_FLUTTER_SOURCE` when resolving a thin-client source).
+4. If the destination already exists → stop unless this message contains `overwrite-playbook`.
+5. Replace `{{MODE}}` with the mode and `{{DATE}}` with UTC `YYYY-MM-DD`. Leave every other line unchanged.
+6. Print the 7-step table for **that mode only** (the other mode sections stay in the file).
+7. Close with Form A / Form B. Typical next: `@flutter-session start`.
+
+---
+
 ## Anti-patterns
 
 - Overwriting `.cursorrules`, `analysis_options.yaml` or `pubspec.yaml` without an explicit answer.
@@ -202,6 +219,8 @@ Run `scripts/install-git-hooks.sh` only. Report which hooks were installed or re
 - Reporting "bootstrapped" while tokens remain unreplaced.
 - Recommending `@flutter-foundation greenfield` on a repo that already has a `lib/` full of source.
 - Writing project artifacts into the framework directory.
+- Using `quickstart` to create `.work.flutter/` or to run foundation — that is `init` / `@flutter-foundation`.
+- Overwriting an existing `QUICKSTART-PLAYBOOK.md` without `overwrite-playbook`.
 
 ---
 

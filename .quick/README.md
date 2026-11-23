@@ -2,6 +2,15 @@
 
 Single-page cards. Dense by design — these are for looking something up mid-task, not for learning the system.
 
+**Lifecycle (start here if new):**
+
+| Card | For |
+|------|-----|
+| [`onboarding-30min.md`](onboarding-30min.md) | Lite path: session memory + honest gates in ~30 minutes |
+| [`software-lifecycle.md`](software-lifecycle.md) | Phase → skill map for the whole product loop |
+
+**Lookup cards:**
+
 | Card | For |
 |------|-----|
 | [`commands.md`](commands.md) | Every skill invocation, by skill |

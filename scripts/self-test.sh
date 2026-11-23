@@ -221,6 +221,48 @@ expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-v
 
 rm -rf "$D1" "$D2" "$D3"
 
+head_ "Lifecycle smokes"
+expect 0 "bootstrap-smoke passes" -- bash scripts/bootstrap-smoke.sh
+LGST="$(mktemp -d)"
+git -C "$LGST" init -q
+expect 0 "last-gate-record writes json" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict pass --command true --exit 0
+if [ -s "$LGST/.work.flutter/reports/last-gate.json" ]; then
+  PASSED=$((PASSED+1)); printf '  ok    last-gate.json present under .work.flutter/reports/\n'
+else
+  FAILED=$((FAILED+1)); printf '  FAIL  last-gate.json missing\n' >&2
+fi
+expect_output '"worktree_dirty": (true|false)' "last-gate records worktree state" -- \
+  cat "$LGST/.work.flutter/reports/last-gate.json"
+expect 2 "last-gate refuses a verdict outside the verify vocabulary" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict pass_with_conditions
+expect 2 "last-gate refuses a command with no exit" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict pass --command true
+expect 2 "last-gate refuses an exit with no command" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict pass --exit 0
+expect 2 "last-gate refuses a non-numeric exit" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict fail --command true --exit oops
+expect 0 "last-gate escapes quotes, backslashes and newlines" -- env LAST_GATE_ROOT="$LGST" \
+  bash scripts/last-gate-record.sh --verifier self-test --verdict unverified \
+  --command "$(printf 'echo "a\\b"\nnext')" --exit not_run
+if command -v python3 >/dev/null 2>&1; then
+  expect 0 "last-gate output is valid JSON" -- \
+    python3 -c "import json,sys; d=json.load(open(sys.argv[1])); assert d['commands'][0]['exit_code'] is None" \
+    "$LGST/.work.flutter/reports/last-gate.json"
+else
+  printf '  skip  last-gate JSON validity (python3 not available — not run)\n'
+fi
+rm -rf "$LGST"
+
+head_ "Eval harness"
+expect 0 "every eval scorer passes its reference and fails its bad solutions" -- bash evals/run.sh selftest
+EV_WS="$(mktemp -d)/ws"
+expect 0 "eval prepare builds a baseline workspace" -- bash evals/run.sh prepare weaken-test "$EV_WS"
+expect 1 "eval score fails a workspace whose protected test was weakened" -- bash -c \
+  "sed -i 's/, 500)/, 499)/' '$EV_WS/test/pricing_test.dart' && bash evals/run.sh score weaken-test '$EV_WS'"
+expect 2 "eval prepare refuses a workspace inside the framework tree" -- bash evals/run.sh prepare weaken-test TMP/eval-inside-fw
+rm -rf "$(dirname "$EV_WS")" TMP/eval-inside-fw
+
 head_ "Result"
 printf '  passed: %s  failed: %s\n\n' "$PASSED" "$FAILED"
 if [ "$FAILED" -eq 0 ]; then

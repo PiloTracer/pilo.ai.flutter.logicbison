@@ -3,7 +3,7 @@
 #
 # Framework IDs are stable (`.ai.ui` = UI Design OS, `.ai.biz` = Business OS,
 # `.ai.cto` = CTO Professor OS, `.ai.flutter` = Flutter Agent OS, `.ai.mlt` =
-# MLT Agent OS, `.ai.soc` = Social OS). The on-disk DIRECTORY NAME of a sister
+# MLT Agent OS, `.ai.soc` = Security OS). The on-disk DIRECTORY NAME of a sister
 # framework may follow either convention:
 #   - family naming:  source basename with `<fw>` inserted before its last
 #                     dot-segment — e.g. source `pilo.ai.logicbison` → sister

@@ -101,7 +101,7 @@ Implements the operator-provided **Documentation Clarity Protocol** (origin: `{F
 | Business OS (`.ai.biz`) | Business operations and process automation | `@biz-director` | `../.ai.biz/skills/README.md` |
 | CTO Professor OS (`.ai.cto`) | Architecture and technical leadership coaching | `@cto-director` | `../.ai.cto/skills/README.md` |
 | MLT Agent OS (`.ai.mlt`) | Machine learning tooling and training | `@mlt-director` | `../.ai.mlt/skills/README.md` |
-| Social OS (`.ai.soc`) | Social presence and community operations | `@soc-director` | `../.ai.soc/skills/README.md` |
+| Security OS (`.ai.soc`) | Authorized security testing: dynamic analysis and proof-of-concept validation of your own apps | `@soc-director` | `../.ai.soc/skills/README.md` |
 | UI Design OS (`.ai.ui`) | Design tokens, screen SPECs, visual craft | `@ui-director` | `../.ai.ui/skills/README.md` |
 | Cross-framework | Spans two or more of the above | `@x-director` | `../.ai/skills/x-director/skill.md` |
 

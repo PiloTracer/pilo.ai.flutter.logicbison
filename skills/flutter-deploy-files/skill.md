@@ -40,10 +40,10 @@ Installs **the framework**, not the app. `@flutter-release` ships your Flutter a
 
 | Mode | Action |
 |------|--------|
-| `files - <target>` | **Fat install (default).** Copy the full framework into the target so it is self-contained |
-| `update - <target>` | Update an existing files install, preserving all project artifacts. `--update` is accepted as an alias — `@flutter-deploy-files update - <target>` and `@flutter-deploy-files --update - <target>` are identical |
-| `verify - <target>` | Read-only: is the files install complete, consistent and usable |
-| `uninstall - <target>` | Remove the copied framework directory; **never** removes project artifacts |
+| `<target>` (no mode word) | **Fat install (default).** Copy the full framework into the target so it is self-contained |
+| `<target> update` | Update an existing files install, preserving all project artifacts. Canonical form: `@flutter-deploy-files <target> update`. Arguments are order-independent, so `update - <target>` and `--update` also work |
+| `<target> verify` | Read-only: is the files install complete, consistent and usable |
+| `<target> uninstall` | Remove the copied framework directory; **never** removes project artifacts |
 | `status` | Read-only: installed mode, version, drift |
 
 ### Invocation parsing

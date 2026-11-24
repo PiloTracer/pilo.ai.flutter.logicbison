@@ -223,6 +223,11 @@ fi
 sed -i -E 's/REPLACE:(FLUTTER|DART|AI)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
 expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-verify.sh "$D2/app" --quiet
 
+cp "$D2/app/.cursorrules" "$D2/app/.cursorrules.good"
+sed -i '0,/`filled`/s//`riverpod_MANAGEMENT`/' "$D2/app/.cursorrules"
+expect_output 'half-substituted.*riverpod_MANAGEMENT' "deploy-verify names a half-replaced token value" -- bash scripts/deploy-verify.sh "$D2/app"
+mv "$D2/app/.cursorrules.good" "$D2/app/.cursorrules"
+
 head_ "Agent-file pointers"
 for af in AGENTS.md CLAUDE.md; do
   expect_output 'FLUTTER_AGENT_OS_BEGIN' "files install writes the ${af} pointer" -- cat "$D2/app/${af}"

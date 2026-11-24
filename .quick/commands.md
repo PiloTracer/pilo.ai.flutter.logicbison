@@ -120,8 +120,8 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 @flutter-concept-run list|select|run - <FLS-nn>|status
 @flutter-docs create guide|tutorial|reference|explanation|runbook
 @flutter-docs readme|review|index|status
-@flutter-deploy-basic basic|update|--update|verify|uninstall|status - <target>
-@flutter-deploy-files files|update|--update|verify|uninstall|status - <target>
+@flutter-deploy-basic <target> [update|verify|uninstall|status]   (no mode word = install)
+@flutter-deploy-files <target> [update|verify|uninstall|status]   (no mode word = install)
 ```
 
 ---

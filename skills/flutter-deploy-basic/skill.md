@@ -40,10 +40,10 @@ Installs **the framework**, not the app. `@flutter-release` ships your Flutter a
 
 | Mode | Action |
 |------|--------|
-| `basic - <target>` | **Thin install (default).** A pointer file plus `.cursorrules` registration; skills are read from the source location |
-| `update - <target>` | Update an existing basic install, preserving all project artifacts. `--update` is accepted as an alias — `@flutter-deploy-basic update - <target>` and `@flutter-deploy-basic --update - <target>` are identical |
-| `verify - <target>` | Read-only: is the basic install complete, consistent and usable |
-| `uninstall - <target>` | Remove the basic install (pointer file + registration); **never** removes project artifacts |
+| `<target>` (no mode word) | **Thin install (default).** A pointer file plus `.cursorrules` registration; skills are read from the source location |
+| `<target> update` | Update an existing basic install, preserving all project artifacts. Canonical form: `@flutter-deploy-basic <target> update`. Arguments are order-independent, so `update - <target>` and `--update` also work |
+| `<target> verify` | Read-only: is the basic install complete, consistent and usable |
+| `<target> uninstall` | Remove the basic install (pointer file + registration); **never** removes project artifacts |
 | `status` | Read-only: installed mode, version, drift |
 
 ### Invocation parsing

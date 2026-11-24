@@ -176,7 +176,7 @@ Binding per-stack rules: `stacks/<K1 choice>.md`. Every generated file follows t
 
 | Target | Update |
 |--------|--------|
-| `.cursorrules` | Replace `REPLACE:FLUTTER_STATE_MANAGEMENT`, `_NAVIGATION`, `_DI`, `_SERIALIZATION`, `_HTTP`, `_LOCAL_STORE`, `_TEST_DOUBLE` |
+| `.cursorrules` | Replace `REPLACE:FLUTTER_STATE_MANAGEMENT`, `REPLACE:FLUTTER_NAVIGATION`, `REPLACE:FLUTTER_DI`, `REPLACE:FLUTTER_SERIALIZATION`, `REPLACE:FLUTTER_HTTP`, `REPLACE:FLUTTER_LOCAL_STORE`, `REPLACE:FLUTTER_TEST_DOUBLE` (whole tokens only — never a prefix; see `@flutter-bootstrap`) |
 | `DOCS_FLUTTER_STACK.md` | Fill the dependency table and the verification commands |
 | `{FLUTTER_HANDOFF}` | Append `Stack locked: <date> — <K1>/<K2>/<K3>` |
 | `{FLUTTER_DECISIONS_ROOT}` | Write `YYYYMMDD-NNN-technology-stack.md` ADR recording the decision and the rejected options |

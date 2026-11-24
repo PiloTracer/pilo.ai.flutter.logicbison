@@ -96,7 +96,7 @@ if [ -f "$POINTER" ]; then
   echo "already installed: $POINTER"
   grep -E '^\*\*(Version|Mode|Source):' "$POINTER" || true
   echo
-  echo "This is an update. Run @flutter-deploy-basic update - ${TARGET} (or --update)"
+  echo "This is an update. Run @flutter-deploy-basic ${TARGET} update"
   exit 2
 fi
 

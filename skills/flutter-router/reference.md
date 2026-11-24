@@ -9,7 +9,7 @@ Authoritative routing table for [`skill.md`](skill.md). When a skill or standard
 | Bucket | Example questions | Run next | Canonical sources |
 |--------|-------------------|----------|-------------------|
 | `orientation` | "where do I start?" · "what is this framework?" · "what should I do now?" | `@flutter-director status` | `START_HERE.md` · `README.md` |
-| `install` | "how do I add this to my repo?" · "thin vs fat install?" | thin → `@flutter-deploy-basic - <path>`; fat → `@flutter-deploy-files - <path>` | `skills/flutter-deploy-basic/skill.md` · `skills/flutter-deploy-files/skill.md` |
+| `install` | "how do I add this to my repo?" · "thin vs fat install?" | thin → `@flutter-deploy-basic <path>`; fat → `@flutter-deploy-files <path>` | `skills/flutter-deploy-basic/skill.md` · `skills/flutter-deploy-files/skill.md` |
 | `bootstrap` | "how do I set up `.work.flutter/`?" · "what does init create?" | `@flutter-bootstrap init` | `skills/flutter-bootstrap/skill.md` · `templates/bootstrap.sh` |
 | `desktop` | "Windows/macOS/Linux app?" · "keyboard shortcuts?" · "notarize / MSIX?" · "custom title bar?" | `@flutter-scaffold desktop` | `standards/20261123-DESKTOP_STANDARD.md` · `resources/packages-2026.md` § Desktop |
 | `quickstart` | "30-minute onboarding" · "lite path" · "quickstart playbook" | `@flutter-bootstrap quickstart - lite` | `.quick/onboarding-30min.md` · `templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md` |

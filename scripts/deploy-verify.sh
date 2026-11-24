@@ -138,7 +138,7 @@ if [ -n "$FW" ]; then
   if [ -n "$FWC" ]; then
     pass "framework location resolves: $FWC"
   else
-    fail "framework location does not resolve: $FW — if the framework moved, run @flutter-deploy-${MODE} update - $TARGET"
+    fail "framework location does not resolve: $FW — if the framework moved, run @flutter-deploy-${MODE} $TARGET update"
   fi
 fi
 
@@ -155,14 +155,14 @@ if [ -n "$FWC" ]; then
   elif [ "$SRC_VERSION" = "$VERSION" ]; then
     pass "version matches the source ($VERSION)"
   else
-    fail "version drift: pointer says $VERSION, source is $SRC_VERSION — run @flutter-deploy-${MODE} update - $TARGET"
+    fail "version drift: pointer says $VERSION, source is $SRC_VERSION — run @flutter-deploy-${MODE} $TARGET update"
   fi
 
   # A thin install records an absolute source path. If that path is not the
   # framework copy this verifier runs from, either the framework moved or two
   # copies exist — the operator must know which one the target actually reads.
   if [ "$MODE" = "basic" ] && [ "$FWC" != "$FRAMEWORK_ROOT" ]; then
-    warn "basic install reads skills from $FWC, not from this framework copy ($FRAMEWORK_ROOT) — if the framework moved, run @flutter-deploy-basic update - $TARGET"
+    warn "basic install reads skills from $FWC, not from this framework copy ($FRAMEWORK_ROOT) — if the framework moved, run @flutter-deploy-basic $TARGET update"
   fi
 fi
 
@@ -206,6 +206,19 @@ else
     done <<EOF
 $TOKENS
 EOF
+  fi
+
+  # Half-replaced tokens: substituting a token's prefix (REPLACE:FLUTTER_STATE
+  # inside REPLACE:FLUTTER_STATE_MANAGEMENT) leaves an upper-case tail glued to
+  # the value — `riverpod_MANAGEMENT`, `go_routerIGATION`. The token is gone,
+  # so the check above passes, yet every agent reads a wrong stack.
+  if [ -n "$BLOCK" ]; then
+    HALF="$(grep -oE '`[^`]*[a-z0-9.)]_?[A-Z]{4,}[^`]*`' <<< "$BLOCK" | grep -v 'REPLACE:' | sort -u | tr '\n' ' ' || true)"
+    if [ -n "$HALF" ]; then
+      fail "values look half-substituted (an upper-case token tail glued to a value): ${HALF}— refill them from STACK.md / DOCS_FLUTTER_STACK.md"
+    else
+      pass "no half-substituted token values in the block"
+    fi
   fi
 fi
 

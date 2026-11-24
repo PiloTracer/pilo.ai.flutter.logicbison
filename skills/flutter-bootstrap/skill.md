@@ -144,13 +144,15 @@ Scan every created file for `REPLACE:FLUTTER_*` tokens and list them with their 
 |-------|-----------|
 | `REPLACE:FLUTTER_PROJECT_NAME` | the deploy script (target directory name) — re-run install/update |
 | `REPLACE:FLUTTER_APP_ROOT` | `@flutter-bootstrap` (auto when `pubspec.yaml` is found) |
-| `REPLACE:FLUTTER_STATE_MANAGEMENT`, `_NAVIGATION`, `_DI`, `_SERIALIZATION`, `_LOCAL_STORE`, `_HTTP`, `_TEST_DOUBLE` | `@flutter-stack set` |
+| `REPLACE:FLUTTER_STATE_MANAGEMENT`, `REPLACE:FLUTTER_NAVIGATION`, `REPLACE:FLUTTER_DI`, `REPLACE:FLUTTER_SERIALIZATION`, `REPLACE:FLUTTER_HTTP`, `REPLACE:FLUTTER_LOCAL_STORE`, `REPLACE:FLUTTER_TEST_DOUBLE` | `@flutter-stack set` |
 | `REPLACE:FLUTTER_SDK_VERSION`, `REPLACE:DART_SDK_VERSION` | `@flutter-bootstrap` from `flutter --version`, else operator |
 | `REPLACE:FLUTTER_PLATFORMS` | `@flutter-foundation` P1 |
 | `REPLACE:FLUTTER_MIN_IOS`, `REPLACE:FLUTTER_MIN_ANDROID_SDK` | `@flutter-foundation` P1 |
 | `REPLACE:FLUTTER_COVERAGE_MIN` | `@flutter-foundation` P3 (default 80) |
 | `REPLACE:FLUTTER_TASK_REF_PREFIX` | operator (default `FLT`) |
 | `REPLACE:AI_PATH`, `REPLACE:AI_UI_PATH`, `REPLACE:AI_BIZ_PATH`, `REPLACE:AI_SOC_PATH`, `REPLACE:AI_CTO_PATH`, `REPLACE:AI_MLT_PATH` | the deploy script (sister framework discovery) — re-run install/update; an unfilled cell is expected when the sister is not installed |
+
+**Replace whole tokens only.** Substitute each complete `REPLACE:NAME` string, matching the full name up to its closing backtick or delimiter, never a prefix: replacing `REPLACE:FLUTTER_STATE` inside `REPLACE:FLUTTER_STATE_MANAGEMENT` leaves `riverpod_MANAGEMENT` in `.cursorrules`, and every agent then reads a wrong stack. Values come from `STACK.md` / `DOCS_FLUTTER_STACK.md`; `deploy-verify.sh` flags a value with an upper-case token tail glued to it.
 
 ### B7 — Run report
 

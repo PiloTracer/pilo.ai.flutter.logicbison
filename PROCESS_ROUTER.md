@@ -48,9 +48,9 @@ For free-text requests use `@flutter-director - <request>`. For questions use `@
 | See where the project is | `@flutter-session status` |
 | Load context to resume | `@flutter-session context` |
 | End a session cleanly | `@flutter-session close` |
-| Install the framework elsewhere (thin) | `@flutter-deploy-basic - <target>` |
-| Install the framework elsewhere (fat) | `@flutter-deploy-files - <target>` |
-| Update the framework | `@flutter-deploy-basic update - <target>` (or `--update`) / `@flutter-deploy-files update` |
+| Install the framework elsewhere (thin) | `@flutter-deploy-basic <target>` |
+| Install the framework elsewhere (fat) | `@flutter-deploy-files <target>` |
+| Update the framework | `@flutter-deploy-basic <target> update` / `@flutter-deploy-files <target> update` |
 
 ---
 

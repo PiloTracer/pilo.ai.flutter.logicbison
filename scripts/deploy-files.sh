@@ -97,7 +97,7 @@ VERSION="$(grep -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' "${FRAMEWORK_ROOT}/CHANGELO
 
 if [ -d "$DEST" ] && [ "$FORCE" -eq 0 ]; then
   echo "already installed at ${DEST}"
-  echo "This is an update. Run @flutter-deploy-files update - ${TARGET} (or --update)"
+  echo "This is an update. Run @flutter-deploy-files ${TARGET} update"
   exit 2
 fi
 

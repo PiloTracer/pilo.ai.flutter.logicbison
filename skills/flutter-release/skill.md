@@ -39,6 +39,8 @@ Releasing is the moment every earlier shortcut becomes visible. This skill makes
 | `build - <flavor> [platform]` | Produce the release artifact with the standard flags |
 | `size` | Analyze artifact size against the NFR budget |
 | `distribute - <channel>` | Publish to the configured channel; record what shipped |
+| `bump - patch\|minor\|major` | Set the next release version in `pubspec.yaml` from the newest `releases/` folder (`scripts/release-bump.sh`); never hand-edited |
+| `collect [- <run-id>]` | Desktop: place the CI build into `releases/<version>/{linux,macos,windows}` at the repo root (append-only) |
 | `metadata` | Generate/refresh store metadata, privacy declarations and release notes |
 | `status` | Read-only: release configuration, last build, gate results, what is stale |
 
@@ -137,6 +139,10 @@ Build failure → **do not** retry blindly. Route to `@flutter-doctor build` wit
 **`size`** — `flutter build <target> --analyze-size` (plus DevTools' size analysis for the treemap). Report total, the delta since the last recorded build, and the top contributors. Over budget → findings routed to `@flutter-perf` (assets, fonts, unused locales, uncompressed images) or `@flutter-stack audit` (a heavyweight dependency).
 
 **`distribute`** — publish to the configured channel (internal test track, TestFlight, a self-hosted feed). Never uploads without `release-ready: yes`. Records version, build, SHA, channel, date and rollout percentage in `{FLUTTER_WORK_ROOT}/plans/operations/releases.md`.
+
+**`bump`** — run `scripts/release-bump.sh <level>` (RELEASE_STANDARD § Release numbering) and quote its line. Choose the level from what changed since the latest release: fixes → `patch`, features → `minor`, breaking → `major`; state the reason. Never hand-edit `version:`. Then commit the bump and let CI build.
+
+**`collect`** — desktop releases live in the project repo at `releases/<version>/{linux,macos,windows}` (RELEASE_STANDARD § Release layout). Run `scripts/release-layout-verify.sh` first: `pubspec.yaml` must be ahead of the latest release, or run `bump` first (never overwrite an existing version). Then `scripts/release-collect.sh [--run <id>]`, which downloads the CI run's `releases` artifact and refuses a missing OS or an existing version. Quote both outputs. All three OSes are required: a release without one is incomplete, not "partially done".
 
 **`metadata`** — generate release notes from the milestone's `Done this iteration` entries, plus store listing fields, and the privacy/data-safety declarations derived from doc 04 §5 (what is collected, why, whether it is linked to identity, whether it is shared) and SPEC §11 (permissions with justifications). Every declaration cites its source. A declaration you cannot cite is a declaration you should not make.
 

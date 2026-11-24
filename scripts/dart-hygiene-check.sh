@@ -57,13 +57,13 @@ THEME_PATHS='(^|/)theme/|_theme\.dart|color_scheme|typography\.dart|spacing\.dar
 scan() {
   local sev="$1" re="$2" msg="$3" excl="${4:-}" incomments="${5:-}"
   for f in "${FILES[@]}"; do
-    if [ -n "$excl" ] && printf '%s' "$f" | grep -qE "$excl"; then continue; fi
+    if [ -n "$excl" ] && grep -qE "$excl" <<< "$f"; then continue; fi
     while IFS=: read -r line content; do
       [ -z "$line" ] && continue
       if [ -z "$incomments" ]; then
         case "$(printf '%s' "$content" | sed 's/^[[:space:]]*//')" in '//'*) continue ;; esac
       fi
-      if [ -n "$excl" ] && printf '%s' "$content" | grep -qE "$excl"; then continue; fi
+      if [ -n "$excl" ] && grep -qE "$excl" <<< "$content"; then continue; fi
       report "$sev" "$f" "$line" "$msg"
     done < <(grep -nE "$re" "$f" 2>/dev/null)
   done
@@ -164,9 +164,9 @@ for f in "${FILES[@]}"; do
       while IFS=: read -r line content; do
         [ -n "$line" ] || continue
         # An implementation importing its own interface is correct, not a violation.
-        printf '%s' "$content" | grep -qE "${self%_impl}\.dart" && continue
+        grep -qE "${self%_impl}\.dart" <<< "$content" && continue
         stem="$(printf '%s' "$content" | sed -nE "s#.*/([a-z0-9_]+)\.dart'.*#\1#p; s#^import '([a-z0-9_]+)\.dart'.*#\1#p" | head -1)"
-        if [ -n "$stem" ] && printf '%s\n' "$own" | grep -qx "$stem"; then continue; fi
+        if [ -n "$stem" ] && grep -qx "$stem" <<< "$own"; then continue; fi
         report BLOCKER "$f" "$line" 'repository imports another repository — compose in the ViewModel or a use case (FLS-03)'
       done < <(grep -nE "^import .*(repositories/|_repository)\.?.*\.dart'" "$f" 2>/dev/null)
       ;;

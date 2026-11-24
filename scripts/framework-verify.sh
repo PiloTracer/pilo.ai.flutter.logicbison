@@ -46,6 +46,7 @@ for f in LICENSE README.md START_HERE.md skills/README.md skills/SKILL_DEPENDENC
          skills/probe-protocol.md standards/PROTECTED_SURFACES.json templates/bootstrap.sh \
          scripts/sister-discovery.sh scripts/last-gate-record.sh scripts/bootstrap-smoke.sh \
          scripts/flutter-sdk.sh scripts/desktop-preflight.sh scripts/agent-files.sh \
+         scripts/release-layout-verify.sh scripts/release-collect.sh scripts/release-bump.sh \
          templates/work.flutter/plans/QUICKSTART-PLAYBOOK.md \
          templates/ci/github-actions/flutter-gates.yml \
          standards/20261123-CICD_CONVENTIONS.md; do
@@ -80,7 +81,7 @@ head_ "Skill frontmatter and size"
 while IFS= read -r f; do
   s="$(basename "$(dirname "$f")")"
 
-  head -1 "$f" | grep -q '^---$' \
+  head -1 "$f" | grep '^---$' >/dev/null \
     && pass "$s frontmatter opens" \
     || fail "$s does not start with '---'"
 
@@ -246,6 +247,22 @@ if grep -rqn 'NEXT_FLUTTER\.md' skills/ 2>/dev/null; then
 else
   warn "no skill references NEXT_FLUTTER.md"
 fi
+
+# ------------------------------------------------- 8b. pipefail + grep -q
+# `cmd | grep -q` under `set -o pipefail` is a false-negative generator: grep
+# exits at the first match, the writer is killed by SIGPIPE (141), and the
+# pipeline reports failure. In pre-commit this turned 741 analyzer issues into
+# "ok analyze". Use `grep -q PAT <<< "$VAR"` or `cmd | grep PAT >/dev/null`.
+head_ "Shell pitfalls"
+PIPEQ=""
+for f in hooks/* scripts/*.sh evals/run.sh templates/bootstrap.sh; do
+  [ -f "$f" ] || continue
+  grep -q 'pipefail' "$f" || continue
+  hits="$(grep -nE '[|][[:space:]]*grep[[:space:]]+-[A-Za-z]*[qm]' "$f" | grep -vE '^[0-9]+:[[:space:]]*#' | cut -d: -f1 | tr '\n' ' ')"
+  [ -n "$hits" ] && PIPEQ="${PIPEQ} ${f}:${hits}"
+done
+if [ -z "$PIPEQ" ]; then pass "no pipe into an early-exit grep (-q/-m) under pipefail"
+else fail "pipe into an early-exit grep (-q/-m) under pipefail (SIGPIPE false negatives):${PIPEQ}"; fi
 
 # ---------------------------------------------------------- 9. lifecycle smoke
 head_ "Lifecycle smokes"

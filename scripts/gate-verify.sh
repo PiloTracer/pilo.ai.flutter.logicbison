@@ -71,7 +71,7 @@ fi
 
 printf '\nConcept registry\n'
 if grep -q 'FLS-06' "$TMP/iter"; then
-  if [ "$STATUS" = "complete" ] && grep -E 'FLS-06' "$TMP/iter" | grep -qi 'pending'; then
+  if [ "$STATUS" = "complete" ] && grep -E 'FLS-06' "$TMP/iter" | grep -i 'pending' >/dev/null; then
     fail "iteration marked complete with FLS-06 still pending"
   else
     pass "FLS-06 present in the registry"

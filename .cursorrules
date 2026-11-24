@@ -106,11 +106,12 @@ If you catch yourself about to write "as of version X" — stop, and describe th
 | `scripts/fixtures/dart/presentation/` | UI importing the data layer |
 | `scripts/fixtures/plan/broken-plan.md` | uncovered requirement, untraced task, residue |
 | `scripts/fixtures/ledger/lying-ledger.md` | confirmed claims with no recorded answers |
+| `scripts/fixtures/releases/bad/` | missing OS, empty OS folder, stray folder, non-semver folder, pubspec behind the latest release |
 | `scripts/fixtures/desktop/bad-app/` | macOS entitlement blockers, plugin parity gap, template title, no minimum size |
 | `evals/scenarios/*/bad/*` | the check named in its `.eval-expect` |
 | `evals/scenarios/*/seed/` | its held-out `acceptance/` test (the task must not already be done) |
 
-**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `desktop/good-app/`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
+**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `desktop/good-app/`, `releases/good/`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
 
 When a fixture legitimately needs to change, change the assertion in `self-test.sh` in the same edit, and say in your summary which behaviour you re-baselined and why.
 

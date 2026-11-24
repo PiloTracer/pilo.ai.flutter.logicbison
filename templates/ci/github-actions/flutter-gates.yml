@@ -116,11 +116,14 @@ jobs:
 
   # ---------------------------------------------------------------- desktop
   # One job per desktop OS, each on its own OS: Flutter does not cross-compile
-  # desktop apps. KEEP ONLY THE JOBS FOR THE OSes doc 02 TARGETS and delete the
-  # rest (@flutter-scaffold ci does this). A kept job fails when its platform
-  # directory is missing: a targeted OS with no build is a defect, not a skip.
+  # desktop apps. A desktop release ALWAYS ships Linux, macOS and Windows
+  # (RELEASE_STANDARD § Release layout), so keep all three jobs. A job fails
+  # when its platform folder is missing: run
+  #   flutter create --platforms=linux,macos,windows .
+  # Every push produces development builds; a RELEASE is collected into the
+  # repo root with @flutter-release collect (append-only releases/<version>/).
   # Signing / notarization belong in a release workflow with secrets, never here
-  # (DESKTOP_STANDARD §8, §9).
+  # (DESKTOP_STANDARD §8).
 
   desktop-linux:
     name: desktop build (Linux)
@@ -245,10 +248,10 @@ jobs:
           path: releases/
           if-no-files-found: error
 
-  # One downloadable tree for every desktop OS kept above:
+  # One downloadable tree for the three desktop builds:
   #   releases/<version>/{linux,macos,windows}/<app>-<version>-<os>.<ext>
-  # Download: gh run download <run-id> -n releases -D releases
-  # Remove an OS from `needs` when you delete its job.
+  # Place it in the repo with scripts/release-collect.sh (refuses an existing
+  # version or a missing OS).
   releases:
     name: combined releases tree
     needs: [desktop-linux, desktop-macos, desktop-windows]

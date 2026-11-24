@@ -82,7 +82,7 @@ if [ "$#" -gt 1 ]; then
       missing=""
       for os in $TARGETS; do
         eval "list=\"\$PLUG_${os}\""
-        printf '%s\n' "$list" | grep -qx "$plug" || missing="${missing} ${os}"
+        grep -qx "$plug" <<< "$list" || missing="${missing} ${os}"
       done
       [ -z "$missing" ] || report MAJOR "plugin '${plug}' has no implementation on:${missing} — confirm it is unused there (FLS-07 parity matrix) or add support"
     done

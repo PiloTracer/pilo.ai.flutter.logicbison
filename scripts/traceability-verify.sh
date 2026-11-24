@@ -50,7 +50,7 @@ UNCOVERED=0
 while IFS= read -r r; do
   [ -z "$r" ] && continue
   if grep -qE "(^|[^A-Z])${r}([^0-9]|$)" "$TMP/matrix" \
-     && grep -E "(^|[^A-Z])${r}([^0-9]|$)" "$TMP/matrix" | grep -qE '\bF[0-9]+-T[0-9]+\b'; then
+     && grep -E "(^|[^A-Z])${r}([^0-9]|$)" "$TMP/matrix" | grep -E '\bF[0-9]+-T[0-9]+\b' >/dev/null; then
     :
   else
     printf '  FAIL  %s has no task in the traceability matrix\n' "$r" >&2
@@ -64,7 +64,7 @@ printf '\nTask tracing (every task needs a requirement)\n'
 UNTRACED=0
 while IFS= read -r t; do
   [ -z "$t" ] && continue
-  if grep -E "\b${t}\b" "$PLAN" | grep -qE '\b(FR|NFR)[0-9]+\b'; then
+  if grep -E "\b${t}\b" "$PLAN" | grep -E '\b(FR|NFR)[0-9]+\b' >/dev/null; then
     :
   else
     printf '  FAIL  %s traces to no requirement\n' "$t" >&2

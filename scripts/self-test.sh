@@ -42,7 +42,7 @@ expect_output() {
   local re="$1" label="$2"; shift 3
   local out
   out="$("$@" 2>&1)"
-  if printf '%s\n' "$out" | grep -qE "$re"; then
+  if grep -qE -- "$re" <<< "$out"; then
     PASSED=$((PASSED+1)); printf '  ok    %s\n' "$label"
   else
     FAILED=$((FAILED+1)); printf '  FAIL  %s (no output matching /%s/)\n' "$label" "$re" >&2
@@ -97,7 +97,7 @@ expect_output 'UI imports the data layer' "UI→data import is caught" -- \
 # regresses into a finding, every correctly-layered project reports a blocker
 # and the check gets switched off.
 if bash scripts/dart-hygiene-check.sh "$FIX/dart/repositories" 2>&1 \
-     | grep -q 'order_repository.dart:5'; then
+     | grep 'order_repository.dart:5' >/dev/null; then
   FAILED=$((FAILED+1))
   printf '  FAIL  false positive: implementation importing its own interface\n' >&2
 else
@@ -163,7 +163,7 @@ printf '# mine\n' > "${BF}/analysis_options.yaml"
 printf '# mine\n' > "${BF}/.cursorrules"
 bash templates/bootstrap.sh --repo "$BF" >/dev/null 2>&1
 for f in analysis_options.yaml .cursorrules; do
-  if head -1 "${BF}/${f}" | grep -q '# mine'; then
+  if head -1 "${BF}/${f}" | grep '# mine' >/dev/null; then
     PASSED=$((PASSED+1)); printf '  ok    brownfield preserved %s\n' "$f"
   else
     FAILED=$((FAILED+1)); printf '  FAIL  brownfield clobbered %s\n' "$f" >&2
@@ -298,6 +298,29 @@ expect_output "bare '\*\*/failures/'" "deploy-verify names a bare **/failures/ i
 expect_output 'source files ignored by .gitignore' "deploy-verify names hand-written Dart that git ignores" -- bash scripts/deploy-verify.sh "$GT"
 rm -rf "$GT"
 
+head_ "Release layout"
+expect 0 "releases/<version>/{linux,macos,windows} with a bumped pubspec is valid" -- bash scripts/release-layout-verify.sh "$FIX/releases/good"
+expect 1 "a broken releases tree is invalid" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+expect_output 'missing: macos' "a release without all three OSes is named" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+expect_output 'windows/ is empty' "an OS folder with no build is named" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+expect_output 'android is not one of' "a folder other than linux/macos/windows is named" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+expect_output 'latest/ is not a MAJOR.MINOR.PATCH' "a non-version folder is named" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+expect_output 'lower than the latest release' "a pubspec version behind the latest release is named" -- bash scripts/release-layout-verify.sh "$FIX/releases/bad"
+
+head_ "Release numbering"
+RB="$(mktemp -d)"; cp -R "$FIX/releases/good" "$RB/app"
+# good: releases 1.0.0 -> 1.1.0 -> 1.1.1; pubspec already bumped to 1.2.0+4 (unreleased)
+expect_output 'not bumping again' "a pending unreleased bump is not bumped twice (no skipped number)" -- bash scripts/release-bump.sh patch "$RB/app"
+expect_output '^version: 1.2.0\+4$' "pubspec is untouched when no bump is due" -- cat "$RB/app/pubspec.yaml"
+expect_output '1.2.0\+4 -> 2.0.0\+5' "major bumps from the latest release, resets minor/patch, raises the build number" -- bash scripts/release-bump.sh major --dry-run "$RB/app"
+expect_output '^version: 1.2.0\+4$' "--dry-run writes nothing" -- cat "$RB/app/pubspec.yaml"
+bash scripts/release-bump.sh major "$RB/app" >/dev/null
+expect_output '^version: 2.0.0\+5$' "the bump is written to pubspec.yaml" -- cat "$RB/app/pubspec.yaml"
+expect_output 'not bumping again' "bumping again before releasing changes nothing" -- bash scripts/release-bump.sh major "$RB/app"
+mkdir -p "$RB/new"; printf 'name: fresh\nversion: 1.0.0+1\n' > "$RB/new/pubspec.yaml"
+expect_output 'first release is 1.0.0' "with no releases yet, the first release is the pubspec version" -- bash scripts/release-bump.sh "$RB/new"
+rm -rf "$RB"
+
 head_ "Desktop pre-flight"
 DP="$(mktemp -d)"
 for a in bad-app good-app; do
@@ -348,6 +371,21 @@ printf 'int answer() => 42;\n' > "$HK/repo/lib/a.dart"
 printf '{"configVersion":2,"flutterRoot":"file://%s/sdk/flutter","packages":[]}\n' "$HK" > "$HK/repo/.dart_tool/package_config.json"
 ( cd "$HK/repo" && bash "$OLDPWD/scripts/install-git-hooks.sh" >/dev/null 2>&1 && git add pubspec.yaml lib/a.dart )
 expect_output 'analyzer crashed' "pre-commit finds an off-PATH SDK and reports a crashed analyzer as not run" -- \
+  env -i HOME="$HK" PATH=/usr/bin:/bin git -C "$HK/repo" -c user.name=t -c user.email=t@t commit -q -m "chore: hook test"
+# Large analyzer output: grep -q exits at the first match, the writer dies of
+# SIGPIPE (141), and under pipefail the "issues found" test used to read as
+# false — so the more issues there were, the likelier `ok analyze`.
+cat > "$HK/sdk/flutter/bin/flutter" <<'STUB'
+#!/bin/sh
+if [ "$1" = analyze ]; then
+  i=0; while [ $i -lt 3000 ]; do
+    echo "  error • The function 'Dio' isn't defined. Try importing the library that defines it • lib/a.dart:$i:1 • undefined_function"
+    i=$((i+1)); done
+  echo "3000 issues found."; exit 1
+fi
+exit 0
+STUB
+expect 1 "pre-commit blocks on a large analyzer report (no SIGPIPE false pass)" -- \
   env -i HOME="$HK" PATH=/usr/bin:/bin git -C "$HK/repo" -c user.name=t -c user.email=t@t commit -q -m "chore: hook test"
 rm -rf "$HK"
 

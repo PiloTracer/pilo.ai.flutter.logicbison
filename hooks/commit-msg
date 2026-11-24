@@ -22,7 +22,7 @@ SUBJECT="$(printf '%s\n' "$BODY" | sed '/^[[:space:]]*$/d' | head -1)"
 [ -z "$SUBJECT" ] && { bad "empty commit message"; exit 1; }
 
 # ------------------------------------------------------------- attribution
-if printf '%s' "$BODY" | grep -qiE '(generated with|co-authored-by: *(claude|cursor|copilot|chatgpt|gpt|gemini|ai)|🤖|authored by an ai|written by (an )?ai)'; then
+if grep -qiE '(generated with|co-authored-by: *(claude|cursor|copilot|chatgpt|gpt|gemini|ai)|🤖|authored by an ai|written by (an )?ai)' <<< "$BODY"; then
   bad "AI attribution line in the commit message. Remove it — commit history records what changed, not which tool typed it."
 fi
 
@@ -44,7 +44,7 @@ case "$FIRSTWORD" in
 esac
 
 # ---------------------------------------------------------- task reference
-if ! printf '%s' "$SUBJECT" | grep -qE '^([A-Z][A-Z0-9]+-[0-9]+|F[0-9]+-T[0-9]+)[: ]|^[a-z]+(\([^)]+\))?:'; then
+if ! grep -qE '^([A-Z][A-Z0-9]+-[0-9]+|F[0-9]+-T[0-9]+)[: ]|^[a-z]+(\([^)]+\))?:' <<< "$SUBJECT"; then
   warn "no task reference or conventional-commit type in the subject"
   warn "expected '<PREFIX>-<n>: subject', 'F<n>-T<k>: subject', or 'type: subject'"
 fi

@@ -40,10 +40,22 @@ if [ -n "$SECRETS" ]; then
   bad "possible secret in the diff (value not shown). Verify, remove, revoke and rotate."
 fi
 
+# An SDK installed off PATH is still a toolchain: load it the way the skills
+# do (scripts/flutter-sdk.sh) before reporting anything as not run.
+if ! command -v flutter >/dev/null 2>&1 && [ -f "${AOS_ROOT}/scripts/flutter-sdk.sh" ]; then
+  if sdk_env="$(bash "${AOS_ROOT}/scripts/flutter-sdk.sh" --env . 2>/dev/null)"; then eval "$sdk_env"; fi
+fi
+
+# Deliberately-broken test data (verifier fixtures, eval scenarios) is gated by
+# self-test.sh / evals/run.sh selftest, not by this hook — the same exemption
+# hygiene uses below. Formatting or analysing it would block the commits that
+# keep the verifiers honest.
+GATED_DART="$(printf '%s\n' "$STAGED_DART" | grep -vE '^(scripts/fixtures|evals)/' || true)"
+
 # --------------------------------------------------------- 3. dart format
-if [ -n "$STAGED_DART" ] && command -v dart >/dev/null 2>&1; then
-  UNFORMATTED="$(printf '%s\n' "$STAGED_DART" | xargs -r dart format --output=none --set-exit-if-changed 2>&1 || true)"
-  if printf '%s' "$UNFORMATTED" | grep -q 'Changed'; then
+if [ -n "$GATED_DART" ] && command -v dart >/dev/null 2>&1; then
+  UNFORMATTED="$(printf '%s\n' "$GATED_DART" | xargs -r dart format --output=none --set-exit-if-changed 2>&1 || true)"
+  if grep -q 'Changed' <<< "$UNFORMATTED"; then
     bad "unformatted Dart files. Run: dart format ."
     printf '%s\n' "$UNFORMATTED" | head -10 >&2
   else
@@ -52,24 +64,21 @@ if [ -n "$STAGED_DART" ] && command -v dart >/dev/null 2>&1; then
 fi
 
 # ------------------------------------------------------------ 4. analyzer
-# An SDK installed off PATH is still a toolchain: load it the way the skills
-# do (scripts/flutter-sdk.sh) before reporting anything as not run.
-if ! command -v flutter >/dev/null 2>&1 && [ -f "${AOS_ROOT}/scripts/flutter-sdk.sh" ]; then
-  if sdk_env="$(bash "${AOS_ROOT}/scripts/flutter-sdk.sh" --env . 2>/dev/null)"; then eval "$sdk_env"; fi
-fi
-if [ -n "$STAGED_DART" ] && command -v flutter >/dev/null 2>&1; then
+if [ -n "$GATED_DART" ] && [ ! -f pubspec.yaml ]; then
+  say "  skip  analyze — no pubspec.yaml at the repo root (not a Flutter package)"
+elif [ -n "$GATED_DART" ] && command -v flutter >/dev/null 2>&1; then
   OUT="$(flutter analyze --no-pub 2>&1 || true)"
-  if printf '%s' "$OUT" | grep -q 'Server error(s) occurred'; then
+  if grep -q 'Server error(s) occurred' <<< "$OUT"; then
     # A crashed analysis server prints no issue lines; reading that as "ok"
     # is a false pass. Typical cause on Linux: inotify instances exhausted.
-    say "  warn  analyzer crashed ($(printf '%s' "$OUT" | grep -m1 -oE 'OS Error: [^,]*' || echo 'server error')) — not run (unverified, not passed); see @flutter-doctor env"
-  elif printf '%s' "$OUT" | grep -qE '^ *(error|warning|info) •'; then
+    say "  warn  analyzer crashed ($(grep -m1 -oE 'OS Error: [^,]*' <<< "$OUT" || echo 'server error')) — not run (unverified, not passed); see @flutter-doctor env"
+  elif grep -qE '^ *(error|warning|info) •' <<< "$OUT"; then
     bad "analyzer issues — the gate is zero issues"
     printf '%s\n' "$OUT" | grep -E '^ *(error|warning|info) •' | head -10 >&2
   else
     say "  ok    analyze"
   fi
-elif [ -n "$STAGED_DART" ]; then
+elif [ -n "$GATED_DART" ]; then
   say "  warn  no Flutter SDK found (PATH, FLUTTER_ROOT, .fvm, .dart_tool) — analyzer not run (unverified, not passed)"
 fi
 

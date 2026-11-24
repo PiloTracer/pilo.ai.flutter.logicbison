@@ -31,7 +31,7 @@ rm -f "$TMP"
 SUBJECT="$(grep -v '^#' "$MSG_FILE" | sed '/^[[:space:]]*$/d' | head -1)"
 
 # Already referenced? Leave it alone.
-if printf '%s' "$SUBJECT" | grep -qE '^([A-Z][A-Z0-9]+-[0-9]+|F[0-9]+-T[0-9]+)[: ]'; then
+if grep -qE '^([A-Z][A-Z0-9]+-[0-9]+|F[0-9]+-T[0-9]+)[: ]' <<< "$SUBJECT"; then
   exit 0
 fi
 

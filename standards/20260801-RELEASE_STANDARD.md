@@ -27,6 +27,39 @@ Each flavor has a distinct application id / bundle id suffix and a distinct disp
 - Version bumps are deliberate: recorded in the changelog, tagged in git, and matched to a release entry.
 - The version is visible in-app (settings or diagnostics) — a support conversation that starts with "which version?" and cannot be answered wastes everyone's time.
 
+### Release numbering
+
+Releases are numbered with [Semantic Versioning](https://semver.org): `MAJOR.MINOR.PATCH`, the same `version:` Flutter and the stores read from `pubspec.yaml`, plus a `+BUILD` number for the stores.
+
+| Change since the last release | Bump | Example |
+|-------------------------------|------|---------|
+| Fixes only, no new behaviour | `patch` (the default) | `1.4.2` → `1.4.3` |
+| New features; nothing existing breaks | `minor` | `1.4.2` → `1.5.0` |
+| Breaking change: removed feature, data migration, redesign | `major` | `1.4.2` → `2.0.0` |
+
+- **The next version is computed, never typed:** `scripts/release-bump.sh [patch|minor|major]` starts from the newest folder in `releases/`, so a number can be neither skipped nor reused. Bumping twice before releasing changes nothing the second time.
+- **The build number rises by one on every bump** and is never reused; the stores reject a reused build number.
+- **The first release is the current pubspec version** (Flutter's default is `1.0.0+1`). No renumbering.
+- Which level applies is a judgement about the change, recorded in the changelog entry for that version. When in doubt between two levels, take the higher one: under-signalling a breaking change costs users more than over-signalling.
+
+### Release layout (desktop builds)
+
+Desktop release builds live **in the project repository**, at the root, one folder per version:
+
+```
+<repo>/
+  releases/
+    1.0.0/  linux/  macos/  windows/     first release (pubspec default 1.0.0+1)
+    1.1.0/  linux/  macos/  windows/     new features   (minor, +2)
+    1.1.1/  linux/  macos/  windows/     fixes only     (patch, +3)
+```
+
+- **The folder name is the `MAJOR.MINOR.PATCH` from `pubspec.yaml`**, without the build number. A name that is not a version (`latest`, `final`, `1.0`) cannot be compared, so "which release is newer" stops having an answer.
+- **Incremental and append-only.** A new release needs a version higher than every existing folder; an existing folder is never rebuilt or overwritten. Overwriting replaces binaries people already downloaded, and two different builds would share one version.
+- **Every release ships `linux`, `macos` and `windows`**, each holding a build. A release missing an OS is incomplete: some users cannot install it, and nobody notices until they ask.
+- **In the folder, not (by default) in git history.** The adopter `.gitignore` snippet ignores `releases/`: binaries stay in the repo folder on disk without bloating every clone. A project that wants them in history must decide how (plain commits grow the repo by every build; Git LFS has storage and bandwidth quotas) and record the choice in `DOCS_FLUTTER_STACK.md`.
+- **Mechanics:** CI builds each OS on its own runner and publishes one `releases` artifact. `scripts/release-collect.sh` places it at `releases/<version>/` and refuses an existing version or a missing OS. `scripts/release-layout-verify.sh` checks the whole tree and that `pubspec.yaml` is ahead of the latest release before the next one.
+
 ---
 
 ## 3. Signing

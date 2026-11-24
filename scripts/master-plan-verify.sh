@@ -40,7 +40,7 @@ SECTIONS=(
 )
 
 printf '\nFront matter\n'
-head -1 "$PLAN" | grep -q '^---$' && pass "opens with front matter" || fail "no front matter"
+head -1 "$PLAN" | grep '^---$' >/dev/null && pass "opens with front matter" || fail "no front matter"
 for k in title status owner foundation-certified last-updated; do
   awk -v k="$k" '/^---$/{n++; next} n==1 && $0 ~ "^"k":"{f=1} END{exit !f}' "$PLAN" \
     && pass "front matter has $k" || fail "front matter missing $k"

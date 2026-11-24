@@ -212,7 +212,7 @@ fi
 # ------------------------------------------------- framework path in the block
 if [ -n "$BLOCK" ]; then
   head_ "Framework path in the Flutter block"
-  FWPATH="$(printf '%s\n' "$BLOCK" | grep -m1 'Framework: `' | sed -E 's/.*Framework: `([^`]+)`.*/\1/')"
+  FWPATH="$(grep -m1 'Framework: `' <<< "$BLOCK" | sed -E 's/.*Framework: `([^`]+)`.*/\1/')"
   if [ -z "$FWPATH" ]; then
     fail "no 'Framework: \`<path>\`' line in the Flutter block — registration is incomplete"
   else

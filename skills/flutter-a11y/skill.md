@@ -82,7 +82,7 @@ WCAG 2.2 level AA, expressed as Flutter-checkable rules. Deviations must be reco
 | Animation with no reduced-motion check | A10 |
 | An error shown only by color | A9 |
 
-3. **Automated guideline checks** — run the framework's accessibility guideline assertions for tap targets (both platforms), labelled tap targets, and text contrast against the target widget. Report each guideline's result with the widget it failed on.
+3. **Automated guideline checks**: run the four `flutter_test` guidelines against the target widget: `meetsGuideline(androidTapTargetGuideline)`, `iOSTapTargetGuideline`, `labeledTapTargetGuideline` and `textContrastGuideline`, with `tester.ensureSemantics()` active (ACCESSIBILITY_STANDARD §3 has the test). Report each guideline's result with the widget it failed on. The tap-target guidelines skip nodes touching the screen edge, so measure edge-anchored controls directly with `tester.getSize`.
 4. **Theme contrast analysis** — compute the ratio for every foreground/background pair the theme defines, in both light and dark. Report every pair below threshold with its ratio and the smallest change that would fix it.
 5. **Text-scale check** — render at 100%, 150% and 200% and report overflow or clipped content.
 6. **Name what remains manual** — meaningfulness of labels, traversal order, discoverability, announcement of dynamic changes. Produce the `traverse` script for them.
@@ -95,9 +95,9 @@ Author tests that make the baseline enforceable in CI:
 
 | Test | Asserts |
 |------|---------|
-| Guideline suite per screen | Tap-target size (both platforms), labelled tap targets, text contrast |
+| Guideline suite per screen | `meetsGuideline` × the four guidelines (ACCESSIBILITY_STANDARD §3), in every SPEC state, light and dark |
 | Semantics assertions | Each interactive element has the expected label, role and state |
-| Text-scale tests | The screen renders without overflow at 150% and 200% |
+| Text-scale tests | The screen renders without overflow at 150% and 200% (`MediaQuery` override with `textScaler: TextScaler.linear(2)`, never the deprecated `textScaleFactor`) |
 | Focus-order test | Traversal visits elements in the intended order |
 | Live-region test | A state change emits the expected announcement |
 | Form test | Field labels associated; validation errors announced and linked |

@@ -26,12 +26,15 @@ SCEN="${EVALS}/scenarios"
 BASE="${EVALS}/apps/base"
 
 die() { echo "evals: $*" >&2; exit 2; }
-have_flutter() { command -v flutter >/dev/null 2>&1; }
+# EVAL_NO_TOOLCHAIN=1: mechanical checks only (self-test.sh sets it). The
+# toolchain run is slow and depends on the host (e.g. inotify limits), so it is
+# a deliberate step — `evals/run.sh selftest` — not part of the fast suite.
+have_flutter() { [ "${EVAL_NO_TOOLCHAIN:-0}" = 1 ] && return 1; command -v flutter >/dev/null 2>&1; }
 
 # An SDK that is installed but not on PATH is still a toolchain. Load it the
 # same way the skills do (scripts/flutter-sdk.sh), so toolchain checks run
 # instead of reporting NOT_RUN on a machine that can run them.
-if ! have_flutter; then
+if [ "${EVAL_NO_TOOLCHAIN:-0}" != 1 ] && ! have_flutter; then
   if sdk_env="$(bash "${FW}/scripts/flutter-sdk.sh" --env "${FW}" 2>/dev/null)"; then
     eval "$sdk_env"
     echo "evals: using Flutter at $(command -v flutter) (found by scripts/flutter-sdk.sh)" >&2

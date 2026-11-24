@@ -99,6 +99,8 @@ Before a UI task or milestone is marked complete, run the polish pass over every
 4. States: all six per SPEC §6, executed per §6 of this standard — including the error copy read aloud.
 5. Clarity: a non-technical user could name what to do here in five seconds.
 6. Dark mode and 200% text scale checked, not assumed (THEMING_STANDARD §10, ACCESSIBILITY_STANDARD).
+7. **Rendered, then looked at.** Steps 2, 3, 5 and 6 are judged from the renders in [`resources/visual-review.md`](../resources/visual-review.md) (size class × brightness × text scale, every SPEC state), never from reading the widget code. An agent without image input generates the renders and reports those steps `unverified`.
+8. Copy: every label, button, dialog and message on the screen passes §10.
 
 The pass is recorded in the iteration's Concept/NFR registry. "The logic is done, polish later" is how the last 30 centimetres never happen — polish is part of done, and it is what the client sees.
 
@@ -112,7 +114,27 @@ The pass is recorded in the iteration's Concept/NFR registry. "The logic is done
 
 ---
 
-## 10. Anti-patterns
+## 10. Interface copy
+
+Words are interface. A screen with perfect spacing and a button labelled "OK" under a question nobody can parse still reads as unfinished, and copy is the part a non-technical user actually reads. All copy lives in l10n ([`L10N_STANDARD`](20260801-L10N_STANDARD.md)); these rules govern what it says.
+
+**Required:**
+
+- **Buttons say what happens.** A specific verb, and an object where it helps: "Save changes", "Send invoice", "Delete 3 photos". Never "OK", "Yes", "Submit" or "Confirm" for an action that has a name. The primary button's label should make sense read alone, because that is how it is scanned.
+- **Confirmation dialogs name the consequence and repeat the verb.** Title: "Delete 3 photos?". Body: what is lost and whether it can be undone. Buttons: "Delete" and "Cancel", never "Yes" and "No". A destructive verb uses the error role, never the accent.
+- **Errors say what happened and what to do next,** in the user's terms (§6): "Couldn't save. Check your connection and try again", with the retry next to it. Never "Error", "Something went wrong" with no next step, "Oops", an exception class, a status code, or a stack trace.
+- **Empty states have three parts:** what will appear here, why it is empty now, and the one action that fills it ("No invoices yet. Invoices you send appear here. [Create invoice]").
+- **One term per concept, everywhere.** If it is a "project" on one screen, it is never a "workspace" on another. The glossary is foundation doc 04 §1.
+- **Sentence case** for titles, buttons and labels unless the platform convention or the design system says otherwise. Title Case On Every Word reads as shouting and costs scanning speed.
+- **Front-load the meaning.** The first two or three words of a label, list item or notification carry the point; users scan the left edge.
+- **Numbers, dates, currency and plurals come from `intl`**, never string concatenation: "1 items" and "$1,000.5" are copy defects that show up in front of the client.
+- **No blame and no jokes in failure paths.** "You entered an invalid date" becomes "Enter a date like 24/11/2026". Humour in an error message reads as indifference to the user who just lost work.
+
+**Judgement call:** tone (formal or friendly) is a product decision recorded once in the SPEC or design system and applied everywhere. Mixed tone across screens is the finding, not either tone.
+
+---
+
+## 11. Anti-patterns
 
 - Hand-tuned spacing values ("nudged until it looked OK") — the signature of undecided design.
 - Ratio-1 hierarchy: title, number, labels and buttons all within a few pixels of each other.
@@ -123,3 +145,5 @@ The pass is recorded in the iteration's Concept/NFR registry. "The logic is done
 - The primary action visually equal to destructive/cancel actions.
 - Fixed `fontSize` that ignores platform text scaling.
 - "Polish at the end" as a separate milestone — it is never scheduled, and the client saw the unpolished screen first.
+- "OK" / "Yes" / "Submit" buttons; "Something went wrong" with no next step; one concept with two names.
+- Hierarchy or dark mode "verified" by reading widget code, or by looking at a test render whose text is placeholder boxes.

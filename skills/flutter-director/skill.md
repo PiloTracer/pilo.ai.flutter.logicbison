@@ -157,6 +157,7 @@ Classify into one bucket. Match by intent. Full signal lists and worked examples
 | `implementation` | "build it", "implement F2", "continue coding", "next 5 tasks" | `@flutter-implementation` |
 | `data` | "model", "JSON", "repository", "cache", "local database", "schema change" | `@flutter-data` |
 | `platform` | "method channel", "permissions", "deep link", "push", "native config", "plugin" | `@flutter-platform` |
+| `guidance` | "wizard", "stepper", "onboarding", "in-app tutorial", "product tour", "coach marks", "tips", "first-run" | `@flutter-guidance plan - <feature>` |
 | `test` | "write tests", "golden test", "coverage", "run the tests" | `@flutter-test` |
 | `verify` | "check the code", "verify the milestone", "pre-commit check", "review my changes" | `@flutter-verify` |
 | `perf` | "slow", "jank", "dropped frames", "app size", "startup time", "memory" | `@flutter-perf` |

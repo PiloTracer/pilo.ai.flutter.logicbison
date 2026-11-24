@@ -97,7 +97,7 @@ Record the choice: `REPLACE:PLATFORM_ADAPTATION` — Material everywhere, or ada
 ## 10. Testing
 
 - Widget and golden tests run in both light and dark.
-- A contrast test asserts every semantic foreground/background pair meets the ratio, so a palette edit cannot silently break accessibility.
+- A contrast test asserts every semantic foreground/background pair meets the ratio, so a palette edit cannot silently break accessibility. On rendered screens, `meetsGuideline(textContrastGuideline)` (ACCESSIBILITY_STANDARD §3) checks text against what is actually behind it.
 - A text-scale test at 200% asserts no overflow on primary screens.
 - A lint or grep check fails the build on hardcoded colour literals and raw `EdgeInsets` numbers outside `core/theme/`.
 

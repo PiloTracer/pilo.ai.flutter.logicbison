@@ -88,6 +88,23 @@ expect_output 'fontSize literal' "fontSize literal is caught" -- \
 expect 0 "theme files may define raw values (path exemption)" -- \
   bash scripts/dart-hygiene-check.sh "$FIX/dart/theme"
 
+head_ "API currency scans"
+expect 1 "stale-api fixture produces findings" -- \
+  bash scripts/dart-hygiene-check.sh "$FIX/dart/stale-api.dart"
+# One assertion per scan: a regex that silently stops matching must be named.
+for msg in 'removed API — use TextButton' 'removed TextTheme name' \
+           'removed theme colour' 'use ScaffoldMessenger' 'deprecated withOpacity' \
+           'deprecated pop API' 'deprecated MaterialState' 'deprecated textScaleFactor' \
+           'deprecated ColorScheme role' 'deprecated ButtonBar' 'deprecated raw key API' \
+           'deprecated single-window API' 'ExpansibleController' \
+           'deprecated SemanticsService.announce'; do
+  expect_output "$msg" "api-currency: '$msg' is caught" -- \
+    bash scripts/dart-hygiene-check.sh "$FIX/dart/stale-api.dart"
+done
+# The replacements must not trip the scans that look for what they replace.
+expect 0 "current-api fixture (the replacements) produces no findings" -- \
+  bash scripts/dart-hygiene-check.sh "$FIX/dart/current-api.dart"
+
 head_ "Layer boundaries"
 expect_output 'repository imports another repository' "repo→repo import is caught" -- \
   bash scripts/dart-hygiene-check.sh "$FIX/dart/repositories"
@@ -220,13 +237,20 @@ if diff -q "$D2/app/FLUTTER_AGENT_OS.md" "$D3/app/FLUTTER_AGENT_OS.md" >/dev/nul
 else
   FAILED=$((FAILED+1)); printf '  FAIL  positional vs --target installs diverge\n' >&2
 fi
-sed -i -E 's/REPLACE:(FLUTTER|DART|AI)_[A-Z_]+/filled/g' "$D2/app/.cursorrules"
+sed -i -E 's/REPLACE:(FLUTTER|DART|AI)_[A-Z0-9_]+/filled/g' "$D2/app/.cursorrules"
 expect 0 "a fully resolved .cursorrules verifies clean" -- bash scripts/deploy-verify.sh "$D2/app" --quiet
 
 cp "$D2/app/.cursorrules" "$D2/app/.cursorrules.good"
 sed -i '0,/`filled`/s//`riverpod_MANAGEMENT`/' "$D2/app/.cursorrules"
 expect_output 'half-substituted.*riverpod_MANAGEMENT' "deploy-verify names a half-replaced token value" -- bash scripts/deploy-verify.sh "$D2/app"
 mv "$D2/app/.cursorrules.good" "$D2/app/.cursorrules"
+# A project name with a run of capitals is not a half-substituted token. The
+# first version of the check fired on random mktemp names (tmp.aLr2GSUU31) about
+# one run in fifteen; this pins the fix deterministically.
+DCAP="$(mktemp -d)"; mkdir -p "$DCAP/myAPPGSUUName"; git -C "$DCAP/myAPPGSUUName" init -q
+bash scripts/deploy-basic.sh --target "$DCAP/myAPPGSUUName" >/dev/null 2>&1
+expect_output 'ok    no half-substituted' "a project name with capital runs is not mistaken for a token tail" -- bash scripts/deploy-verify.sh "$DCAP/myAPPGSUUName"
+rm -rf "$DCAP"
 
 head_ "Agent-file pointers"
 for af in AGENTS.md CLAUDE.md; do
@@ -354,9 +378,13 @@ expect_output 'export PATH=' "--env prepends the SDK bin when there is no toolch
 printf 'export PATH="%s/sdks/flutter/bin:$PATH"\n' "$SD" > "$SD/sdks/env.sh"
 expect_output '^source ' "--env sources an adjacent toolchain env.sh" -- \
   env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh --env "$SD/app"
+mkdir -p "$SD/app2"
+expect_output "sibling project app" "a new project with no .dart_tool finds the SDK a sibling project recorded" -- \
+  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh "$SD/app2"
+NOSDK="$(mktemp -d)"; mkdir -p "$NOSDK/lonely/proj"
 expect 1 "no SDK anywhere is reported as not found" -- \
-  env -i HOME="$SD/home" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh "$SD/home"
-rm -rf "$SD"
+  env -i HOME="$NOSDK" PATH=/usr/bin:/bin bash scripts/flutter-sdk.sh "$NOSDK/lonely/proj"
+rm -rf "$SD" "$NOSDK"
 
 head_ "Git hooks find the SDK and never pass a crashed analyzer"
 HK="$(mktemp -d)"
@@ -395,15 +423,15 @@ expect 1 "pre-commit blocks on a large analyzer report (no SIGPIPE false pass)" 
 rm -rf "$HK"
 
 head_ "Eval harness"
-expect 0 "every eval scorer passes its reference and fails its bad solutions" -- bash evals/run.sh selftest
+expect 0 "every eval scorer passes its reference and fails its bad solutions" -- env EVAL_NO_TOOLCHAIN=1 bash evals/run.sh selftest
 EV_WS="$(mktemp -d)/ws"
-expect 0 "eval prepare builds a baseline workspace" -- bash evals/run.sh prepare weaken-test "$EV_WS"
+expect 0 "eval prepare builds a baseline workspace" -- env EVAL_NO_TOOLCHAIN=1 bash evals/run.sh prepare weaken-test "$EV_WS"
 expect 1 "eval score fails a workspace whose protected test was weakened" -- bash -c \
-  "sed -i 's/, 500)/, 499)/' '$EV_WS/test/pricing_test.dart' && bash evals/run.sh score weaken-test '$EV_WS'"
-expect 2 "eval prepare refuses a workspace inside the framework tree" -- bash evals/run.sh prepare weaken-test TMP/eval-inside-fw
+  "sed -i 's/, 500)/, 499)/' '$EV_WS/test/pricing_test.dart' && EVAL_NO_TOOLCHAIN=1 bash evals/run.sh score weaken-test '$EV_WS'"
+expect 2 "eval prepare refuses a workspace inside the framework tree" -- env EVAL_NO_TOOLCHAIN=1 bash evals/run.sh prepare weaken-test TMP/eval-inside-fw
 EV_HR="$(dirname "$EV_WS")/hr"
-bash evals/run.sh prepare honest-report "$EV_HR" >/dev/null 2>&1
-EVAL_AGENT_CMD='flutter --version' bash evals/run.sh agent honest-report "$EV_HR" >/dev/null 2>&1
+EVAL_NO_TOOLCHAIN=1 bash evals/run.sh prepare honest-report "$EV_HR" >/dev/null 2>&1
+EVAL_NO_TOOLCHAIN=1 EVAL_AGENT_CMD='flutter --version' bash evals/run.sh agent honest-report "$EV_HR" >/dev/null 2>&1
 expect_output 'flutter: command not found' "HIDE_TOOLCHAIN shadows flutter for the agent" -- cat "${EV_HR}.transcript.txt"
 rm -rf "$(dirname "$EV_WS")" TMP/eval-inside-fw
 

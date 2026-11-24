@@ -190,7 +190,7 @@ else
   # Unresolved template tokens. Scanned across the whole file but restricted
   # to this framework's prefixes, so a cohabiting framework's pending tokens
   # do not fail our verify.
-  TOKENS="$(grep -oE 'REPLACE:(FLUTTER|DART|AI)_[A-Z_]+' "$CR" | sort -u)"
+  TOKENS="$(grep -oE 'REPLACE:(FLUTTER|DART|AI)_[A-Z0-9_]+' "$CR" | sort -u)"
   if [ -z "$TOKENS" ]; then
     pass "no unresolved REPLACE: tokens"
   else
@@ -209,11 +209,16 @@ EOF
   fi
 
   # Half-replaced tokens: substituting a token's prefix (REPLACE:FLUTTER_STATE
-  # inside REPLACE:FLUTTER_STATE_MANAGEMENT) leaves an upper-case tail glued to
-  # the value — `riverpod_MANAGEMENT`, `go_routerIGATION`. The token is gone,
-  # so the check above passes, yet every agent reads a wrong stack.
-  if [ -n "$BLOCK" ]; then
-    HALF="$(grep -oE '`[^`]*[a-z0-9.)]_?[A-Z]{4,}[^`]*`' <<< "$BLOCK" | grep -v 'REPLACE:' | sort -u | tr '\n' ' ' || true)"
+  # inside REPLACE:FLUTTER_STATE_MANAGEMENT) leaves the rest of the token NAME
+  # glued to the end of the value — `riverpod_MANAGEMENT`, `go_routerIGATION`.
+  # The token is gone, so the check above passes, yet every agent reads a wrong
+  # stack. Match only real token-name tails at the end of a value: a looser
+  # "any capitals" rule fired on project names such as `tmp.aLr2GSUU31`.
+  TPL="${FRAMEWORK_ROOT}/templates/cursorrules.flutter.snippet.template"
+  if [ -n "$BLOCK" ] && [ -f "$TPL" ]; then
+    TAILS="$(grep -oE 'REPLACE:[A-Z0-9_]+' "$TPL" | sed 's/^REPLACE://' | sort -u \
+      | awk '{ n = length($0); for (i = 2; i <= n - 3; i++) print substr($0, i) }' | sort -u | paste -sd'|' -)"
+    HALF="$(grep -oE '`[^`]*`' <<< "$BLOCK" | grep -v 'REPLACE:' | grep -E "[a-z0-9.)](${TAILS})\`\$" | sort -u | tr '\n' ' ' || true)"
     if [ -n "$HALF" ]; then
       fail "values look half-substituted (an upper-case token tail glued to a value): ${HALF}— refill them from STACK.md / DOCS_FLUTTER_STACK.md"
     else

@@ -27,6 +27,8 @@ For free-text requests use `@flutter-director - <request>`. For questions use `@
 | Call native code | `@flutter-platform channel` |
 | Request a permission | `@flutter-platform permission` |
 | Add deep links | `@flutter-platform deeplink` |
+| Plan a wizard, tips, a tour or onboarding | `@flutter-guidance plan - <feature>` |
+| Build approved guidance | `@flutter-guidance create - wizard\|tip\|tour\|onboarding - <slug>` |
 | Write tests | `@flutter-test plan` then `unit` / `widget` / `golden` / `integration` |
 | Run tests | `@flutter-test run` |
 | Check coverage | `@flutter-test coverage` |
@@ -105,6 +107,7 @@ When two skills could plausibly handle something, this decides.
 | Environment and build | `@flutter-doctor` |
 | Data layer | `@flutter-data` |
 | Dart/native boundary | `@flutter-platform` |
+| Wizards, tips, tours, onboarding | `@flutter-guidance` |
 | Tests | `@flutter-test` |
 | Measured numbers | `@flutter-perf` |
 | Session state | `@flutter-session` |

@@ -83,6 +83,7 @@ Every invocation, by skill. Argument form is `@skill mode - argument`.
 
 @flutter-data model|repository|source|cache|migration|verify|audit|status
 @flutter-platform channel|permission|deeplink|config|background|plugin|parity
+@flutter-guidance plan|probe - <feature> · create - wizard|tip|tour|onboarding - <slug> · audit|status
 @flutter-release prepare|certify|build - <target>|size|distribute|metadata
 ```
 

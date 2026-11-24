@@ -66,6 +66,26 @@ Accessibility is a functional requirement with legal weight in most markets (EN 
 | **Manual screen reader** | TalkBack and VoiceOver traversal of each P0 flow | Everything automation cannot see |
 | Keyboard/switch | Full traversal without touch | Trap and order defects |
 
+**The automated guideline checks, by name.** `flutter_test` ships four. Every P0 screen gets a widget test that runs all four in each state the SPEC defines, in light and dark:
+
+```dart
+testWidgets('checkout meets the a11y guidelines', (tester) async {
+  final handle = tester.ensureSemantics();
+  await tester.pumpWidget(buildApp(home: const CheckoutScreen()));
+  await expectLater(tester, meetsGuideline(androidTapTargetGuideline)); // 48x48
+  await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));     // 44x44
+  await expectLater(tester, meetsGuideline(labeledTapTargetGuideline)); // tappable => labelled
+  await expectLater(tester, meetsGuideline(textContrastGuideline));     // WCAG AA text
+  handle.dispose();
+});
+```
+
+Known limits, measured against the current stable `flutter_test`:
+
+- The tap-target guidelines **skip nodes that touch the screen edge or a scrollable's edge**. A 20 px target in the top-left corner passed both of them; the same target centred failed both. A pass on an edge-anchored control is not evidence; measure that control with `tester.getSize`.
+- `textContrastGuideline` measures rendered text against the pixels behind it. It cannot judge text over images or gradients reliably, and it never sees icons. Icon and graphic contrast (WCAG 1.4.11, 3:1) stays a theme-level check.
+- Scale text with `TextScaler.linear(2)` in a `MediaQuery` override, never the deprecated `textScaleFactor`.
+
 **Automated checks are necessary and insufficient.** They cannot tell you that a label is accurate, that the traversal order makes sense, or that a flow is completable without sight. Only a real screen-reader run answers those questions, and **a screen-reader result may never be claimed without having run one** — including which reader, which device, and which OS version.
 
 ---

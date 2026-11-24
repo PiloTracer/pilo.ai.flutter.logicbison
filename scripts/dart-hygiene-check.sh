@@ -87,13 +87,68 @@ scan BLOCKER 'Colors\.[a-zA-Z]+' \
      'factory palette colour — colours come from the theme (UI_CRAFT §4)' \
      "$THEME_PATHS|Colors\.transparent"
 
-scan MAJOR '(EdgeInsets\.(all|only|symmetric|fromLTRB)|SizedBox|Gap)\([^)]*[0-9]' \
+# A digit counts only as a direct argument: not inside a nested call
+# (`child: bar(1)`) and not inside an identifier (`spacing.x2`), both of which
+# were false positives that push teams to switch the scan off.
+scan MAJOR '(EdgeInsets\.(all|only|symmetric|fromLTRB)|SizedBox|Gap)\(([^()]*[^A-Za-z0-9_.()])?[0-9]' \
      'raw spacing literal — spacing comes from the theme scale (UI_CRAFT §2)' \
      "$THEME_PATHS"
 
 scan MAJOR 'fontSize: *[0-9]' \
      'fontSize literal — text styles come from the TextTheme (UI_CRAFT §3)' \
      "$THEME_PATHS"
+
+# API currency (resources/flutter-api-currency.md): APIs a model's training data
+# still favours. Removed ones do not compile (BLOCKER); deprecated ones fail the
+# gate under --fatal-infos or lose behaviour (MAJOR). Only patterns that are
+# unambiguous without type information are scanned here — the rest belong to the
+# analyzer's deprecated_member_use. Every message names the replacement, because
+# an agent told only "deprecated" tends to invent a third API.
+W='[^A-Za-z0-9_]'  # word boundary without \b (not portable to every grep -E)
+
+scan BLOCKER "(^|$W)(FlatButton|RaisedButton|OutlineButton)($W|\$)" \
+     'removed API — use TextButton / FilledButton / OutlinedButton (api-currency)'
+
+scan BLOCKER '[tT]extTheme\??\.(headline[1-6]|subtitle[12]|bodyText[12]|caption|overline|button)([^A-Za-z0-9_]|$)' \
+     'removed TextTheme name — use display*/headline*/title*/body*/label* roles (api-currency)'
+
+scan BLOCKER '\.(primaryVariant|secondaryVariant)([^A-Za-z0-9_]|$)|[tT]heme(\.of\([a-z]*\))?\.accentColor' \
+     'removed theme colour — use ColorScheme roles (primaryContainer, secondary…) (api-currency)'
+
+scan BLOCKER 'Scaffold\.of\([^)]*\)\.showSnackBar' \
+     'removed API — use ScaffoldMessenger.of(context).showSnackBar (api-currency)'
+
+scan MAJOR '\.withOpacity\(' \
+     'deprecated withOpacity — use .withValues(alpha: …) (api-currency)'
+
+scan MAJOR "(^|$W)WillPopScope($W|\$)|onWillPop:|onPopInvoked:" \
+     'deprecated pop API (breaks Android predictive back) — use PopScope(canPop:, onPopInvokedWithResult:) (api-currency)'
+
+scan MAJOR "(^|$W)MaterialState" \
+     'deprecated MaterialState* — use the WidgetState* equivalent (api-currency)'
+
+# @Preview(textScaleFactor: …) is the widget-preview API's current parameter.
+scan MAJOR '[tT]extScaleFactor' \
+     'deprecated textScaleFactor — use textScaler / MediaQuery.textScalerOf (api-currency)' \
+     'Preview\('
+
+scan MAJOR '[sS]cheme\??\.(background|onBackground|surfaceVariant)([^A-Za-z0-9_]|$)' \
+     'deprecated ColorScheme role — use surface / onSurface / surfaceContainerHighest (api-currency)'
+
+scan MAJOR "(^|$W)ButtonBar(ThemeData)?($W|\$)" \
+     'deprecated ButtonBar — use OverflowBar (api-currency)'
+
+scan MAJOR "(^|$W)(RawKeyboardListener|RawKeyEvent|RawKeyDownEvent|RawKeyUpEvent|RawKeyboard)($W|\$)|(^|$W)onKey:" \
+     'deprecated raw key API — use KeyboardListener / KeyEvent / HardwareKeyboard / onKeyEvent (api-currency)'
+
+scan MAJOR "(^|$W)(ui|instance|binding)\.window($W|\$)|\.fromWindow(Padding)?\(" \
+     'deprecated single-window API — use View.of(context) / fromView / fromViewPadding (api-currency)'
+
+scan MAJOR 'SemanticsService\.announce\(' \
+     'deprecated SemanticsService.announce — use Semantics(liveRegion: true) or sendAnnouncement(View.of(context), …) (api-currency)'
+
+scan MAJOR "dialogBackgroundColor|(^|$W)ExpansionTileController($W|\$)" \
+     'deprecated API — use DialogThemeData(backgroundColor:) / ExpansibleController (api-currency)'
 
 scan MAJOR '// *ignore(_for_file)?:' \
      'analyzer suppression — needs a linked ADR or a reason on the same line' \

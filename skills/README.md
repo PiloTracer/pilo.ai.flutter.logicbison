@@ -56,6 +56,7 @@ Use for **new** skills and for any **rename** (update `.cursorrules`, this READM
 | flutter-implementation | `flutter-implementation/` | **Iteration execution:** validate the `NEXT_FLUTTER.md` iteration block, per-task gates, batch sweep, completion |
 | flutter-data | `flutter-data/` | Data layer: models and serialization, repositories, remote/local sources, local-store migrations |
 | flutter-platform | `flutter-platform/` | Platform integration: method/event channels, permissions, deep links, native config, plugin authoring |
+| flutter-guidance | `flutter-guidance/` | Guided UX: plan (decision ladder into SPEC §4), build and audit wizards, contextual tips, tours and onboarding from verified recipes |
 | flutter-release | `flutter-release/` | Flavors, signing, obfuscation, build artifacts, CI/CD, store metadata; certifies **release-ready** |
 
 ### Verification

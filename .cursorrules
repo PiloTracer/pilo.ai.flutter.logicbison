@@ -100,6 +100,7 @@ If you catch yourself about to write "as of version X" — stop, and describe th
 |---------|-------------------|
 | `scripts/fixtures/dart/dirty.dart` | hygiene violations |
 | `scripts/fixtures/dart/cheap-ui.dart` | factory palette, raw spacing, fontSize literals |
+| `scripts/fixtures/dart/stale-api.dart` | every api-currency scan (removed and deprecated Flutter APIs) |
 | `scripts/fixtures/dart/domain/entity.dart` | Flutter import in `domain/` |
 | `scripts/fixtures/dart/domain_ui_package/domain/price.dart` | `material_ui` import in `domain/` |
 | `scripts/fixtures/dart/repositories/` | repository importing a repository |
@@ -111,7 +112,7 @@ If you catch yourself about to write "as of version X" — stop, and describe th
 | `evals/scenarios/*/bad/*` | the check named in its `.eval-expect` |
 | `evals/scenarios/*/seed/` | its held-out `acceptance/` test (the task must not already be done) |
 
-**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `desktop/good-app/`, `releases/good/`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
+**Never "fix" a fixture.** Doing so makes the self-test pass while proving nothing, and the framework loses its ability to detect its own regressions silently — the worst possible failure mode, because everything still reports green. `clean.dart`, `current-api.dart`, `theme/app_theme.dart`, `repositories/in_memory_user_repository.dart`, `desktop/good-app/`, `releases/good/`, `good-plan.md`, and `honest-ledger.md` are the opposite: they must stay clean, since a false positive there would push someone to switch the check off. `theme/app_theme.dart` specifically guards the path-level theme exemption — theme files are where raw values are *defined*.
 
 When a fixture legitimately needs to change, change the assertion in `self-test.sh` in the same edit, and say in your summary which behaviour you re-baselined and why.
 

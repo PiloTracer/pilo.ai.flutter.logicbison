@@ -76,7 +76,7 @@ Missing platform targets → **stop** and route to `@flutter-foundation continue
 
 ### A2 — Create the project
 
-`flutter create` with the resolved org, project name and the exact platform list. Never generate platform folders the foundation excluded — removing them later is messy.
+`flutter create` with the resolved org, project name and the exact platform list. Never generate platform folders the foundation excluded — removing them later is messy. **Always pass `--project-name`:** the Dart package name must be lowercase letters, digits and underscores, not starting with a digit, and not a reserved word. A repo directory such as `pilo.ai.soc.logicbison.app` is not a valid package name, so `flutter create .` fails or produces an unusable name. Derive a snake_case name from doc 01 (e.g. `soc_app`), confirm it with the operator (it becomes every `package:` import and is costly to change), and record it in doc 01 and `.cursorrules`.
 
 ### A3 — Impose the directory tree
 
@@ -122,7 +122,7 @@ Generate, per `{FLUTTER_STACK_LOCK}` and the matching [`stacks/`](../../stacks/)
 | Entry | `bootstrap.dart` with a guarded zone, error handlers (`FlutterError.onError`, `PlatformDispatcher.instance.onError`), logging init, DI init |
 | DI | The composition root in the locked style, wired but empty |
 | Routing | Router config with a home route and a not-found route |
-| Theme | Light and dark `ThemeData` from a single color-seed source, per THEMING_STANDARD — plus the craft wiring per UI_CRAFT_STANDARD: the spacing scale (4/8/16/24/32) as a `ThemeExtension`, a neutral grey ramp with **one** accent (never a stock `Colors.<name>` seed shipped untouched), semantic status colours, and a `TextTheme` with the dominant-element display style (~2.5× body) |
+| Theme | Light and dark `ThemeData` from a single color-seed source, per THEMING_STANDARD (start from [`resources/ui-recipes.md`](../../resources/ui-recipes.md) §1, which is verified against the current SDK), plus the craft wiring per UI_CRAFT_STANDARD: the spacing scale (4/8/16/24/32) as a `ThemeExtension`, a neutral grey ramp with **one** accent (never a stock `Colors.<name>` seed shipped untouched), semantic status colours, and a `TextTheme` with the dominant-element display style (~2.5× body) |
 | l10n | `l10n.yaml`, a base ARB, and the generated-delegate wiring, when doc 02 requires localisation |
 | Config | `AppConfig` read from `--dart-define`, one instance per flavor |
 | Error | The project's failure type and the Result idiom from ARCHITECTURE_STANDARD |
@@ -186,7 +186,7 @@ Then run `scripts/desktop-preflight.sh` and quote it (zero BLOCKERs expected aft
 
 **`devcontainer`** (optional) — copy `templates/devcontainer/` to the adopter's `.devcontainer/` (merge if one exists — never clobber without asking). Tell the operator to replace the `:stable` image tag with the tag matching the SDK pin in `DOCS_FLUTTER_STACK.md`, and that iOS/macOS builds still need a Mac. Purpose: one toolchain for developers, agents and CI, so fewer checks end `unverified`.
 
-**`test-harness`** — `flutter_test_config.dart` (deterministic fonts and surface size for goldens), a golden comparison helper, fixture loaders, fakes for the locked stack's boundaries, and a `test/README.md` stating the conventions.
+**`test-harness`** — `flutter_test_config.dart` (deterministic fonts and surface size for goldens), a golden comparison helper, `test/support/visual_review.dart` copied from [`resources/visual-review.md`](../../resources/visual-review.md) with the `visual-review` tag declared in `dart_test.yaml`, an a11y guideline test for the starter screen (ACCESSIBILITY_STANDARD §3), fixture loaders, fakes for the locked stack's boundaries, and a `test/README.md` stating the conventions.
 
 ---
 

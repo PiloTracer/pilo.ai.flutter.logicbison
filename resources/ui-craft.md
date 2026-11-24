@@ -2,7 +2,7 @@
 
 The difference between software that reads as "premium" and software that reads as "free template" is not artistic talent. It is a small set of mechanical decisions — spacing, hierarchy, colour, states, copy — made deliberately instead of by default. This file distils those decisions into numbers an agent can apply, each traced to a source that was verified when this file was written.
 
-**Binding rules live in [`standards/20260802-UI_CRAFT_STANDARD.md`](../standards/20260802-UI_CRAFT_STANDARD.md).** This file is the evidence base behind them: read it when you need the *why*, the numbers, or the source. Not a standard, not a skill.
+**Binding rules live in [`standards/20260802-UI_CRAFT_STANDARD.md`](../standards/20260802-UI_CRAFT_STANDARD.md).** This file is the evidence base behind them: read it when you need the *why*, the numbers, or the source. Not a standard, not a skill. Working code that applies these rules is in [`ui-recipes.md`](ui-recipes.md); how to *see* whether a screen meets them is in [`visual-review.md`](visual-review.md).
 
 ---
 

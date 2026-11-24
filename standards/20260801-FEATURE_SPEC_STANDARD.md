@@ -47,7 +47,7 @@ All sixteen are mandatory. "N/A" is an acceptable content with a **reason** — 
 | 1 | **Purpose and user value** | The `FT-` id, the job-to-be-done, and what changes for the user. Not "add a profile screen" but "a user can correct their delivery address before an order ships" |
 | 2 | **Scope** | In-scope list, and an explicit **out-of-scope** list. Non-goals prevent more rework than goals cause |
 | 3 | **Actors and preconditions** | Who, in what auth state, with what permissions and what data present |
-| 4 | **User flows** | Step by step, with entry points, exit points, and back behaviour at each step. Include the abandonment path |
+| 4 | **User flows** | Step by step, with entry points, exit points, and back behaviour at each step. Include the abandonment path. Any wizard, tip, tour or onboarding carries a **Guidance plan** row per GUIDED_UX_STANDARD §2 (`@flutter-guidance plan`), with the fix-the-screen alternative answered |
 | 5 | **Screens and surfaces** | Route names and paths; which surfaces are new; who owns the visual design; **per screen: the one dominant element and the single primary action** (UI_CRAFT_STANDARD §3 — a screen without that decision cannot be verified for hierarchy) |
 | 6 | **UI states** ★ | For **every** surface: loading, empty, partial, error, offline, success. Each described in terms of what the user sees and can do |
 | 7 | **Data contract** | Entities read and written, source of truth, freshness and staleness tolerance, cache policy, validation rules |
@@ -151,3 +151,4 @@ Discovering a gap during implementation is normal and expected. Silently impleme
 | 13 | No implementation prescription |
 | 14 | Concept registry populated |
 | 15 | Every screen names its dominant element and single primary action |
+| 16 | Every guided surface (wizard, tip, tour, onboarding) has a Guidance plan row in §4 with rung 1 answered |

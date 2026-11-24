@@ -216,7 +216,7 @@ cat <<EOF
 
 deploy-basic: installed
 
-Verify: @flutter-deploy-basic verify - ${TARGET}
+Verify: @flutter-deploy-basic ${TARGET} verify
 Next:   @flutter-bootstrap init   (install is not setup — the project memory
         scaffold is a separate, required step)
 EOF

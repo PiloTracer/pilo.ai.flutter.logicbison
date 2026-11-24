@@ -37,7 +37,7 @@ The framework is a set of **markdown protocols** any LLM can follow, plus **shel
 
 | Directory | Contents |
 |-----------|----------|
-| [`skills/`](skills/README.md) | 26 skills. Each has hard rules, modes, prerequisite gates, protocols and a completion checklist |
+| [`skills/`](skills/README.md) | 27 skills. Each has hard rules, modes, prerequisite gates, protocols and a completion checklist |
 | [`standards/`](standards/README.md) | 23 standards (including desktop and CI/CD) + protected surfaces. Templates that become project-binding once tokens are filled |
 | [`concepts/`](concepts/README.md) | FLS-01…FLS-13 review lenses, run against real diffs |
 | [`stacks/`](stacks/README.md) | Per-state-management idiom guides: Riverpod, Bloc, Provider, Signals |
@@ -56,7 +56,7 @@ The framework is a set of **markdown protocols** any LLM can follow, plus **shel
 
 **Setup and planning** — `flutter-bootstrap` · `flutter-stack` · `flutter-foundation` · `flutter-plan-master` · `flutter-feature-spec` · `flutter-plan-verify` · `flutter-plan-repair`
 
-**Implementation** — `flutter-scaffold` · `flutter-implementation` · `flutter-data` · `flutter-platform` · `flutter-release`
+**Implementation** — `flutter-scaffold` · `flutter-implementation` · `flutter-data` · `flutter-platform` · `flutter-guidance` · `flutter-release`
 
 **Verification** — `flutter-test` · `flutter-verify` · `flutter-perf` · `flutter-a11y` · `flutter-security`
 

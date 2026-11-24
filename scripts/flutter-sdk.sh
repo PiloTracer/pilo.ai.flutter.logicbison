@@ -21,13 +21,16 @@
 #   4. <project>/.dart_tool/package_config.json  "flutterRoot" (last SDK used here)
 #   5. ~/flutter ~/development/flutter ~/sdks/flutter ~/fvm/default
 #      /opt/flutter /usr/local/flutter ~/snap/flutter/common/flutter
+#   6. a sibling project's .dart_tool/package_config.json "flutterRoot" — a new
+#      project has no .dart_tool yet, and projects on one machine usually share
+#      an SDK; the sibling it came from is named on stderr
 #
 # Exit: 0 found · 1 not found · 2 usage. Reads files only; never installs.
 set -uo pipefail
 
 MODE=root
 if [ "${1:-}" = "--env" ]; then MODE=env; shift; fi
-case "${1:-}" in -h|--help) sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; -*) echo "flutter-sdk: unknown option $1" >&2; exit 2 ;; esac
+case "${1:-}" in -h|--help) sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; -*) echo "flutter-sdk: unknown option $1" >&2; exit 2 ;; esac
 PROJECT="${1:-$PWD}"
 
 valid() { [ -n "$1" ] && [ -x "$1/bin/flutter" ]; }
@@ -79,5 +82,16 @@ for c in "$HOME/flutter" "$HOME/development/flutter" "$HOME/sdks/flutter" "$HOME
   valid "$c" && found "$c" "conventional location"
 done
 
-echo "flutter-sdk: no Flutter SDK found (checked PATH, FLUTTER_ROOT/FLUTTER_SDK_ROOT/FLUTTER_HOME, .fvm, .dart_tool/package_config.json, conventional locations)" >&2
+# 6. A sibling project's recorded SDK (newest config first).
+PARENT="$(cd "${PROJECT}/.." 2>/dev/null && pwd)"
+if [ -n "$PARENT" ]; then
+  while IFS= read -r spc; do
+    fr="$(grep -oE '"flutterRoot"[[:space:]]*:[[:space:]]*"[^"]*"' "$spc" | head -1 \
+          | sed -E 's/.*"flutterRoot"[[:space:]]*:[[:space:]]*"([^"]*)"/\1/; s#^file://##')"
+    sib="$(basename "$(dirname "$(dirname "$spc")")")"
+    valid "$fr" && found "$fr" "sibling project ${sib} (.dart_tool/package_config.json)"
+  done < <(find "$PARENT" -mindepth 3 -maxdepth 3 -path '*/.dart_tool/package_config.json' -printf '%T@ %p\n' 2>/dev/null | sort -rn | cut -d' ' -f2-)
+fi
+
+echo "flutter-sdk: no Flutter SDK found (checked PATH, FLUTTER_ROOT/FLUTTER_SDK_ROOT/FLUTTER_HOME, .fvm, .dart_tool/package_config.json, conventional locations, sibling projects)" >&2
 exit 1

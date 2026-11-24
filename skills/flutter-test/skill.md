@@ -37,6 +37,7 @@ Tests are the only mechanism by which a claim about behaviour becomes evidence. 
 | `unit - <target>` | Author unit tests (domain logic, mappers, view models, repositories) |
 | `widget - <target>` | Author widget tests, including all six states |
 | `golden - <target>` | Author golden tests with deterministic setup |
+| `render - <target>` | Write review renders (PNG per size class × brightness × text scale, every SPEC state) to `build/visual_review/` for visual review. Not a regression test: nothing is compared or committed. Recipe: [`resources/visual-review.md`](../../resources/visual-review.md) |
 | `integration - <flow>` | Author an integration test for an end-to-end flow |
 | `a11y - <target>` | Author accessibility assertions (delegates the audit to `@flutter-a11y`) |
 | `run [target]` | Execute tests; report real counts and failures |
@@ -102,7 +103,7 @@ Deterministic setup is not optional:
 | Requirement | Why |
 |-------------|-----|
 | Fixed surface size and device pixel ratio | Layout differs per size |
-| Test fonts loaded (or the default test font used consistently) | The real font may be unavailable in CI |
+| Test fonts loaded (or the default test font used consistently) | The real font may be unavailable in CI. Without loaded fonts every glyph renders as a box: fine for regression, useless for anyone *looking* at the image (use `render` for review) |
 | Animations disabled or pumped to completion | Mid-animation frames are non-deterministic |
 | No real images or network | Placeholder or bundled fixtures only |
 | Text scale explicitly set | The default varies |
@@ -111,6 +112,10 @@ Deterministic setup is not optional:
 Put shared setup in `flutter_test_config.dart` so every golden inherits it. Golden files are committed and reviewed as images; a golden diff in a PR is a design change and must be treated as one.
 
 **Platform divergence:** goldens rendered on different host platforms can differ. Either pin CI to one host for golden generation, or scope goldens with a platform tag. Decide once, record it in TESTING_STANDARD, and never let the team disable goldens because CI is red.
+
+### Render (for review, not regression)
+
+A golden asks "did this change?"; a review render asks "is this good?". Renders load real fonts, cover the size × brightness × text-scale matrix and every SPEC state, write to the gitignored `build/visual_review/`, and are inspected by an agent with image input or a human, answering FLS-13's look questions with the image path cited. The helper, the review table and its limits are in [`resources/visual-review.md`](../../resources/visual-review.md). An agent that cannot view images still writes the renders, and reports the look questions `unverified (no image input)`.
 
 ### Integration
 

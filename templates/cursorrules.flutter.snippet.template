@@ -52,6 +52,8 @@ Commands are canonical in `DOCS_FLUTTER_STACK.md`.
 11. **AI-assisted by default.** Agent sessions run FLS-06 before an iteration completes. Do not self-classify out of it.
 12. **Record after acting.** Append a HANDOFF entry; keep exactly one active pointer in `{FLUTTER_NEXT}`.
 13. **Cohabitation.** `.ai` and `.ai.ui` own their own work trees and skills. Never write into them; route non-Flutter work out.
+14. **The installed SDK over memory.** Training data predates the SDK, so models write removed and deprecated APIs by default (`withOpacity`, `WillPopScope`, `textScaleFactor`, `MaterialState`, `headline6`). Before writing an API this repo does not already use, confirm it in the SDK source (`$FLUTTER_ROOT/packages/flutter/lib`). After editing, run `dart fix --dry-run`; every `deprecated_member_use` is a finding. Stale-to-current table: `REPLACE:FLUTTER_FRAMEWORK_PATH/resources/flutter-api-currency.md`. If the SDK has no such API, report it `unverified` and never invent a replacement name.
+15. **UI is proven rendered, not read.** Hierarchy, rhythm, dark mode and 200% text are judged from rendered images (`REPLACE:FLUTTER_FRAMEWORK_PATH/resources/visual-review.md`). An agent that cannot view images reports them `unverified`.
 
 ### Frameworks registry (cross-framework discovery)
 
@@ -72,7 +74,7 @@ Sister frameworks are siblings on disk; `.ai.<fw>` (legacy) / `pilo.ai.<fw>.logi
 
 Orchestration: `@flutter-director` `@flutter-router`
 Setup and planning: `@flutter-bootstrap` `@flutter-stack` `@flutter-foundation` `@flutter-plan-master` `@flutter-feature-spec` `@flutter-plan-verify` `@flutter-plan-repair`
-Implementation: `@flutter-scaffold` `@flutter-implementation` `@flutter-data` `@flutter-platform` `@flutter-release`
+Implementation: `@flutter-scaffold` `@flutter-implementation` `@flutter-data` `@flutter-platform` `@flutter-guidance` `@flutter-release`
 Verification: `@flutter-test` `@flutter-verify` `@flutter-perf` `@flutter-a11y` `@flutter-security`
 Repair: `@flutter-repair` `@flutter-doctor`
 Support: `@flutter-session` `@flutter-concept-run` `@flutter-docs` `@flutter-deploy-basic` `@flutter-deploy-files`

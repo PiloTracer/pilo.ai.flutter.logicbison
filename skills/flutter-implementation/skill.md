@@ -30,6 +30,8 @@ Execute implementation iterations derived from an **Approved master plan**. Each
 - **Characterize before changing owned behaviour.** When altering behaviour you do not fully own, add or extend a test (or golden) that locks current observable output, watch it pass on the old code, then change the implementation and keep it green. Docs-only and framework shell work are exempt.
 - **Three-strike stop.** After three failed attempts on the same root cause with no new evidence, stop, report what was tried, and escalate — do not loop or weaken checks.
 - **Scope discipline.** Do not modify a file that is not in the task's `Files` list. Any accidental change is reverted and documented.
+- **The installed SDK over memory.** Training data predates the SDK. An API this repo does not already use is confirmed in the SDK source before it is written ([`resources/flutter-api-currency.md`](../../resources/flutter-api-currency.md) § How to check). `deprecated_member_use` is a finding, never noise. If the SDK has no such API, report `unverified`; never invent a name.
+- **UI tasks are looked at, not read.** A task that changes a screen ends with review renders (`@flutter-test render`) and the UI_CRAFT §8 polish pass answered from the images, or marked `unverified (no image input)`.
 - **Follow the locked stack.** Read `{FLUTTER_STACK_LOCK}` and the matching [`stacks/`](../../stacks/) idiom file. Do not introduce a second state-management approach, router or serialization strategy.
 - **Data-layer and native work delegate.** Schema and model changes go through `@flutter-data`; channels, permissions and native config go through `@flutter-platform`.
 - **No secrets in code, tests, comments or fixtures.** Configuration comes from `--dart-define` / `--dart-define-from-file`; true secrets never ship in the bundle.
@@ -180,12 +182,13 @@ Run after **every** task, before marking it `done`. Mechanical only — `@flutte
 |---|-------|---------|----------------|
 | G1 | Formatting | `dart format --set-exit-if-changed <changed files>` | Non-zero exit |
 | G2 | Static analysis | `flutter analyze` (or `dart analyze` for pure packages) | Any error or warning; `info` per the project's severity policy |
+| G2b | SDK migrations | `dart fix --dry-run` | Any proposed fix in a changed file: apply with `dart fix --apply`, review the diff, re-gate |
 | G3 | Tests | `flutter test <the task's test paths>` — full suite when the change is cross-cutting | Any failure |
 | G4 | Codegen current | `dart run build_runner build --delete-conflicting-outputs` when annotated sources changed | Generated output differs from committed |
 | G5 | Scope | `git diff --name-only` ⊆ declared scope | Any undeclared file |
 | G6 | Secrets | No key, token, password or credential in the diff | Any match |
 | G7 | Stack conformance | Idioms match `{FLUTTER_STACK_LOCK}` + the `stacks/` file | A second state approach, router or serialization strategy introduced |
-| G8 | Hygiene | `bash scripts/dart-hygiene-check.sh <changed files>` | `print(`, hardcoded color literals in widgets, `ignore_for_file` without a reason, unreferenced `TODO`, `http://` URLs |
+| G8 | Hygiene | `bash scripts/dart-hygiene-check.sh <changed files>` | Any finding: `print(`, theme-bypassing colour/spacing/`fontSize` literals, removed or deprecated APIs (api-currency), `ignore_for_file` without a reason, unreferenced `TODO`, `http://` URLs |
 | G9 | **SC1 self-critique** | See below | Any answer reveals an unhandled case |
 
 **SC1 self-critique** — answer all five in the task's Notes column, in one line each:

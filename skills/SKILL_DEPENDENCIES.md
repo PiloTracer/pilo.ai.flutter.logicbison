@@ -186,6 +186,9 @@ foundation-complete → plan-ready → implementation-ready → release-ready
 | **flutter-data** `verify` / `status` | - | Read-only |
 | **flutter-platform** `channel` / `permission` / `deeplink` / `config` / `plugin` | `{APP_ROOT}` with the target platform folder present (**PL0** gate) | **Required** |
 | **flutter-platform** `status` | - | Read-only |
+| **flutter-guidance** `plan` | Approved or in-review SPEC for the feature (**GU0** gate) | **Recommended:** `@flutter-feature-spec amend` writes the plan into SPEC §4 |
+| **flutter-guidance** `create` | Item approved in the SPEC §4 Guidance plan **and** listed in the iteration block (**GU0**) | **Required** (renders + a11y guidelines + behaviour tests) |
+| **flutter-guidance** `probe` / `audit` / `status` | `{APP_ROOT}` | Read-only (`probe` writes only the answers the operator gives) |
 | **flutter-test** `plan` / `unit` / `widget` / `golden` / `integration` | `{APP_ROOT}` with `test/` resolvable; stack-locked (test doubles follow the stack) | **Recommended** |
 | **flutter-test** `run` / `coverage` / `status` | `flutter` on PATH (else report `toolchain unavailable`) | - |
 | **flutter-verify** `milestone` | Active milestone in `{FLUTTER_MASTER_PLAN}` **or** `{FLUTTER_NEXT}` § Current iteration (**V0** gate) | **Required** |
@@ -279,7 +282,7 @@ All skills use the same verbs where applicable, so muscle memory stays portable.
 | `help` | Purpose, modes, invocation examples | flutter-director, flutter-router |
 | `init` | One-time setup | flutter-bootstrap |
 | `set` / `show` | Record / display a locked decision | flutter-stack; `show` also on flutter-plan-master |
-| `probe` | Adaptive gap-driven interrogation loop; scores coverage, asks ≤5 targeted questions, fills registries. Engine: [`probe-protocol.md`](probe-protocol.md) | flutter-foundation, flutter-plan-master, flutter-stack, flutter-feature-spec |
+| `probe` | Adaptive gap-driven interrogation loop; scores coverage, asks ≤5 targeted questions, fills registries. Engine: [`probe-protocol.md`](probe-protocol.md) | flutter-foundation, flutter-plan-master, flutter-stack, flutter-feature-spec, flutter-guidance |
 | `greenfield` | First-time creation | flutter-foundation, flutter-plan-master |
 | `continue` | Resume in-progress work | flutter-foundation, flutter-plan-master, flutter-implementation |
 | `continue` + target | Batch tasks: `- N`, `- until blocked`, `- F{N}-T{a}..T{b}` | flutter-implementation |
@@ -287,12 +290,12 @@ All skills use the same verbs where applicable, so muscle memory stays portable.
 | `integrity` | Automated completeness sweep over an artifact set | flutter-plan-master |
 | `revise` | Structured edit of an approved artifact | flutter-plan-master |
 | `intake` | Classify a free-text request → route; records to `{FLUTTER_NEXT}` § Intake queue | flutter-feature-spec |
-| `create` | Make a new artifact | flutter-feature-spec, flutter-docs |
+| `create` | Make a new artifact | flutter-feature-spec, flutter-docs, flutter-guidance |
 | `amend` | Modify an existing artifact without rewriting history | flutter-feature-spec |
 | `review` | Read-only audit of one artifact | flutter-feature-spec |
 | `approve` | Flip an artifact's status after a passing review | flutter-feature-spec |
 | `document` | Author docs for something that already exists (brownfield) | flutter-feature-spec, flutter-docs |
-| `plan` | Prepare the next unit of work | flutter-implementation, flutter-test |
+| `plan` | Prepare the next unit of work | flutter-implementation, flutter-test, flutter-guidance |
 | `start` | Begin a unit of work · open a session (load context, confirm readiness, capture goal) | flutter-implementation, flutter-session |
 | `open` / `begin` | Aliases of session `start` | flutter-session |
 | `complete` | Mark a unit as done | flutter-implementation |
@@ -303,7 +306,7 @@ All skills use the same verbs where applicable, so muscle memory stays portable.
 | `context` | Read-only full context load, uncommitted-aware; no writes | flutter-session |
 | `verify` | Audit produced artifacts | flutter-plan-verify (`foundation`/`master`/`alignment`/`coverage`/`brownfield`), flutter-data |
 | `milestone` / `uncommitted` / `last` / `gate` | Verification scopes | flutter-verify |
-| `audit` | Read-only domain audit with findings table | flutter-perf, flutter-a11y, flutter-security, flutter-plan-verify |
+| `audit` | Read-only domain audit with findings table | flutter-perf, flutter-a11y, flutter-security, flutter-plan-verify, flutter-guidance |
 | `repair` | Fix reported findings, then re-verify with the originating verifier | flutter-repair, flutter-plan-repair |
 | `diagnose` | Toolchain/environment root-cause analysis | flutter-doctor |
 | `brownfield` | Discover/create missing artifacts from an existing repo | flutter-plan-verify, flutter-plan-repair |

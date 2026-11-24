@@ -62,6 +62,7 @@ Record the exact command, the full output, and the **first** meaningful error li
 | `Execution failed for task`, AGP/Gradle/Kotlin/JDK version errors, `minSdkVersion` conflicts, R8 failures, manifest merger errors | Android build | `build - android` |
 | `pod install` failures, CocoaPods repo errors, `Podfile.lock` conflicts, code-signing errors, deployment-target mismatches, missing simulators | iOS build | `build - ios` |
 | `build_runner` conflicting outputs, stale `.g.dart`, generator/annotation version mismatch, `part` directive errors | Codegen | `codegen` |
+| `'X' is deprecated and shouldn't be used`, `The getter 'headline6' isn't defined`, `The method 'RaisedButton' isn't defined` after an SDK upgrade or in agent-written code | **Stale API — code, not toolchain** | `@flutter-repair`: `dart fix --dry-run` then `--apply`, the rest by hand from `resources/flutter-api-currency.md`. Never downgrade the SDK to make it compile |
 | Compilation errors in `lib/`, analyzer errors, failing assertions in your own code | **Code — not this skill** | `@flutter-repair` |
 | Test assertions failing on logic | **Code — not this skill** | `@flutter-repair repair - from test` |
 | Works locally, fails in CI (or the reverse) | Environment divergence | `env` |

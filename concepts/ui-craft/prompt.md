@@ -44,7 +44,13 @@ The question this lens asks: **does this screen look like somebody made delibera
 
 17. Dark mode: checked, or assumed? Same for 200% text scale. Evidence, not recollection (cross-check FLS-10).
 18. Motion: from tokens, subtle, reduce-motion honoured? Any ad-hoc `Duration` in the diff?
-19. What was looked at on a real device or emulator, at what size — and what was only ever seen in code?
+19. What was looked at rendered, and at what sizes? Name the image paths ([`resources/visual-review.md`](../../resources/visual-review.md): size class × brightness × text scale, every SPEC state), and say what was only ever seen in code. Do the renders show real letters, or placeholder boxes?
+
+**Copy** (UI_CRAFT_STANDARD §10)
+
+20. List every button label on the screen. Which ones say "OK", "Yes", "Submit" or "Confirm" where the action has a name?
+21. Does every confirmation dialog name the consequence and repeat the verb on its button? Does every empty state say what appears here and offer the one action that fills it?
+22. Is any concept called by two names across the touched screens? Are numbers, dates and plurals formatted by `intl`, or concatenated?
 
 ---
 
@@ -53,7 +59,7 @@ The question this lens asks: **does this screen look like somebody made delibera
 | # | Severity | File:line / screen | Signal | Finding | Remedy |
 |---|----------|--------------------|--------|---------|--------|
 
-Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `finish`. Plus: the accent-location list (Q10), the saturated-colour count (Q12), and an explicit split between what was seen rendered and what was judged from code.
+Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `copy` · `finish`. Plus: the accent-location list (Q10), the saturated-colour count (Q12), and an explicit split between what was seen rendered and what was judged from code.
 
 ---
 
@@ -73,5 +79,8 @@ Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `finis
 | Skeleton shapes that do not mimic the real layout | minor |
 | Ad-hoc `Duration` outside motion tokens | minor |
 | Dark mode or 200% text scale asserted without being rendered | major — and the claim downgraded to `unverified` |
+| A review render with placeholder-box glyphs treated as evidence | major — the render is invalid; load fonts and re-render |
+| Generic action labels ("OK", "Yes", "Submit") where the action has a name; destructive confirm without the verb | major |
+| Error copy that blames the user or jokes in a failure path; one concept with two names | minor |
 
-**Judged from code is not seen.** Hierarchy and rhythm questions answered without rendering the screen (widget test, emulator, device, or golden) are reported as `unverified`, never as pass. The polish pass in UI_CRAFT_STANDARD §8 is the walkthrough; this lens is its evidence.
+**Judged from code is not seen.** Hierarchy and rhythm questions answered without rendering the screen (a review render per `resources/visual-review.md`, emulator, device, or golden with real fonts loaded) are reported as `unverified`, never as pass. An agent without image input generates the renders for a human and reports the look questions `unverified (no image input)`. The polish pass in UI_CRAFT_STANDARD §8 is the walkthrough; this lens is its evidence.

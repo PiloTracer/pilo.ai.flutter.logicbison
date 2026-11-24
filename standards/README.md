@@ -20,6 +20,7 @@ Binding rules for Flutter code, plans and process. Skills cite these; they do no
 | [`DATA_LAYER_STANDARD`](20260801-DATA_LAYER_STANDARD.md) | yes | Models, repos, storage | data, verify |
 | [`THEMING_STANDARD`](20260801-THEMING_STANDARD.md) | yes | Theme and tokens | implementation, a11y |
 | [`UI_CRAFT_STANDARD`](20260802-UI_CRAFT_STANDARD.md) | yes | Visible quality of shipped UI | implementation, verify, scaffold, feature-spec |
+| [`GUIDED_UX_STANDARD`](20261124-GUIDED_UX_STANDARD.md) | yes | Wizards, contextual tips, tours, onboarding | guidance, feature-spec, verify |
 | [`L10N_STANDARD`](20260801-L10N_STANDARD.md) | yes | Strings, formats, RTL | implementation, a11y |
 | [`TESTING_STANDARD`](20260801-TESTING_STANDARD.md) | yes | Test strategy | test, verify |
 | [`QUALITY_GATES`](20260801-QUALITY_GATES.md) | yes | What "done" means | verify, implementation, release |

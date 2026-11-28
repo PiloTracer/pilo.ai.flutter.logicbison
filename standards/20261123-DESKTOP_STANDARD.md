@@ -52,6 +52,10 @@ Flutter does not cross-compile desktop apps. **A macOS build needs a Mac, a Wind
 3. **Expanded widths use the space**: list–detail side by side, navigation rail or drawer instead of a bottom bar, content constrained to a readable line length instead of stretched edge to edge.
 4. **Density follows the platform.** Leave `ThemeData.visualDensity` at its adaptive default unless the design system says otherwise; desktop is denser than touch.
 5. **No fixed pixel widths for content.** They break at the minimum window size and waste the maximum.
+6. **Wide tables scroll horizontally when their readable columns exceed the viewport.** Keep type at the user's scale, provide a visible horizontal scrollbar and confirm the final column and row actions are reachable. Build rows lazily for large inventories. Provide a way to read essential values that the table elides.
+7. **In-page splits use local constraints.** Account for the remaining width after navigation and context panes, including larger text and longer labels. Wrap topic controls or stack secondary panels when they crowd the task. Check at the minimum supported window with 200% text.
+
+[UI craft §12](20260802-UI_CRAFT_STANDARD.md#12-desktop-surfaces) covers desktop hierarchy, selection and surfaces. [Desktop surfaces](../resources/desktop-surfaces.md) includes Flutter examples.
 
 ## 6. Files, storage and OS integration
 
@@ -95,6 +99,9 @@ Build each targeted desktop OS on its own runner (`templates/ci/github-actions/f
 - A Ctrl-only shortcut on macOS, or a shortcut test that runs only on the default platform.
 - `GestureDetector` on a custom control with no hover state and no click cursor.
 - `MediaQuery.of(context).size` or a numeric breakpoint inside a widget.
+- A wide table whose last columns or actions cannot be reached at 200% text.
+- A settings column that stays a fixed sidebar when the text scale no longer fits.
+- Rail selection painted in the accent colour.
 - Writing files next to the executable or inside the app bundle.
 - Shipping a macOS release build that was only ever tested in debug (sandbox entitlements differ).
 - An unsigned Windows installer, or a macOS app that is signed but not notarized.

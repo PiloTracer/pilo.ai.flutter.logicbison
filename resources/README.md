@@ -11,6 +11,7 @@ Reference material skills read. Not standards (not binding) and not skills (no p
 | [`visual-review.md`](visual-review.md) | Proven helper that renders screens to PNG (size class x brightness x text scale, real fonts) and the protocol for reviewing them | `flutter-test render`, `flutter-implementation`, `flutter-verify` D15, FLS-13 |
 | [`guided-ux.md`](guided-ux.md) | Research behind GUIDED_UX_STANDARD (NN/g, GOV.UK, W3C WAI, Apple HIG), the Flutter building blocks, and verified wizard and contextual-tip recipes with their tests | `flutter-guidance` |
 | [`ui-recipes.md`](ui-recipes.md) | Verified, token-consuming exemplars: theme, adaptive shell, six-state screen, action hierarchy and confirmation | `flutter-scaffold`, `flutter-implementation` |
+| [`desktop-surfaces.md`](desktop-surfaces.md) | Desktop layout decisions by user task, with review checks and links to [verified Flutter recipes](desktop-surface-recipes.md) | `flutter-scaffold`, `flutter-implementation`, FLS-13 |
 
 ---
 

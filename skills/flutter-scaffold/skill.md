@@ -122,7 +122,7 @@ Generate, per `{FLUTTER_STACK_LOCK}` and the matching [`stacks/`](../../stacks/)
 | Entry | `bootstrap.dart` with a guarded zone, error handlers (`FlutterError.onError`, `PlatformDispatcher.instance.onError`), logging init, DI init |
 | DI | The composition root in the locked style, wired but empty |
 | Routing | Router config with a home route and a not-found route |
-| Theme | Light and dark `ThemeData` from a single color-seed source, per THEMING_STANDARD (start from [`resources/ui-recipes.md`](../../resources/ui-recipes.md) §1, which is verified against the current SDK), plus the craft wiring per UI_CRAFT_STANDARD: the spacing scale (4/8/16/24/32) as a `ThemeExtension`, a neutral grey ramp with **one** accent (never a stock `Colors.<name>` seed shipped untouched), semantic status colours, and a `TextTheme` with the dominant-element display style (~2.5× body) |
+| Theme | Light and dark `ThemeData` from a single color-seed source, per THEMING_STANDARD (start from [`resources/ui-recipes.md`](../../resources/ui-recipes.md) §1, which is verified against the current SDK), plus the craft wiring per UI_CRAFT_STANDARD: the spacing scale (4/8/16/24/32) as a `ThemeExtension`, a neutral grey ramp with **one** accent (never a stock `Colors.<name>` seed shipped untouched), semantic status colours, and a `TextTheme` with the dominant-element display style (~2.5× body). A multi-section desktop tool also takes the frame/canvas/card tones from [`resources/desktop-surfaces.md`](../../resources/desktop-surfaces.md) |
 | l10n | `l10n.yaml`, a base ARB, and the generated-delegate wiring, when doc 02 requires localisation |
 | Config | `AppConfig` read from `--dart-define`, one instance per flavor |
 | Error | The project's failure type and the Result idiom from ARCHITECTURE_STANDARD |
@@ -176,7 +176,7 @@ Register the route (K2), the DI bindings (K3), and the test mirror. Then run the
 
 1. Platform folders: `flutter create --platforms=<targets> .` (adds folders, never overwrites `lib/`). Report every file it created.
 2. Window: initial size, minimum size and title (§2), via the runner files or the window package the stack locked. Record the minimum size in doc 02.
-3. `AppBreakpoints` tokens in the theme (compact/medium/expanded per §5), and an adaptive shell that switches navigation at `expanded`.
+3. Add `AppBreakpoints` tokens and an adaptive shell per §5. For a multi-section workspace, use [Desktop surfaces](../../resources/desktop-surfaces.md) to choose its shell and content patterns. Fit the active task to the space left after navigation and context panes.
 4. Shortcuts: an app-level `Shortcuts`/`Actions` skeleton with one helper that picks the platform modifier (meta on macOS, control elsewhere), wired to the SPEC's primary actions.
 5. Menus: `PlatformMenuBar` on macOS with Quit/Close/About; an in-app `MenuBar` on Windows/Linux when the app has more than a handful of commands.
 6. macOS `Release.entitlements` matching what the SPECs need (network client, user-selected files). Protected surface: show the diff and get approval.

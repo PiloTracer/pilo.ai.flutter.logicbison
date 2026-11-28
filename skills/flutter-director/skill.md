@@ -23,7 +23,7 @@ description: >-
 5. **Do not invent skills or modes.** Only what is registered in [`skills/README.md`](../README.md). If nothing fits, follow § New skill protocol.
 6. **Never write under this framework directory.** Project artifacts go to `{FLUTTER_WORK_ROOT}`; code goes to `{APP_ROOT}`.
 7. **Never claim a result you did not observe.** If a chain step could not run (no device, no toolchain, no network), report it as `not run` with the reason. A fabricated `pass` is the single worst failure mode of this framework.
-8. **Route non-Flutter work out.** Backend, database, infrastructure → `@ai-director`. Design tokens, visual craft, screen design → `@ui-director`. Spanning both → `@x-director`. Always run the framework preflight in `SKILL_DEPENDENCIES.md` § Frameworks registry first; if the sibling framework is absent, say `framework not installed here` and offer the closest Flutter-side action.
+8. **Route by ownership.** Backend, database and infrastructure go to `@ai-director`. Design-system ownership and standalone screen design go to `@ui-director`. Flutter rendering, adaptive layout and polish of implemented screens stay in the Flutter workflow. Work spanning frameworks goes to `@x-director`. Run the framework preflight before invoking a sibling.
 
 ---
 
@@ -171,7 +171,8 @@ Classify into one bucket. Match by intent. Full signal lists and worked examples
 | `docs` | "document", "write a guide", "tutorial", "reference doc" | `@flutter-docs` |
 | `deploy` | "install this framework into my repo", "copy the framework" | thin → `@flutter-deploy-basic`; fat → `@flutter-deploy-files` |
 | `router` | "how do I…?", "where is…?", "which skill…?" | `@flutter-router - <question>` |
-| `not-flutter` | Backend, API, DB, infra → `.ai`. Design tokens, visual craft → `.ai.ui` | Preflight, then `@ai-director` / `@ui-director` |
+| `ui-craft` | "polish the Flutter screen", "the desktop layout feels flat", "the table breaks at large text" | `@flutter-test render - <screen>` → `@flutter-concept-run run - FLS-13` |
+| `not-flutter` | Backend, API, DB, infra → `.ai`. Design-system authoring or standalone visuals → `.ai.ui` | Preflight, then `@ai-director` / `@ui-director` |
 | `cross-framework` | Spans Flutter + backend and/or design ("app plus the API behind it") | Preflight, then `@x-director` |
 | `new-skill-needed` | No registered skill can fulfil it | § New skill protocol |
 | `unsure` | Cannot classify, or the request is underspecified | Clarify gate, then `@flutter-foundation probe` or `@flutter-router` |

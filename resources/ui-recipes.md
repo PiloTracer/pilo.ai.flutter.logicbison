@@ -7,6 +7,8 @@ Rules tell an agent what is wrong. Exemplars show what right looks like, and mod
 - passes all four `flutter_test` accessibility guidelines in every state, in light and dark;
 - was rendered with [`visual-review.md`](visual-review.md) at compact, medium and expanded widths, in light, dark and 200% text, and **looked at**. That review found two defects that every test above had passed: icons rendered as boxes (a helper bug, since fixed) and a skeleton that did not match the rows it stood in for (fixed below).
 
+A multi-section desktop tool (framed window, many sections, tables, settings) continues in [`desktop-surfaces.md`](desktop-surfaces.md). The shell in §2 is the phone-and-rail case.
+
 **Adapt; do not paste blindly.** Swap the import for the project's UI library (ARCHITECTURE_STANDARD), take the seed from the design system (`.ai.ui`, when installed, owns tokens), take strings from `AppLocalizations` (they are inline here only for readability), and follow the locked state-management stack: the screen takes its state as a parameter so it fits any of them.
 
 | Recipe | Shows | Standard |

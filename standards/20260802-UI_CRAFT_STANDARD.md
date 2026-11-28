@@ -101,6 +101,7 @@ Before a UI task or milestone is marked complete, run the polish pass over every
 6. Dark mode and 200% text scale checked, not assumed (THEMING_STANDARD §10, ACCESSIBILITY_STANDARD).
 7. **Rendered, then looked at.** Steps 2, 3, 5 and 6 are judged from the renders in [`resources/visual-review.md`](../resources/visual-review.md) (size class × brightness × text scale, every SPEC state), never from reading the widget code. An agent without image input generates the renders and reports those steps `unverified`.
 8. Copy: every label, button, dialog and message on the screen passes §10.
+9. Check the applicable desktop surfaces in §12 at the minimum supported window size with 200% text, including the available width with any context pane open.
 
 The pass is recorded in the iteration's Concept/NFR registry. "The logic is done, polish later" is how the last 30 centimetres never happen — polish is part of done, and it is what the client sees.
 
@@ -147,3 +148,21 @@ Words are interface. A screen with perfect spacing and a button labelled "OK" un
 - "Polish at the end" as a separate milestone — it is never scheduled, and the client saw the unpolished screen first.
 - "OK" / "Yes" / "Submit" buttons; "Something went wrong" with no next step; one concept with two names.
 - Hierarchy or dark mode "verified" by reading widget code, or by looking at a test render whose text is placeholder boxes.
+- A desktop shell whose rail, canvas and cards are one flat colour, or whose selected rail item is painted in the accent.
+- A dominant page title that loses its hierarchy while optional artwork keeps its space.
+- A wide table that shrinks its type, or overflows, at 200% text instead of scrolling sideways.
+- A settings sidebar with a fixed width that does not yield to text scale.
+- Revealed files or a draft from the previous record still on screen after the selection changes.
+- `fontFamily` set to a face the review fonts did not load. The glyphs are boxes, and the review does not count.
+
+---
+
+## 12. Desktop surfaces
+
+Use [Desktop surfaces](../resources/desktop-surfaces.md) to choose patterns for multi-section workspaces. Apply the following checks to the surfaces in scope.
+
+- **Hierarchy follows the task.** Preserve the dominant content and primary action agreed in SPEC §5. When a section title is dominant, keep its hierarchy as space tightens. Let decorative art and optional copy yield first. Keep instructions available in the task flow and decorative art out of hit testing and semantics.
+- **Use neutral layers for orientation.** For a framed shell, use related theme tones for the frame, workspace and cards. Give navigation and choice controls a visible and semantic selection cue. Reserve the accent for the task’s primary action. Pair status tints with readable text or an icon that conveys the status.
+- **Keep actions with their content.** Place creation controls by the inventory and outside its scrolling region. Distinguish an empty inventory, zero search matches and a load failure. When retry is the primary action, emphasize it.
+- **Keep detail state with its record.** Isolate transient details and late async results by stable record ID. Check where scroll position is owned so it follows the same rule. Preserve drafts by ID when the flow promises to retain them. Make values that users need to copy, such as commands and saved source, selectable.
+- **Verify interaction feedback over custom surfaces.** Focus, hover, ink and switch feedback remain visible in both themes. A transparent Flutter `Material` above the canvas is one option when the background covers the underlying ink.

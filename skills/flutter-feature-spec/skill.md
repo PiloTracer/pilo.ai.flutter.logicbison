@@ -114,7 +114,7 @@ Path: `{FLUTTER_SPEC_ROOT}/<slug>/YYYYMMDD-SPEC.md`. Sections §1–§16 per [`F
 | 2 | Scope in / out | Explicit non-goals |
 | 3 | Actors & preconditions | Auth state, permissions, required data |
 | 4 | User flows | Step by step, including entry points and back behaviour |
-| 5 | Screens & surfaces | Route names, whether a UI SPEC owns the visuals |
+| 5 | Screens & surfaces | Routes, visual owner, dominant content and primary action for each screen. For desktop workflows, identify the context users need beside the primary task and what must remain accessible as space tightens. [Desktop surfaces](../../resources/desktop-surfaces.md#decide-what-the-user-needs-first) |
 | 6 | **UI states** | **Every surface: loading, empty, partial, error, offline, success.** No state may be undefined |
 | 7 | Data contract | Entities read/written, source of truth, staleness tolerance, cache policy |
 | 8 | Business rules & invariants | Numbered `R{n}`, each testable |

@@ -8,6 +8,12 @@ The deploy skills (`@flutter-deploy-basic`, `@flutter-deploy-files`) read this f
 
 ## [Unreleased]
 
+### Added — desktop UI and UX craft (2026-11-27)
+
+- [Desktop surfaces](resources/desktop-surfaces.md) helps agents choose layouts around the user’s task. It covers inventories, editors, settings, details, reports and readiness flows, with guidance drawn from the desktop page refresh in `pilo.ai.soc.logicbison.app`.
+- [Desktop surface recipes](resources/desktop-surface-recipes.md) provides ten verified Flutter examples. The review moved the Add action next to the inventory, aligned headings with cell values, and removed a low-contrast rail subtitle that surfaced when the tests loaded real fonts.
+- SPEC, scaffold, implementation and verification now lead to the desktop guidance. FLS-13 checks task hierarchy, reachability at 200% text and record isolation. The director routes Flutter polish through visual review and FLS-13.
+
 ### Added — model-independent Flutter and UI/UX abilities, round 2 (2026-11-24)
 
 Plan: `plans/20261124-flutter-ui-abilities-02.md`. Every code sample below was compiled, analyzed with `--fatal-infos`, formatted, hygiene-scanned, tested and rendered against the current stable SDK in a scratch copy of `evals/apps/base` before publishing; the published blocks are byte-identical to the verified files.

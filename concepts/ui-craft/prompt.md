@@ -52,6 +52,14 @@ The question this lens asks: **does this screen look like somebody made delibera
 21. Does every confirmation dialog name the consequence and repeat the verb on its button? Does every empty state say what appears here and offer the one action that fills it?
 22. Is any concept called by two names across the touched screens? Are numbers, dates and plurals formatted by `intl`, or concatenated?
 
+**Desktop surfaces** ([design guide](../../resources/desktop-surfaces.md), UI_CRAFT_STANDARD §12)
+
+23. In a framed shell, can you distinguish the frame, workspace and cards in both themes? Is the selected navigation item identifiable without the accent?
+24. What does the user need first on this screen? Does the masthead support the SPEC's dominant element? As space tightens, does decoration yield while the title, necessary instructions and next action remain readable?
+25. At the minimum supported width and 200% text with the context pane open where applicable, can you reach the last column and its actions by scrolling? Are essential truncated values readable somewhere? For a split layout, do controls wrap or stack while the task remains usable?
+26. When switching from record A to B, do the visible details, transient state and late results belong to B?
+27. Do key controls sit with the content they affect? For redesigns, are existing actions, review steps and recovery paths still available?
+
 ---
 
 ## Output
@@ -59,7 +67,7 @@ The question this lens asks: **does this screen look like somebody made delibera
 | # | Severity | File:line / screen | Signal | Finding | Remedy |
 |---|----------|--------------------|--------|---------|--------|
 
-Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `copy` · `finish`. Plus: the accent-location list (Q10), the saturated-colour count (Q12), and an explicit split between what was seen rendered and what was judged from code.
+Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `copy` · `finish` · `desktop`. Plus: the accent-location list (Q10), the saturated-colour count (Q12), and an explicit split between what was seen rendered and what was judged from code.
 
 ---
 
@@ -82,5 +90,10 @@ Signals: `spacing` · `hierarchy` · `colour` · `states` · `clarity` · `copy`
 | A review render with placeholder-box glyphs treated as evidence | major — the render is invalid; load fonts and re-render |
 | Generic action labels ("OK", "Yes", "Submit") where the action has a name; destructive confirm without the verb | major |
 | Error copy that blames the user or jokes in a failure path; one concept with two names | minor |
+| Desktop rail, brand or masthead competes with the primary accent; dominant title loses hierarchy | major |
+| Wide table with unreachable columns or actions at 200% text; split layout crowds out the active task | major |
+| Detail state from the previous record still visible | major |
+| Redesign hides a task action or drops an existing review or recovery step | major |
+| Decorative masthead artwork left in the semantics tree or hit-testable | minor |
 
 **Judged from code is not seen.** Hierarchy and rhythm questions answered without rendering the screen (a review render per `resources/visual-review.md`, emulator, device, or golden with real fonts loaded) are reported as `unverified`, never as pass. An agent without image input generates the renders for a human and reports the look questions `unverified (no image input)`. The polish pass in UI_CRAFT_STANDARD §8 is the walkthrough; this lens is its evidence.

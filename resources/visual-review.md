@@ -14,7 +14,7 @@ Read by `@flutter-test render`, `@flutter-implementation` (the polish pass, UI_C
 | Golden files (`matchesGoldenFile`) | Built for regression, not review. They are committed, platform-sensitive, and **render text in a placeholder font where every glyph is a box** unless fonts are loaded |
 | **Widget-test render to PNG** | Headless, runs wherever `flutter test` runs, deterministic sizes, any theme and text scale, nothing committed |
 
-**The font trap.** Under `flutter test` every glyph is drawn as a solid box until real fonts are loaded, and icons are glyphs too. A model shown that image will still describe a layout: it reviews rectangles and reports a pass. The helper below loads the app's own fonts and the SDK's Roboto and Material Icons. (The first review of `ui-recipes.md` caught exactly this: text was real, every icon was a hollow square, and all 17 widget and guideline tests still passed.) A review image that shows boxes instead of letters is invalid; say so, and do not review it.
+**The font trap.** Under `flutter test` every glyph is drawn as a solid box until real fonts are loaded, and icons are glyphs too. A model shown that image will still describe a layout: it reviews rectangles and reports a pass. The helper below loads the app's own fonts and the SDK's Roboto and Material Icons. (The first review of `ui-recipes.md` caught exactly this: text was real, every icon was a hollow square, and all 17 widget and guideline tests still passed.) A review image that shows boxes instead of letters is invalid; say so, and do not review it. The same trap hits a widget that sets `fontFamily` to a face this helper never loaded: the surrounding Roboto text looks real, and the one "monospace" line is boxes. Load that face here, or do not name it.
 
 ---
 
@@ -78,7 +78,8 @@ Future<void> loadReviewFonts() async {
       final name = file.uri.pathSegments.last;
       if (RegExp(r'^Roboto-[A-Za-z]+\.ttf$').hasMatch(name)) {
         roboto.addFont(
-            Future.value(ByteData.sublistView(file.readAsBytesSync())));
+          Future.value(ByteData.sublistView(file.readAsBytesSync())),
+        );
       }
     }
     await roboto.load();
@@ -94,7 +95,7 @@ Future<void> loadReviewFonts() async {
 }
 
 /// Pumps [screen] under every variant and writes one PNG per variant to
-/// build/visual_review/<name>/<variant>.png. Review images, not goldens:
+/// `build/visual_review/<name>/<variant>.png`. Review images, not goldens:
 /// nothing is compared and nothing is committed (build/ is gitignored).
 Future<List<String>> renderForReview(
   WidgetTester tester, {
@@ -169,6 +170,8 @@ void main() {
 
 Render **every state the SPEC defines** (FEATURE_SPEC §6), not just the data state: the empty and error states are where cheap UI hides. Use the fakes the widget tests already use; never a real network. Declare the tag in `dart_test.yaml` (`tags: {visual-review: {}}`) and run just the renders with `flutter test --tags visual-review`.
 
+For a desktop workspace, supply `variants` with the project's expanded and minimum supported window sizes. Add a minimum-window variant at 200% text with any context pane open. Use a screen-level assertion against `MediaQuery.textScalerOf(context)` when validating the harness so the evidence reflects the effective scale. Load the same app fonts before running pixel-based `textContrastGuideline` checks. Rendering and contrast tests should exercise the same typefaces regardless of test order.
+
 ---
 
 ## The review protocol
@@ -184,10 +187,13 @@ Render **every state the SPEC defines** (FEATURE_SPEC §6), not just the data st
 | Expanded layout uses the space | `expanded-*` | A phone column stretched across 1280 px; full-width text fields |
 | Dark mode is designed | `*-dark` | Muddy greys, invisible dividers, a logo that vanishes, pure black |
 | 200% text | `compact-light-text200` | Clipped or overlapping text, overflow stripes, truncated primary content |
+| Desktop minimum window at 200% text | Project-specific variant, with context pane open where applicable | Active content is crowded out, labels or controls are inaccessible, or the wide table has no visible scroll affordance |
 | State copy | error and empty renders | Jargon, codes, no recovery action, an empty screen that does not teach |
 
 3. **Report what you saw, with the file path.** "`build/visual_review/orders_error/compact-dark.png`: retry button and body text share the accent." A finding without the image path is a finding nobody can check.
 4. **Measure what the eye can only estimate.** A hierarchy ratio or a contrast value comes from the theme roles or `textContrastGuideline`, not from squinting at pixels.
+
+For interaction claims, also exercise the behavior. Scroll to the last column and try its actions, test focus and feedback on the themed surface, and switch records while the first record's work is pending. Capture the start and scrolled views if the finding concerns reachability.
 
 **An agent that cannot view images** still generates the renders, so a human can look, and reports every look question as `unverified (no image input)`. It never answers them from the code. Code-judged hierarchy is the exact failure this file exists to prevent.
 
